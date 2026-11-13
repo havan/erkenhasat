@@ -139,14 +139,14 @@ section.block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px;
 .field { display: grid; gap: 4px; align-content: start; }
 .field label { font-size: 0.86rem; font-weight: 500; }
 .field .hint { font-size: 0.8rem; color: var(--muted); }
-input[type="text"], input[type="date"], select, textarea {
+input[type="text"], input[type="date"], input[type="datetime-local"], select, textarea {
   font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums;
   color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 7px;
   padding: 8px 10px; width: 100%; min-width: 0;
 }
 select { font-family: var(--font-body); }
 input.wide-text { font-family: var(--font-body); }
-input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+input[type="text"]:focus, input[type="date"]:focus, input[type="datetime-local"]:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .unit-input { display: flex; align-items: stretch; }
 .unit-input input { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .unit-input span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line); border-left: 0;
@@ -172,6 +172,12 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .step-head label.check { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); white-space: nowrap; cursor: pointer; }
 .step-head input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--good); }
 .step.done .step-head h3 { color: var(--muted); }
+.step-head .step-toggle { padding: 3px 10px; font-size: 0.8rem; white-space: nowrap; background: transparent; color: var(--accent); border-color: var(--line); }
+.step:not(.done) .step-toggle { display: none; }
+@media screen {
+  .step.collapsed > :not(.step-head) { display: none; }
+  .step.collapsed { padding-top: 12px; padding-bottom: 12px; }
+}
 .lang-body { display: grid; gap: 10px; }
 .step ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
 .step p { max-width: 70ch; }
@@ -317,6 +323,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
   .step.done .step-head h3 { color: var(--ink); }
   .step-head input[type="checkbox"] { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border: 1.5px solid #000; border-radius: 3px; margin: 0; }
   .step-head label.check { color: var(--ink); }
+  .step-toggle { display: none !important; }
   .why, .caution { font-size: 9.5pt; }
   .reaction { white-space: normal; }
   a { color: inherit; text-decoration: none; }
@@ -355,8 +362,10 @@ table.fs-lookup td.rec { font-weight: 600; }
 
 /* ---------- brand ---------- */
 .brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; }
-.brand-mark { width: 26px; height: 26px; color: var(--accent); flex: none; }
+.brand-mark { width: 30px; height: 30px; color: var(--accent); flex: none; }
 .brand small { font-family: var(--font-mono); font-weight: 400; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.brand-text { display: grid; line-height: 1.15; }
+.brand-url { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 400; color: var(--muted); letter-spacing: 0.01em; }
 .brand:hover .brand-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .brand:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; border-radius: 4px; }
 
@@ -393,8 +402,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 .lbl.small .lbl-name { font-size: 7.6pt; -webkit-line-clamp: 1; }
 .lbl-sub { font-family: var(--font-mono); font-size: 7.2pt; color: #56631b; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.4mm; }
 .lbl.small .lbl-sub { font-size: 5.6pt; }
-.lbl-brand { display: flex; align-items: center; gap: 1mm; font-size: 6pt; font-weight: 700; color: #56631b; white-space: nowrap; }
-.lbl-brand svg { width: 3.6mm; height: 3.6mm; color: #56631b; }
+.lbl-by { display: flex; align-items: center; gap: 0.8mm; margin-top: 0.5mm; color: #56631b; font-weight: 600; white-space: nowrap; }
+.lbl-by svg { width: 2.8mm; height: 2.8mm; color: #56631b; flex: none; }
 .lbl-res { display: flex; align-items: center; gap: 2.6mm; border-top: 0.3mm solid #56631b; border-bottom: 0.3mm solid #56631b; padding: 1.3mm 0; }
 .lbl.small .lbl-res { padding: 0.7mm 0; gap: 2mm; }
 .lbl-acid { font-family: var(--font-mono); font-weight: 600; font-size: 24pt; color: #a3164a; line-height: 1; white-space: nowrap; }
@@ -454,7 +463,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 <div class="wrap">
   <header class="top">
     <div class="top-row">
-      <a class="brand" href="../" title="Erken Hasat · all tools / tüm araçlar"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-name">Erken Hasat</span></a>
+      <a class="brand" href="../" title="Erken Hasat · all tools / tüm araçlar"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-text"><span class="brand-name">Erken Hasat</span><span class="brand-url">havan.github.io/erkenhasat</span></span></a>
       <div class="top-actions">
         <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet (PDF)</span><span class="tr">Saha formu (PDF)</span></button>
         <div class="lang-switch" role="group" aria-label="Language / Dil">
@@ -985,10 +994,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         origin: ["Origin", "Village, region or grove."],
         variety: ["Olive variety", "Pick from the list or type your own."],
         ripeness: ["Ripeness at harvest", ""],
-        harvestDate: ["Harvest date", ""],
+        harvestStart: ["Harvest start", "Date and time picking began."],
+        harvestEnd: ["Harvest end", "When the last olives were picked."],
         harvestMethod: ["Harvest method", ""],
         transport: ["Olives carried in", "Ventilated crates keep olives cooler and less bruised than sacks."],
-        pressDate: ["Pressing date", ""],
+        pressDate: ["Pressing date and time", "When the olives went into the mill."],
         mill: ["Olive mill (press house)", "Name and town."],
         extraction: ["Extraction system", ""],
         malaxTime: ["Malaxation time", "Time the paste spends in the malaxer. Usually 30–45 min."],
@@ -1009,9 +1019,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         container: { darkGlass: "Dark glass bottle", clearGlass: "Clear glass bottle", steel: "Stainless steel tank", tin: "Tin can", plasticFood: "Food-grade plastic jerrycan", pet: "Reused PET bottles", clay: "Clay jar", other: "Other" }
       },
       infoCount: function (n) { return n ? n + " filled" : ""; },
-      iDaysBad: "The pressing date is before the harvest date.",
-      iDaysOk: function (d) { return (d === 0 ? "Pressed on the day of harvest." : "Pressed the day after harvest.") + " Quick pressing keeps acidity low."; },
-      iDaysLate: function (d) { return "The olives waited " + d + " days before pressing. Ideally press within 24 hours: waiting, especially in sacks or piles, raises acidity."; },
+      iOrder: "Check the times: the harvest end or the pressing comes before the harvest start.",
+      iHarvest: function (h) { return "Picking took " + h + "."; },
+      iWaitOk: function (r) { return "Pressed " + r + " after picking. Quick pressing keeps acidity low."; },
+      iWaitLate: function (r) { return "The olives waited " + r + " between picking and pressing. Ideally press within 24 hours: waiting, especially in sacks or piles, raises acidity."; },
+      hU: "h", dU: "days", show: "Show", hide: "Hide",
       iCold: "Malaxed at 27 °C or less: counts as cold extraction.",
       iWarm: "Malaxed above 27 °C: more oil, but fewer polyphenols and less aroma, and it can't be called cold extraction.",
       iLong: "Malaxation over 60 minutes increases oxidation and lowers polyphenols.",
@@ -1020,7 +1032,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       iClear: "Clear glass lets light in, which spoils oil. Keep the bottles in a dark cupboard.",
       lblOil: "Olive oil", lblAcidK: "free acidity, as oleic acid", lblNoResult: "no result yet",
       lblOrigin: "Origin", lblHarvest: "Harvest", lblPressed: "Pressed", lblMill: "Mill", lblMalax: "Malaxation", lblStorage: "Storage", lblCold: "cold extraction",
-      lblDays: function (d) { return d === 0 ? "same day" : d + (d === 1 ? " day" : " days") + " after harvest"; },
+      lblWait: function (r) { return r + " after picking"; },
+      lblBy: "Test tool: Erken Hasat · havan.github.io/erkenhasat",
       lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + " · ISO 660 titration. Home test, not a certified analysis."; },
       lblTestedShort: function (date) { return "Tested " + date + " · ISO 660 titration"; },
       lblSheet: function (per, n, pages) { return per + " labels per A4 sheet · printing " + n + " on " + pages + (pages === 1 ? " sheet" : " sheets") + "."; },
@@ -1031,7 +1044,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       repMethodTxt: function (N) { return "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized alcohol-ether solvent (cold method after ISO 660 / EU Regulation 2568/91). Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
       repBy: "Tested by", repSig: "Signature",
       repFoot: "Home test for your own use, not a certified analysis.",
-      dDays: "Harvest to pressing", dCold: "Cold extraction (≤ 27 °C)", dYield: "Yield", yes: "yes", no: "no",
+      dHarvestH: "Picking took", dWait: "Picking to pressing", dCold: "Cold extraction (≤ 27 °C)", dYield: "Yield", yes: "yes", no: "no",
       noResultWarn: "No completed run yet: the labels and report will show “—” for acidity."
     },
     tr: {
@@ -1107,10 +1120,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         origin: ["Menşe", "Köy, bölge veya bahçe."],
         variety: ["Zeytin çeşidi", "Listeden seçin veya kendiniz yazın."],
         ripeness: ["Hasattaki olgunluk", ""],
-        harvestDate: ["Hasat tarihi", ""],
+        harvestStart: ["Hasat başlangıcı", "Toplamaya başlanan tarih ve saat."],
+        harvestEnd: ["Hasat bitişi", "Son zeytinin toplandığı tarih ve saat."],
         harvestMethod: ["Hasat yöntemi", ""],
         transport: ["Zeytin taşıma şekli", "Havalandırmalı kasa, zeytini çuvala göre daha serin ve daha az ezilmiş tutar."],
-        pressDate: ["Sıkım tarihi", ""],
+        pressDate: ["Sıkım tarihi ve saati", "Zeytinin yağhanede işlenmeye başladığı an."],
         mill: ["Yağhane", "Adı ve yeri."],
         extraction: ["Sıkım sistemi", ""],
         malaxTime: ["Malaksör süresi", "Hamurun malaksörde kaldığı süre. Genellikle 30–45 dk."],
@@ -1131,9 +1145,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         container: { darkGlass: "Koyu renk cam şişe", clearGlass: "Şeffaf cam şişe", steel: "Paslanmaz çelik tank / bidon", tin: "Teneke", plasticFood: "Gıdaya uygun plastik bidon", pet: "Kullanılmış PET şişe", clay: "Toprak küp", other: "Diğer" }
       },
       infoCount: function (n) { return n ? n + " alan dolu" : ""; },
-      iDaysBad: "Sıkım tarihi hasat tarihinden önce.",
-      iDaysOk: function (d) { return (d === 0 ? "Hasat günü sıkılmış." : "Hasattan bir gün sonra sıkılmış.") + " Hızlı sıkım asitliği düşük tutar."; },
-      iDaysLate: function (d) { return "Zeytinler sıkımdan önce " + d + " gün beklemiş. İdeali 24 saat içinde sıkmaktır: özellikle çuvalda veya yığında bekleme asitliği yükseltir."; },
+      iOrder: "Saatleri kontrol edin: hasat bitişi veya sıkım, hasat başlangıcından önce görünüyor.",
+      iHarvest: function (h) { return "Toplama " + h + " sürmüş."; },
+      iWaitOk: function (r) { return "Toplamadan " + r + " sonra sıkılmış. Hızlı sıkım asitliği düşük tutar."; },
+      iWaitLate: function (r) { return "Zeytinler toplama ile sıkım arasında " + r + " beklemiş. İdeali 24 saat içinde sıkmaktır: özellikle çuvalda veya yığında bekleme asitliği yükseltir."; },
+      hU: "saat", dU: "gün", show: "Göster", hide: "Gizle",
       iCold: "27 °C veya altında malakse edilmiş: soğuk sıkım sayılır.",
       iWarm: "27 °C üstünde malakse edilmiş: verim artar ama polifenol ve aroma azalır; soğuk sıkım denemez.",
       iLong: "60 dakikayı aşan malaksör süresi oksidasyonu artırır, polifenolleri düşürür.",
@@ -1142,7 +1158,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       iClear: "Şeffaf cam ışık geçirir ve yağı bozar. Şişeleri karanlık bir dolapta saklayın.",
       lblOil: "Zeytinyağı", lblAcidK: "serbest asitlik, oleik asit cinsinden", lblNoResult: "henüz sonuç yok",
       lblOrigin: "Menşe", lblHarvest: "Hasat", lblPressed: "Sıkım", lblMill: "Yağhane", lblMalax: "Malaksör", lblStorage: "Saklama", lblCold: "soğuk sıkım",
-      lblDays: function (d) { return d === 0 ? "aynı gün" : "hasattan " + d + " gün sonra"; },
+      lblWait: function (r) { return "toplamadan " + r + " sonra"; },
+      lblBy: "Test aracı: Erken Hasat · havan.github.io/erkenhasat",
       lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " deneme ortalaması" : "") + " · ISO 660 titrasyonu. Ev testidir, akredite analiz değildir."; },
       lblTestedShort: function (date) { return "Test: " + date + " · ISO 660 titrasyonu"; },
       lblSheet: function (per, n, pages) { return "A4 sayfada " + per + " etiket · " + pages + " sayfaya " + n + " etiket basılacak."; },
@@ -1153,7 +1170,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       repMethodTxt: function (N) { return "Serbest yağ asitleri, nötrleştirilmiş alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile titre edilmiştir (ISO 660 / AB 2568/91 soğuk yöntemi esas alınarak). Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
       repBy: "Testi yapan", repSig: "İmza",
       repFoot: "Kendi kullanımınız için ev testidir, akredite analiz değildir.",
-      dDays: "Hasattan sıkıma", dCold: "Soğuk sıkım (≤ 27 °C)", dYield: "Verim", yes: "evet", no: "hayır",
+      dHarvestH: "Toplama süresi", dWait: "Toplamadan sıkıma", dCold: "Soğuk sıkım (≤ 27 °C)", dYield: "Verim", yes: "evet", no: "hayır",
       noResultWarn: "Henüz tamamlanmış deneme yok: etiket ve raporda asitlik “—” olarak görünür."
     }
   };
@@ -1164,9 +1181,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     return {
       example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
       testDate: todayISO(), label: defaultLabel(),
-      info: { origin: "Ayvalık, Balıkesir", variety: "Ayvalık (Edremit)", ripeness: "early", harvestDate: "2026-10-18", harvestMethod: "comb",
-        transport: "crates", pressDate: "2026-10-19", extraction: "two", malaxTime: "35", malaxTemp: "26", olivesKg: "500", oilL: "68",
-        filtration: "unfiltered", container: "steel" },
+      info: exampleInfo(),
       runs: [
         { id: 1, mode: "diff", before: "87.42", after: "67.31", direct: "", vol: "", blank: "", fills: [{ start: "0.00", end: "2.35" }] },
         { id: 2, mode: "diff", before: "67.31", after: "47.05", direct: "", vol: "", blank: "", fills: [{ start: "2.35", end: "4.72" }] }
@@ -1193,7 +1208,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   if (!state.info || typeof state.info !== "object") state.info = {};
   if (!state.label || typeof state.label !== "object") state.label = defaultLabel();
   if (!state.testDate) state.testDate = todayISO();
+  if (state.example) state.info = exampleInfo();
+  else if (state.info.harvestDate && !state.info.harvestStart) { state.info.harvestStart = state.info.harvestDate; }
+  delete state.info.harvestDate;
 
+  function exampleInfo() {
+    return { origin: "Ayvalık, Balıkesir", variety: "Ayvalık (Edremit)", ripeness: "early", harvestStart: "2026-10-18T07:30", harvestEnd: "2026-10-18T16:00",
+      harvestMethod: "comb", transport: "crates", pressDate: "2026-10-18T21:00", extraction: "two", malaxTime: "35", malaxTemp: "26",
+      olivesKg: "500", oilL: "68", filtration: "unfiltered", container: "steel" };
+  }
   function defaultLabel() { return { size: "large", copies: "", start: "1", cut: false }; }
   function todayISO() {
     var d = new Date();
@@ -1455,8 +1478,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
   // ---------- oil details ----------
   var INFO_GROUPS = [
-    ["olives", [["origin", "text"], ["variety", "text"], ["ripeness", "select"], ["harvestDate", "date"], ["harvestMethod", "select"], ["transport", "select"]]],
-    ["pressing", [["pressDate", "date"], ["mill", "text"], ["extraction", "select"], ["malaxTime", "num", "min"], ["malaxTemp", "num", "°C"], ["olivesKg", "num", "kg"], ["oilL", "num", "L"]]],
+    ["olives", [["origin", "text"], ["variety", "text"], ["ripeness", "select"], ["harvestStart", "datetime"], ["harvestEnd", "datetime"], ["harvestMethod", "select"], ["transport", "select"]]],
+    ["pressing", [["pressDate", "datetime"], ["mill", "text"], ["extraction", "select"], ["malaxTime", "num", "min"], ["malaxTemp", "num", "°C"], ["olivesKg", "num", "kg"], ["oilL", "num", "L"]]],
     ["storage", [["filtration", "select"], ["container", "select"], ["notes", "textarea"]]]
   ];
   var VARIETIES = ["Ayvalık (Edremit)", "Memecik", "Gemlik", "Domat", "Erkence", "Çekişte", "Uslu", "Trilye", "Nizip Yağlık", "Kilis Yağlık",
@@ -1464,9 +1487,23 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
   function unitFor(k, fallback) { return k === "malaxTime" ? t("min") : fallback; }
 
+  // Accepts "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM" (what date and datetime-local inputs give).
   function parseDate(s) {
-    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
-    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(s || "");
+    return m ? new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) : null;
+  }
+  function timeOf(s) { var m = /T(\d{2}:\d{2})/.exec(s || ""); return m ? m[1] : ""; }
+  function fmtDT(s) { var d = fmtDate(s); return d && timeOf(s) ? d + " " + timeOf(s) : d; }
+  // "18 Oct 2026 07:30–16:00" on one day, else both ends in full.
+  function fmtRange(a, b) {
+    if (!a || !b) return fmtDT(a || b);
+    return a.slice(0, 10) === b.slice(0, 10) && timeOf(a) && timeOf(b) ? fmtDate(a) + " " + timeOf(a) + "–" + timeOf(b) : fmtDT(a) + " – " + fmtDT(b);
+  }
+  function hNum(h) { return h < 10 && Math.abs(h - Math.round(h)) >= 0.05 ? f(h, 1) : f(h, 0); }   // 8.5, 5, 14
+  function fmtH(h) { return h < 72 ? hNum(h) + " " + t("hU") : f(h / 24, 1) + " " + t("dU"); }
+  function rangeH(lo, hi) {
+    if (hi - lo < 0.5) return fmtH(hi);
+    return hi < 72 ? hNum(lo) + "–" + fmtH(hi) : fmtH(lo) + "–" + fmtH(hi);
   }
   function fmtDate(s) {
     var d = parseDate(s);
@@ -1480,7 +1517,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     v = String(v).trim();
     var O = t("opts");
     if (O[k]) return O[k][v] ? esc(O[k][v]) : "";
-    if (k === "harvestDate" || k === "pressDate") return esc(fmtDate(v));
+    if (k === "harvestStart" || k === "harvestEnd" || k === "pressDate") return esc(fmtDT(v));
     var units = { malaxTime: t("min"), malaxTemp: "°C", olivesKg: "kg", oilL: "L" };
     return esc(v) + (units[k] ? " " + units[k] : "");
   }
@@ -1504,7 +1541,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         } else if (type === "num") {
           ctl = '<div class="unit-input"><input type="text" inputmode="decimal" id="' + id + '" data-info="' + k + '" value="' + esc(val) + '"><span>' + unitFor(k, fd[2]) + '</span></div>';
         } else {
-          ctl = '<input type="' + (type === "date" ? "date" : "text") + '"' + (type === "text" ? ' class="wide-text"' : "") + ' id="' + id + '" data-info="' + k + '" value="' + esc(val) + '"' + (k === "variety" ? ' list="varietyList"' : "") + '>';
+          ctl = '<input type="' + (type === "datetime" ? "datetime-local" : "text") + '"' + (type === "text" ? ' class="wide-text"' : "") + ' id="' + id + '" data-info="' + k + '" value="' + esc(val) + '"' + (k === "variety" ? ' list="varietyList"' : "") + '>';
         }
         html += '<div class="field' + (type === "textarea" ? " span2" : "") + '"><label for="' + id + '">' + L[k][0] + '</label>' + ctl +
           (L[k][1] ? '<span class="hint">' + L[k][1] + '</span>' : "") + '</div>';
@@ -1515,13 +1552,18 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   }
 
   function infoDerived() {
-    var i = state.info, out = { notes: [], days: NaN };
-    var h = parseDate(i.harvestDate), p = parseDate(i.pressDate);
-    if (h && p) {
-      out.days = Math.round((p - h) / 86400000);
-      if (out.days < 0) out.notes.push(["bad", t("iDaysBad")]);
-      else if (out.days <= 1) out.notes.push(["ok", t("iDaysOk")(out.days)]);
-      else out.notes.push(["warn", t("iDaysLate")(out.days)]);
+    var i = state.info, out = { notes: [] }, H = 3600000;
+    var hs = parseDate(i.harvestStart), he = parseDate(i.harvestEnd), p = parseDate(i.pressDate);
+    var bad = (hs && he && he < hs) || (p && ((hs && p < hs) || (he && p < he)));
+    if (bad) out.notes.push(["bad", t("iOrder")]);
+    else {
+      if (hs && he) { out.harvestH = (he - hs) / H; out.notes.push(["info", t("iHarvest")(fmtH(out.harvestH))]); }
+      if (p && (hs || he)) {
+        // First-picked olives waited longest (from harvest start), last-picked the least (from harvest end).
+        out.waitMax = (p - (hs || he)) / H; out.waitMin = (p - (he || hs)) / H;
+        out.waitText = rangeH(out.waitMin, out.waitMax);
+        out.notes.push(out.waitMax <= 24 ? ["ok", t("iWaitOk")(out.waitText)] : ["warn", t("iWaitLate")(out.waitText)]);
+      }
     }
     var temp = num(i.malaxTemp), time = num(i.malaxTime);
     if (isFinite(temp)) { out.cold = temp <= 27; out.notes.push(out.cold ? ["ok", t("iCold")] : ["warn", t("iWarm")]); }
@@ -1564,11 +1606,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var acid = s ? (lang === "tr" ? "<small>%</small>" + f(s.mean, 2) : f(s.mean, 2) + "<small>%</small>") : "—";
     var sub = [infoVal("variety"), infoVal("ripeness")].filter(Boolean).join(" · ");
     var tested = esc(fmtDate(state.testDate));
-    var rows = [], harvest = infoVal("harvestDate"), pressed = infoVal("pressDate");
+    var rows = [], harvest = esc(fmtRange(state.info.harvestStart, state.info.harvestEnd)), pressed = infoVal("pressDate");
     if (size === "large") {
       if (infoVal("origin")) rows.push([t("lblOrigin"), infoVal("origin")]);
       if (harvest) rows.push([t("lblHarvest"), [harvest, infoVal("harvestMethod")].filter(Boolean).join(" · ")]);
-      if (pressed) rows.push([t("lblPressed"), pressed + (d.days >= 0 ? " (" + t("lblDays")(d.days) + ")" : "")]);
+      if (pressed) rows.push([t("lblPressed"), pressed + (d.waitText ? " (" + t("lblWait")(d.waitText) + ")" : "")]);
       var mill = [infoVal("mill"), infoVal("extraction")].filter(Boolean).join(" · ");
       if (mill) rows.push([t("lblMill"), mill]);
       var mx = [infoVal("malaxTime"), infoVal("malaxTemp")].filter(Boolean).join(" · ");
@@ -1577,14 +1619,14 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       if (st) rows.push([t("lblStorage"), st]);
     } else {
       if (harvest) rows.push([t("lblHarvest"), harvest]);
-      if (pressed) rows.push([t("lblPressed"), pressed]);
+      if (pressed) rows.push([t("lblPressed"), pressed + (d.waitText ? " (" + d.waitText + ")" : "")]);
     }
     return '<div class="lbl ' + size + '">' +
-      '<div class="lbl-head"><div><div class="lbl-name">' + esc(state.name || t("lblOil")) + '</div>' + (sub ? '<div class="lbl-sub">' + sub + '</div>' : '') + '</div>' +
-        '<div class="lbl-brand">' + BRAND_SVG + (size === "large" ? 'Erken Hasat' : '') + '</div></div>' +
+      '<div class="lbl-head"><div><div class="lbl-name">' + esc(state.name || t("lblOil")) + '</div>' + (sub ? '<div class="lbl-sub">' + sub + '</div>' : '') + '</div></div>' +
       '<div class="lbl-res"><span class="lbl-acid">' + acid + '</span><span class="lbl-acid-k">' + t("lblAcidK") + '<br><b class="' + (g ? { good: "ev", warn: "v", bad: "l" }[g.cls] : "") + '">' + (g ? g.text : t("lblNoResult")) + '</b></span></div>' +
       (rows.length ? '<dl class="lbl-rows">' + rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>'; }).join("") + '</dl>' : '') +
-      '<div class="lbl-foot">' + (size === "large" ? t("lblTested")(tested, s ? s.n : 0) : t("lblTestedShort")(tested) + " · Erken Hasat") + '</div></div>';
+      '<div class="lbl-foot">' + (size === "large" ? t("lblTested")(tested, s ? s.n : 0) : t("lblTestedShort")(tested)) +
+        '<div class="lbl-by">' + BRAND_SVG + (size === "large" ? t("lblBy") : "havan.github.io/erkenhasat") + '</div></div></div>';
   }
 
   function labelPlan() {
@@ -1617,7 +1659,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     INFO_GROUPS.forEach(function (grp) {
       grp[1].forEach(function (fd) { if (fd[0] !== "notes" && infoVal(fd[0])) det.push([t("info")[fd[0]][0], infoVal(fd[0])]); });
     });
-    if (d.days >= 0) det.push([t("dDays"), t("lblDays")(d.days)]);
+    if (isFinite(d.harvestH)) det.push([t("dHarvestH"), fmtH(d.harvestH)]);
+    if (d.waitText) det.push([t("dWait"), d.waitText]);
     if (d.cold !== undefined) det.push([t("dCold"), d.cold ? t("yes") : t("no")]);
     if (isFinite(d.yieldPct)) det.push([t("dYield"), pct(d.yieldPct, 1) + " · " + f(d.kgPerL, 1) + " kg/L"]);
     var detRows = "";
@@ -1627,7 +1670,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     }
     var notes = String(state.info.notes || "").trim();
     document.getElementById("printReport").innerHTML = '<div class="rep">' +
-      '<div class="rep-head"><div><div class="brand">' + BRAND_SVG.replace("<svg", '<svg class="brand-mark"') + '<span>Erken Hasat</span></div>' +
+      '<div class="rep-head"><div><div class="brand">' + BRAND_SVG.replace("<svg", '<svg class="brand-mark"') + '<span class="brand-text"><span>Erken Hasat</span><span class="brand-url">havan.github.io/erkenhasat</span></span></div>' +
         '<div class="rep-eyebrow">ISO 660 · EU 2568/91</div><h1>' + t("repTitle") + '</h1>' + (state.name ? '<div class="rep-name">' + esc(state.name) + '</div>' : '') + '</div>' +
         '<div class="rep-date">' + t("repDate") + '<b>' + esc(fmtDate(state.testDate)) + '</b></div></div>' +
       '<div class="rep-result"><div class="rep-big">' + (s ? pct(s.mean, 2) : "—") + '<small>' + t("lblAcidK") + '</small></div>' +
@@ -1638,7 +1681,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       '<section><h2>' + t("repRuns") + '</h2><table><thead><tr>' + cols.map(function (c, j) { return '<th' + (j > 1 ? ' class="num"' : '') + '>' + c + '</th>'; }).join("") + '</tr></thead><tbody>' + runRows + '</tbody></table></section>' +
       '<section><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
       '<div class="rep-sign"><div>' + t("repBy") + '</div><div>' + t("repSig") + '</div></div>' +
-      '<div class="rep-foot">' + t("repFoot") + ' · Erken Hasat</div></div>';
+      '<div class="rep-foot">' + t("repFoot") + ' · Erken Hasat · havan.github.io/erkenhasat</div></div>';
   }
 
   function renderLabelControls() {
@@ -1695,7 +1738,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var malax = [iv("malaxTime"), iv("malaxTemp")].filter(Boolean).join(" · ");
     document.getElementById("fsMeta2").innerHTML = [
       [t("fsVariety"), iv("variety")], [t("fsOrigin"), iv("origin")], [t("fsMill"), iv("mill")],
-      [t("fsHarvest"), iv("harvestDate")], [t("fsPressed"), iv("pressDate")], [t("fsMalax"), malax]
+      [t("fsHarvest"), ex ? "" : esc(fmtRange(state.info.harvestStart, state.info.harvestEnd))], [t("fsPressed"), iv("pressDate")], [t("fsMalax"), malax]
     ].map(function (p) { return '<div class="ln"><b>' + p[0] + '</b><i>' + p[1] + '</i></div>'; }).join("");
     var setup = document.getElementById("fsSetup");
     setup.innerHTML = '<div>' + t("fsSetup1")(Ns, rangeTxt) + '</div>' + document.getElementById("recommend").innerHTML;
@@ -1750,6 +1793,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     table.innerHTML = html + '</tbody>';
   }
 
+  // Done steps fold up; "Show" opens one again without unticking it. Kept in memory only.
+  var openSteps = {};
+  document.querySelectorAll("[data-step]").forEach(function (cb) {
+    var key = cb.getAttribute("data-step"), b = document.createElement("button");
+    b.type = "button"; b.className = "step-toggle"; b.setAttribute("data-toggle", key);
+    var lbl = cb.closest("label");
+    lbl.parentNode.insertBefore(b, lbl);
+  });
+
   function renderSteps() {
     var done = 0, total = 0;
     document.querySelectorAll("[data-step]").forEach(function (cb) {
@@ -1758,7 +1810,13 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       cb.checked = !!state.steps[key];
       if (cb.checked) done++;
       var box = document.querySelector('[data-step-box="' + key + '"]');
-      if (box) box.classList.toggle("done", cb.checked);
+      if (!box) return;
+      var collapsed = cb.checked && !openSteps[key];
+      box.classList.toggle("done", cb.checked);
+      box.classList.toggle("collapsed", collapsed);
+      var tg = box.querySelector(".step-toggle");
+      tg.textContent = (collapsed ? "▸ " + t("show") : "▾ " + t("hide"));
+      tg.setAttribute("aria-expanded", collapsed ? "false" : "true");
     });
     document.getElementById("stepCount").textContent = t("stepsDone")(done, total);
   }
@@ -1890,7 +1948,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var el = e.target;
     if (!el.hasAttribute("data-step")) return;
     state.steps[el.getAttribute("data-step")] = el.checked;
+    delete openSteps[el.getAttribute("data-step")];
     save(); renderSteps();
+  });
+  document.querySelector(".steps").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-toggle]");
+    if (!b) return;
+    var key = b.getAttribute("data-toggle");
+    openSteps[key] = !openSteps[key];
+    renderSteps();
   });
 
   document.getElementById("clearExample").addEventListener("click", function () {

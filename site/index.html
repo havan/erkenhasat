@@ -53,6 +53,8 @@ header { display: grid; gap: 10px; border-bottom: 1px solid var(--line); padding
 .eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: center; gap: 12px; }
 .brand-mark { width: 44px; height: 44px; color: var(--accent); flex: none; }
+.brand-text { display: grid; line-height: 1.1; gap: 4px; }
+.brand-url { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 400; color: var(--muted); letter-spacing: 0.01em; }
 header p { color: var(--muted); max-width: 64ch; }
 .lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .lang-switch button { font: inherit; cursor: pointer; border: 0; background: var(--surface); color: var(--muted); padding: 6px 12px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
@@ -81,7 +83,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
         <button type="button" data-lang="tr" aria-pressed="false">TR</button>
       </div>
     </div>
-    <h1><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg>Erken Hasat</h1>
+    <h1><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-text"><span>Erken Hasat</span><span class="brand-url">havan.github.io/erkenhasat</span></span></h1>
     <p class="en">Small tools for checking and making olive oil at home and in the field. Each one runs entirely in your browser, and each has a printable sheet for when there's no signal.</p>
     <p class="tr">Zeytinyağını evde ve sahada kontrol etmek ve üretmek için küçük araçlar. Hepsi tamamen tarayıcınızda çalışır; çekmeyen yerler için her birinin yazdırılabilir bir formu vardır.</p>
   </header>
