@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olive Oil Acidity Titration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+  // Pick the language before first paint: saved choice, else the browser language.
+  (function () {
+    var l = null;
+    try { l = window.localStorage.getItem("olive-acidity-lang"); } catch (e) {}
+    if (l !== "en" && l !== "tr") l = (navigator.language || "").toLowerCase().indexOf("tr") === 0 ? "tr" : "en";
+    document.documentElement.lang = l;
+  })();
+</script>
+<style>
+/* Layout idea: a lab worksheet. Guide + measurement cards on the left, a sticky result panel on the right (on top on phones).
+   Olive for structure, phenolphthalein pink only for the endpoint and the result. Bilingual: .en / .tr blocks, toggled by html[lang]. */
+:root {
+  --paper: #f5f6f0;
+  --surface: #ffffff;
+  --ink: #1d2118;
+  --muted: #5d6555;
+  --line: #d8dbcd;
+  --accent: #56631b;
+  --accent-soft: #e9eccf;
+  --pink: #c2255c;
+  --pink-soft: #fbe3ec;
+  --good: #2e7d32;
+  --warn: #a86300;
+  --bad: #b42318;
+  --good-soft: #e3f1e3;
+  --warn-soft: #fbefd9;
+  --bad-soft: #f9e1de;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12150e;
+    --surface: #1b1f15;
+    --ink: #e6e9dd;
+    --muted: #a0a891;
+    --line: #333a28;
+    --accent: #b8c76c;
+    --accent-soft: #2a311a;
+    --pink: #f0699a;
+    --pink-soft: #3a1825;
+    --good: #7cc47f;
+    --warn: #e0a54a;
+    --bad: #f08a7e;
+    --good-soft: #1c2e1c;
+    --warn-soft: #33270f;
+    --bad-soft: #3a1b18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12150e;
+  --surface: #1b1f15;
+  --ink: #e6e9dd;
+  --muted: #a0a891;
+  --line: #333a28;
+  --accent: #b8c76c;
+  --accent-soft: #2a311a;
+  --pink: #f0699a;
+  --pink-soft: #3a1825;
+  --good: #7cc47f;
+  --warn: #e0a54a;
+  --bad: #f08a7e;
+  --good-soft: #1c2e1c;
+  --warn-soft: #33270f;
+  --bad-soft: #3a1b18;
+  color-scheme: dark;
+}
+
+html[lang="tr"] .en, html[lang="en"] .tr { display: none !important; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+}
+h1, h2, h3 { text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: 1.02rem; font-weight: 600; }
+p { margin: 0; }
+code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+a { color: var(--accent); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+header.top { display: grid; gap: 8px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+header.top .eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+header.top p { color: var(--muted); max-width: 68ch; }
+
+.lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.lang-switch button { border: 0; border-radius: 0; background: var(--surface); color: var(--muted); padding: 6px 12px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
+.lang-switch button + button { border-left: 1px solid var(--line); }
+.lang-switch button[aria-pressed="true"] { background: var(--accent); color: var(--paper); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+.main { display: grid; gap: 28px; min-width: 0; }
+aside.panel { position: sticky; top: 16px; }
+@media (max-width: 920px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.panel { position: static; order: -1; }
+}
+
+section.block { display: grid; gap: 14px; }
+.section-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.section-head .tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.lede { color: var(--muted); max-width: 68ch; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+
+.banner { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 10px; padding: 12px 16px; }
+.banner p { color: var(--ink); font-size: 0.95rem; }
+.banner[hidden] { display: none; }
+
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.field { display: grid; gap: 4px; align-content: start; }
+.field label { font-size: 0.86rem; font-weight: 500; }
+.field .hint { font-size: 0.8rem; color: var(--muted); }
+input[type="text"], select {
+  font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 7px;
+  padding: 8px 10px; width: 100%; min-width: 0;
+}
+select { font-family: var(--font-body); }
+input.wide-text { font-family: var(--font-body); }
+input[type="text"]:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.unit-input { display: flex; align-items: stretch; }
+.unit-input input { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.unit-input span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line); border-left: 0;
+  border-radius: 0 7px 7px 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); background: var(--accent-soft); }
+
+button { font: inherit; cursor: pointer; border-radius: 7px; padding: 8px 14px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--paper); font-weight: 500; }
+button.ghost { background: transparent; color: var(--accent); }
+button.small { padding: 5px 10px; font-size: 0.86rem; }
+button.danger { border-color: var(--bad); color: var(--bad); background: transparent; }
+button:focus-visible, input[type="checkbox"]:focus-visible, .seg input:focus-visible + span { outline: 2px solid var(--pink); outline-offset: 2px; }
+button:hover { filter: brightness(1.06); }
+
+.recommend { display: grid; gap: 6px; background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; font-size: 0.93rem; }
+.recommend strong { font-family: var(--font-mono); font-weight: 600; }
+
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; }
+.step.done { border-left-color: var(--good); }
+.step-head { display: flex; gap: 12px; align-items: flex-start; }
+.step-head .n { font-family: var(--font-mono); font-weight: 600; color: var(--accent); min-width: 2ch; }
+.step-head h3 { flex: 1; }
+.step-head label.check { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); white-space: nowrap; cursor: pointer; }
+.step-head input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--good); }
+.step.done .step-head h3 { color: var(--muted); }
+.lang-body { display: grid; gap: 10px; }
+.step ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 70ch; }
+.step p { max-width: 70ch; }
+.why { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.92rem; max-width: 70ch; }
+.why b { color: var(--accent); }
+.caution { border-left: 3px solid var(--bad); background: var(--bad-soft); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.92rem; max-width: 70ch; }
+.caution b { color: var(--bad); }
+.endpoint { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 0.92rem; }
+.swatch { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.swatch i { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); display: inline-block; }
+.reaction { font-family: var(--font-mono); background: var(--paper); border: 1px dashed var(--line); border-radius: 6px; padding: 8px 12px; overflow-x: auto; white-space: nowrap; font-size: 0.9rem; }
+
+.runs { display: grid; gap: 16px; }
+.run { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.run-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 18px; background: var(--accent-soft); border-bottom: 1px solid var(--line); }
+.run-head h3 { font-family: var(--font-mono); }
+.run-head .res { font-family: var(--font-mono); font-weight: 600; color: var(--pink); }
+.run-body { padding: 16px 18px; display: grid; gap: 18px; }
+.run-part { display: grid; gap: 10px; }
+.run-part > .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-family: var(--font-mono); }
+
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: fit-content; max-width: 100%; }
+.seg label { position: relative; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg span { display: block; padding: 7px 12px; font-size: 0.88rem; border-right: 1px solid var(--line); background: var(--paper); }
+.seg label:last-child span { border-right: 0; }
+.seg input:checked + span { background: var(--accent); color: var(--paper); font-weight: 500; }
+
+.fill-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 90px 32px; gap: 10px; align-items: end; }
+.fill-row .fill-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); padding-bottom: 9px; }
+.fill-row .fill-vol { font-family: var(--font-mono); font-size: 0.92rem; padding-bottom: 9px; text-align: right; }
+.fill-row .x { padding: 4px 0; width: 32px; height: 36px; background: transparent; color: var(--muted); border-color: var(--line); }
+@media (max-width: 560px) {
+  .fill-row { grid-template-columns: 1fr 1fr; }
+  .fill-row .fill-name { grid-column: 1 / -1; padding-bottom: 0; }
+  .fill-row .fill-vol { text-align: left; }
+}
+
+.calc { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; font-family: var(--font-mono); font-size: 0.88rem; overflow-x: auto; }
+.calc .row { display: grid; grid-template-columns: 10em 1fr; gap: 8px; white-space: nowrap; }
+.calc .row .k { color: var(--muted); }
+.calc .row.final { border-top: 1px dashed var(--line); padding-top: 6px; margin-top: 2px; }
+.calc .row.final .v { color: var(--pink); font-weight: 600; }
+.notes { display: grid; gap: 6px; }
+.note { font-size: 0.88rem; padding: 7px 11px; border-radius: 6px; color: var(--ink); }
+.note.warn { background: var(--warn-soft); border-left: 3px solid var(--warn); }
+.note.bad { background: var(--bad-soft); border-left: 3px solid var(--bad); }
+.note.ok { background: var(--good-soft); border-left: 3px solid var(--good); }
+
+.add-run { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.derive { display: grid; gap: 10px; }
+.derive .d-step { display: grid; grid-template-columns: 2.2em 1fr; gap: 8px; align-items: start; }
+.derive .d-step .i { font-family: var(--font-mono); color: var(--accent); font-weight: 600; }
+.derive .d-step .eq { font-family: var(--font-mono); font-size: 0.9rem; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; margin-top: 4px; overflow-x: auto; white-space: nowrap; }
+.big-formula { font-family: var(--font-mono); font-size: 1.15rem; text-align: center; padding: 16px; background: var(--accent-soft); border-radius: 8px; overflow-x: auto; white-space: nowrap; }
+.big-formula small { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 6px; white-space: normal; }
+
+table.grades { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+table.grades th, table.grades td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.grades th { font-size: 0.8rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+table.grades td.mono { white-space: nowrap; }
+.tbl-wrap { overflow-x: auto; }
+
+.panel .card { display: grid; gap: 14px; }
+.panel .k-label { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.result-big { font-family: var(--font-mono); font-size: 2.6rem; font-weight: 600; line-height: 1; color: var(--pink); font-variant-numeric: tabular-nums; }
+.result-big small { font-size: 1rem; color: var(--muted); font-weight: 400; margin-left: 4px; }
+.result-sub { font-size: 0.86rem; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; width: fit-content; }
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.none { background: var(--accent-soft); color: var(--muted); }
+
+.gauge { display: grid; gap: 4px; }
+.gauge-bar { position: relative; height: 12px; border-radius: 6px; display: grid; grid-template-columns: 32fr 48fr 20fr; }
+.gauge-bar .seg-g { background: var(--good); opacity: 0.75; border-radius: 6px 0 0 6px; }
+.gauge-bar .seg-w { background: var(--warn); opacity: 0.75; }
+.gauge-bar .seg-b { background: var(--bad); opacity: 0.75; border-radius: 0 6px 6px 0; }
+.gauge-marker { position: absolute; top: -5px; width: 4px; height: 22px; background: var(--ink); border-radius: 2px; transform: translateX(-2px); transition: left 0.25s ease; }
+.gauge-scale { position: relative; height: 16px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.gauge-scale span { position: absolute; transform: translateX(-50%); }
+.gauge-scale span.first { transform: none; }
+.gauge-scale span.last { transform: translateX(-100%); }
+
+.run-list { display: grid; gap: 4px; font-family: var(--font-mono); font-size: 0.86rem; }
+.run-list .r { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted var(--line); padding: 3px 0; }
+.run-list .r .muted { color: var(--muted); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.stat .v { font-family: var(--font-mono); font-weight: 600; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 0.75rem; color: var(--muted); }
+.panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.copy-msg { font-size: 0.82rem; color: var(--good); min-height: 1.2em; }
+.copy-fallback { width: 100%; min-height: 140px; font-family: var(--font-mono); font-size: 0.8rem; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
+.copy-fallback[hidden] { display: none; }
+
+footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2568/91 method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2568/91 yöntemi</span></span>
+      <div class="lang-switch" role="group" aria-label="Language / Dil">
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+      </div>
+    </div>
+    <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
+    <p class="en">Work through the steps in order. Enter the numbers you read on the scale and the pipette in the run cards, and the page calculates the acidity as % oleic acid, showing every formula with your values filled in. Your entries stay in this browser if the page reloads.</p>
+    <p class="tr">Adımları sırayla uygulayın. Terazide ve pipette okuduğunuz değerleri deneme kartlarına girin; sayfa asitliği % oleik asit olarak hesaplar ve her formülü sizin değerlerinizle gösterir. Sayfa yenilense de girdileriniz bu tarayıcıda kalır.</p>
+  </header>
+
+  <div class="banner" id="exampleBanner" hidden>
+    <p class="en"><b>Example values loaded.</b> The two runs below are filled with made-up numbers so you can see how the calculation works. Clear them before your real test.</p>
+    <p class="tr"><b>Örnek değerler yüklü.</b> Aşağıdaki iki deneme, hesaplamanın nasıl çalıştığını görmeniz için uydurma sayılarla doldurulmuştur. Gerçek testten önce temizleyin.</p>
+    <button type="button" id="clearExample"><span class="en">Clear example and start my test</span><span class="tr">Örneği temizle ve testime başla</span></button>
+  </div>
+
+  <div class="layout" style="margin-top:16px">
+    <div class="main">
+
+      <!-- SETTINGS -->
+      <section class="block" aria-labelledby="h-setup">
+        <div class="section-head"><h2 id="h-setup"><span class="en">Test setup</span><span class="tr">Test ayarları</span></h2><span class="tag"><span class="en">set once per test</span><span class="tr">her test için bir kez</span></span></div>
+        <div class="card" style="display:grid; gap:16px">
+          <div class="fields">
+            <div class="field">
+              <label for="sampleName"><span class="en">Sample name</span><span class="tr">Numune adı</span></label>
+              <input type="text" class="wide-text" id="sampleName">
+              <span class="hint"><span class="en">Used in the copied results.</span><span class="tr">Kopyalanan sonuçlarda kullanılır.</span></span>
+            </div>
+            <div class="field">
+              <label for="normality"><span class="en">Titrant normality, N</span><span class="tr">Titrant normalitesi, N</span></label>
+              <div class="unit-input"><input type="text" inputmode="decimal" id="normality"><span>mol/L</span></div>
+              <span class="hint"><span class="en">From the NaOH label. Yours is 0.1.</span><span class="tr">NaOH etiketinde yazar. Sizinki 0,1.</span></span>
+            </div>
+            <div class="field">
+              <label for="expected"><span class="en">Expected acidity</span><span class="tr">Beklenen asitlik</span></label>
+              <select id="expected">
+                <option value="low"></option>
+                <option value="mid"></option>
+                <option value="high"></option>
+              </select>
+              <span class="hint"><span class="en">Decides how much oil to weigh.</span><span class="tr">Ne kadar yağ tartılacağını belirler.</span></span>
+            </div>
+            <div class="field">
+              <label for="density"><span class="en">Oil density</span><span class="tr">Yağ yoğunluğu</span></label>
+              <div class="unit-input"><input type="text" inputmode="decimal" id="density"><span>g/mL</span></div>
+              <span class="hint"><span class="en">Only used if you measure the oil by volume. Olive oil ≈ 0.91 at room temperature.</span><span class="tr">Yalnızca yağı hacimle ölçerseniz kullanılır. Zeytinyağı oda sıcaklığında ≈ 0,91.</span></span>
+            </div>
+          </div>
+          <div class="recommend" id="recommend"></div>
+        </div>
+      </section>
+
+      <!-- PROCEDURE -->
+      <section class="block" aria-labelledby="h-proc">
+        <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span></div>
+        <p class="lede en">Tick each step as you finish it. Steps 4 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>.</p>
+        <p class="lede tr">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her deneme için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki deneme kartlarına yazın.</p>
+
+        <ol class="steps">
+          <li><div class="step" data-step-box="s1">
+            <div class="step-head"><span class="n">1</span><h3><span class="en">Prepare the workspace</span><span class="tr">Çalışma alanını hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s1"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Work at a table near an open window, or outdoors out of direct sun.</li>
+                <li>Make sure there are <b>no flames or sparks in the room</b>: gas stove, water heater pilot light, candles, cigarettes, space heaters.</li>
+                <li>Put on safety glasses and nitrile gloves.</li>
+                <li>Lay out: Erlenmeyer flask, measuring cylinder, alcohol-ether solution, phenolphthalein and dropper, NaOH bottle, small glass jar, Pi-pump with a 10 mL pipette, scale, your oil, and a sheet of white paper.</li>
+              </ul>
+              <div class="caution"><b>Why this matters:</b> the alcohol-ether solution is mostly diethyl ether. It boils at 35 °C, and its vapour is heavier than air. The vapour creeps along the table and floor and can ignite metres away from the bottle. NaOH, even at 0.1 N, irritates the eyes.</div>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>Açık bir pencerenin yanındaki masada ya da doğrudan güneş almayan bir dış mekânda çalışın.</li>
+                <li>Odada <b>alev veya kıvılcım kaynağı olmadığından</b> emin olun: ocak, şofben/kombi pilot alevi, mum, sigara, ısıtıcı.</li>
+                <li>Koruyucu gözlük ve nitril eldiven takın.</li>
+                <li>Hazırlayın: erlen, mezür, alkol-eter solüsyonu, fenolftalein ve damlalık, NaOH şişesi, küçük cam kavanoz, 10 mL pipet takılı Pi-pump, terazi, yağınız ve bir beyaz kâğıt.</li>
+              </ul>
+              <div class="caution"><b>Neden önemli:</b> alkol-eter solüsyonunun büyük kısmı dietil eterdir. 35 °C’de kaynar ve buharı havadan ağırdır. Buhar masa ve zemin boyunca yayılır, şişeden metrelerce uzakta tutuşabilir. NaOH, 0,1 N’de bile gözü tahriş eder.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s2">
+            <div class="step-head"><span class="n">2</span><h3><span class="en">Prepare the titrant</span><span class="tr">Titrantı hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s2"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Pour about 20–30 mL of 0.1 N NaOH into the small clean glass jar, then <b>close the NaOH bottle straight away</b>.</li>
+                <li>Fit a 10 mL pipette into the green Pi-pump. Practise with water first: turn the wheel up to draw liquid, then down slowly to release it one drop at a time.</li>
+                <li>Never pour leftover NaOH from the jar back into the bottle.</li>
+              </ul>
+              <div class="why"><b>Why:</b> NaOH slowly absorbs CO₂ from the air and turns partly into sodium carbonate, which weakens it. A short time open does no harm, but a bottle left open or contaminated stops being 0.1 N, and every result after that reads wrong.</div>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>Küçük, temiz cam kavanoza yaklaşık 20–30 mL 0,1 N NaOH dökün ve <b>NaOH şişesini hemen kapatın</b>.</li>
+                <li>Yeşil Pi-pump’a 10 mL’lik pipeti takın. Önce suyla deneyin: çarkı yukarı çevirince sıvı çekilir, yavaşça aşağı çevirince damla damla bırakılır.</li>
+                <li>Kavanozda kalan NaOH’ı asla şişeye geri dökmeyin.</li>
+              </ul>
+              <div class="why"><b>Neden:</b> NaOH havadaki CO₂’yi yavaşça emer ve kısmen sodyum karbonata dönüşerek zayıflar. Kısa süre açık kalması sorun değildir; ama açık bırakılan ya da kirlenen bir şişe artık 0,1 N olmaz ve sonraki tüm sonuçlar yanlış çıkar.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s3">
+            <div class="step-head"><span class="n">3</span><h3><span class="en">Measure and neutralize the solvent</span><span class="tr">Çözücüyü ölçün ve nötrleştirin</span></h3><label class="check"><input type="checkbox" data-step="s3"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Measure <b>100 mL</b> of alcohol-ether solution with the 100 mL cylinder and pour it into an Erlenmeyer flask.</li>
+                <li>Add <b>4–5 drops</b> of phenolphthalein (about 0.25 mL) and swirl.</li>
+                <li>Add NaOH from the pipette drop by drop, swirling, until the liquid turns the <b>faintest pink that stays for 10 seconds</b>.</li>
+                <li>You don't need to write down this volume. It isn't part of the result.</li>
+              </ul>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>100 mL’lik mezürle <b>100 mL</b> alkol-eter solüsyonu ölçüp bir erlene dökün.</li>
+                <li><b>4–5 damla</b> fenolftalein (yaklaşık 0,25 mL) ekleyip çalkalayın.</li>
+                <li>Pipetten damla damla NaOH ekleyin ve çalkalayın; sıvı <b>10 saniye kalan en soluk pembeye</b> dönene kadar devam edin.</li>
+                <li>Bu hacmi yazmanıza gerek yok. Sonuca dahil değildir.</li>
+              </ul>
+            </div>
+            <div class="endpoint">
+              <span class="swatch"><i style="background:#f4f4ee"></i><span class="en">colourless: acid present</span><span class="tr">renksiz: asit var</span></span>
+              <span class="swatch"><i style="background:#f7d6e3"></i><span class="en">faint pink: neutral, target</span><span class="tr">soluk pembe: nötr, hedef</span></span>
+              <span class="swatch"><i style="background:#e05591"></i><span class="en">strong pink: overshot</span><span class="tr">koyu pembe: fazla kaçtı</span></span>
+            </div>
+            <div class="lang-body en">
+              <div class="why"><b>Why:</b> the solvent itself contains traces of acid, from ethanol oxidation, ether peroxides and dissolved CO₂. If you didn't cancel them first, the NaOH used on them would be counted as acid from the oil, and the result would come out too high. If you overshoot to a strong pink, the solvent is now slightly alkaline and the result will read low. Pour it away and start again.</div>
+              <p class="lede" style="font-size:0.9rem">Alternative: skip this step and run a <b>blank</b> instead. Titrate 100 mL of untreated solvent with no oil and enter that volume as the blank in the run card. The page then subtracts it.</p>
+            </div>
+            <div class="lang-body tr">
+              <div class="why"><b>Neden:</b> çözücünün kendisi de etanol oksidasyonu, eter peroksitleri ve çözünmüş CO₂ kaynaklı eser miktarda asit içerir. Önce bunlar giderilmezse, onlar için harcanan NaOH yağdan gelen asit gibi sayılır ve sonuç yüksek çıkar. Koyu pembeye kadar fazla kaçırırsanız çözücü hafif bazik olur ve sonuç düşük çıkar. Dökün ve baştan başlayın.</div>
+              <p class="lede" style="font-size:0.9rem">Alternatif: bu adımı atlayıp <b>kör deneme</b> yapın. Yağ eklemeden 100 mL işlenmemiş çözücüyü titre edin ve bu hacmi deneme kartına kör deneme olarak girin. Sayfa bunu düşer.</p>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s4">
+            <div class="step-head"><span class="n">4</span><h3><span class="en">Weigh the oil</span><span class="tr">Yağı tartın</span></h3><label class="check"><input type="checkbox" data-step="s4"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <p>Aim for the mass shown in Test setup (20 g for good oil). You don't need to hit it exactly: enter whatever you actually weighed. Choose one method in the run card:</p>
+              <ul>
+                <li><b>By difference (best with your scale):</b> pour about 40 mL of oil into a small cup. Weigh the cup and write it down. Pour roughly 22 mL of oil (about 20 g) into the flask of neutralized solvent. Weigh the cup again. The weight it lost is your sample.</li>
+                <li><b>Tared flask:</b> put the flask on the scale and press tare. Pour the oil in a few grams at a time, letting the reading settle between pours.</li>
+                <li><b>By volume (no scale):</b> measure about 22 mL of oil in the cylinder and let it drain fully for a minute. The page converts it to grams using the density.</li>
+              </ul>
+              <div class="why"><b>Why by difference:</b> cheap scales ignore very slow, small changes (auto-zero tracking). Weighing the cup twice means the scale only ever reads a large, stable load, which is where it's accurate. With 20 g of oil, a ±0.1 g scale error changes the result by only ±0.5% of its value, which is negligible.</div>
+            </div>
+            <div class="lang-body tr">
+              <p>Test ayarlarında gösterilen kütleyi hedefleyin (iyi yağ için 20 g). Tam tutturmanız gerekmez; gerçekte ne tarttıysanız onu girin. Deneme kartında bir yöntem seçin:</p>
+              <ul>
+                <li><b>Farkla tartım (terazinizle en iyisi):</b> küçük bir kaba yaklaşık 40 mL yağ koyun. Kabı tartıp değeri yazın. Nötrleştirilmiş çözücünün bulunduğu erlene yaklaşık 22 mL (≈ 20 g) yağ dökün. Kabı tekrar tartın. Kabın kaybettiği ağırlık numunenizdir.</li>
+                <li><b>Darası alınmış erlen:</b> erleni teraziye koyup dara alın. Yağı birkaç gramlık porsiyonlarla dökün, her dökmeden sonra değerin oturmasını bekleyin.</li>
+                <li><b>Hacimle (terazisiz):</b> mezürde yaklaşık 22 mL yağ ölçün ve bir dakika tamamen akmasını bekleyin. Sayfa yoğunlukla grama çevirir.</li>
+              </ul>
+              <div class="why"><b>Neden farkla tartım:</b> ucuz teraziler çok yavaş ve küçük değişimleri yok sayar (otomatik sıfır takibi). Kabı iki kez tartınca terazi hep büyük ve sabit bir yük okur; en doğru olduğu aralık da budur. 20 g yağda ±0,1 g terazi hatası sonucu yalnızca kendi değerinin ±%0,5’i kadar değiştirir, ihmal edilebilir.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s5">
+            <div class="step-head"><span class="n">5</span><h3><span class="en">Dissolve the oil</span><span class="tr">Yağı çözün</span></h3><label class="check"><input type="checkbox" data-step="s5"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Swirl the flask until the oil has dissolved completely and the liquid is <b>clear and uniform</b>, with no oily streaks or droplets.</li>
+                <li>The faint pink disappears as you swirl. This is expected: the free fatty acids in the oil are neutralizing the trace of base you left in the solvent.</li>
+                <li>If it stays cloudy, add 20–25 mL more neutralized solvent. Don't heat it: ether boils at 35 °C.</li>
+              </ul>
+              <div class="why"><b>Why:</b> NaOH can only react with fatty acids that are dissolved. Oil left undissolved holds acid that the titrant can't reach, so the result comes out low.</div>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>Yağ tamamen çözünüp sıvı <b>berrak ve homojen</b> olana kadar, yağlı çizgi veya damlacık kalmayacak şekilde erleni çalkalayın.</li>
+                <li>Çalkaladıkça soluk pembe kaybolur. Bu beklenen bir durumdur: yağdaki serbest yağ asitleri çözücüde bıraktığınız eser bazı nötrleştirir.</li>
+                <li>Bulanık kalırsa 20–25 mL daha nötrleştirilmiş çözücü ekleyin. Isıtmayın: eter 35 °C’de kaynar.</li>
+              </ul>
+              <div class="why"><b>Neden:</b> NaOH yalnızca çözünmüş yağ asitleriyle tepkimeye girebilir. Çözünmeden kalan yağdaki aside titrant ulaşamaz ve sonuç düşük çıkar.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s6">
+            <div class="step-head"><span class="n">6</span><h3><span class="en">Titrate to the endpoint</span><span class="tr">Dönüm noktasına kadar titre edin</span></h3><label class="check"><input type="checkbox" data-step="s6"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Draw NaOH into the pipette a little above a marked line, then release it down to that line exactly. Write down this <b>start reading</b>. Read the bottom of the meniscus with your eye level to it.</li>
+                <li>Put the flask on the white paper. Add NaOH steadily while swirling all the time. Pink flashes appear where the drops land and fade as you swirl.</li>
+                <li>When the flashes take longer to fade, slow down to <b>one drop at a time</b>, swirling after each drop.</li>
+                <li><b>Endpoint:</b> the whole flask holds a faint pink for <b>10 seconds</b>. Stop and write down the <b>end reading</b>.</li>
+                <li>If the pipette runs low before the endpoint, record the end reading as fill 1. Refill, record a new start, and continue as fill 2.</li>
+              </ul>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>NaOH’ı pipette bir çizginin biraz üstüne çekin, sonra tam o çizgiye kadar bırakın. Bu <b>başlangıç okumasını</b> yazın. Menisküsün altını göz hizasından okuyun.</li>
+                <li>Erleni beyaz kâğıdın üzerine koyun. Sürekli çalkalayarak düzenli NaOH ekleyin. Damlaların düştüğü yerde pembe parlamalar olur ve çalkaladıkça kaybolur.</li>
+                <li>Parlamaların kaybolması uzamaya başlayınca <b>tek tek damlatın</b> ve her damladan sonra çalkalayın.</li>
+                <li><b>Dönüm noktası:</b> erlenin tamamı <b>10 saniye</b> soluk pembe kalır. Durun ve <b>bitiş okumasını</b> yazın.</li>
+                <li>Pipet dönüm noktasından önce biterse bitiş okumasını 1. dolum olarak kaydedin. Pipeti yeniden doldurun, yeni başlangıcı yazın ve 2. dolum olarak devam edin.</li>
+              </ul>
+            </div>
+            <div class="reaction"><span class="en">R–COOH (free fatty acid) + NaOH → R–COO⁻Na⁺ (soap) + H₂O &nbsp;·&nbsp; 1 : 1</span><span class="tr">R–COOH (serbest yağ asidi) + NaOH → R–COO⁻Na⁺ (sabun) + H₂O &nbsp;·&nbsp; 1 : 1</span></div>
+            <div class="lang-body en">
+              <div class="why"><b>Why 10 seconds:</b> once all the fatty acids are neutralized, the next drop leaves excess OH⁻ and phenolphthalein turns pink (pH ≈ 8.2–10). After a minute or so the pink fades again as the liquid absorbs CO₂ from the air. Ignore that fading. The first pink that lasts 10 s is the endpoint. A little cloudiness from the water in the NaOH is normal.</div>
+            </div>
+            <div class="lang-body tr">
+              <div class="why"><b>Neden 10 saniye:</b> tüm yağ asitleri nötrleşince bir sonraki damla fazla OH⁻ bırakır ve fenolftalein pembeye döner (pH ≈ 8,2–10). Bir dakika kadar sonra sıvı havadan CO₂ emdiği için pembe yeniden solar. Bu solmayı dikkate almayın; 10 saniye kalan ilk pembe dönüm noktasıdır. NaOH’daki sudan kaynaklı hafif bulanıklık normaldir.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s7">
+            <div class="step-head"><span class="n">7</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. deneme)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Use a clean flask, fresh solvent (step 3 again) and a fresh portion of oil (steps 4–6).</li>
+                <li>Press <b>Add run</b> under Measurements for each repeat.</li>
+                <li>The result panel shows the mean and how closely the runs agree.</li>
+              </ul>
+              <div class="why"><b>Why:</b> a single titration can be off because of one overshot drop or a misread meniscus. Two or three runs that agree show the result is real, and their mean is more precise than any one of them.</div>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>Temiz bir erlen, taze çözücü (yine 3. adım) ve yeni bir yağ porsiyonu (4–6. adımlar) kullanın.</li>
+                <li>Her tekrar için Ölçümler bölümünde <b>Deneme ekle</b>’ye basın.</li>
+                <li>Sonuç paneli ortalamayı ve denemelerin ne kadar uyuştuğunu gösterir.</li>
+              </ul>
+              <div class="why"><b>Neden:</b> tek bir titrasyon, fazla kaçan bir damla ya da yanlış okunan bir menisküs yüzünden sapabilir. Birbiriyle uyuşan iki-üç deneme sonucun gerçek olduğunu gösterir; ortalamaları da tek tek her birinden daha hassastır.</div>
+            </div>
+          </div></li>
+
+          <li><div class="step" data-step-box="s8">
+            <div class="step-head"><span class="n">8</span><h3><span class="en">Clean up</span><span class="tr">Temizlik</span></h3><label class="check"><input type="checkbox" data-step="s8"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="lang-body en">
+              <ul>
+                <li>Leave the used solvent-oil mixture in an open container outdoors, away from any flame, until the ether and alcohol have evaporated. Then dispose of the oily residue like used cooking oil.</li>
+                <li>Rinse the pipette with water straight away so NaOH doesn't dry inside it. Wash the flasks with hot water and dish soap.</li>
+                <li>Store the alcohol-ether bottle tightly closed, in the dark and cool. Store the NaOH tightly closed.</li>
+              </ul>
+            </div>
+            <div class="lang-body tr">
+              <ul>
+                <li>Kullanılmış çözücü-yağ karışımını, eter ve alkol buharlaşana kadar dışarıda, her türlü alevden uzakta açık bir kapta bırakın. Ardından yağlı kalıntıyı kullanılmış kızartma yağı gibi atın.</li>
+                <li>NaOH içinde kurumasın diye pipeti hemen suyla durulayın. Erlenleri sıcak su ve bulaşık deterjanıyla yıkayın.</li>
+                <li>Alkol-eter şişesini sıkıca kapalı, karanlık ve serin bir yerde saklayın. NaOH’ı da sıkıca kapalı tutun.</li>
+              </ul>
+            </div>
+          </div></li>
+        </ol>
+      </section>
+
+      <!-- RUNS -->
+      <section class="block" aria-labelledby="h-runs">
+        <div class="section-head"><h2 id="h-runs"><span class="en">Measurements</span><span class="tr">Ölçümler</span></h2><span class="tag"><span class="en">one card per titration</span><span class="tr">her titrasyon için bir kart</span></span></div>
+        <p class="lede en">Enter readings exactly as you see them. Commas work as decimal separators. Each card shows its calculation step by step.</p>
+        <p class="lede tr">Okumaları gördüğünüz gibi girin. Ondalık ayırıcı olarak virgül de kullanılabilir. Her kart kendi hesabını adım adım gösterir.</p>
+        <div class="runs" id="runs"></div>
+        <div class="add-run">
+          <button type="button" id="addRun"><span class="en">Add run</span><span class="tr">Deneme ekle</span></button>
+        </div>
+      </section>
+
+      <!-- DERIVATION -->
+      <section class="block" aria-labelledby="h-math">
+        <div class="section-head"><h2 id="h-math"><span class="en">How the formula works</span><span class="tr">Formül nasıl çalışır</span></h2><span class="tag" id="deriveSource"></span></div>
+        <div class="card" style="display:grid; gap:16px">
+          <div class="big-formula"><span class="en">Acidity (% oleic) = V × N × 28.2 ÷ m</span><span class="tr">Asitlik (% oleik) = V × N × 28,2 ÷ m</span>
+            <small><span class="en">V = titrant used (mL) · N = titrant normality (mol/L) · m = oil mass (g)</span><span class="tr">V = harcanan titrant (mL) · N = titrant normalitesi (mol/L) · m = yağ kütlesi (g)</span></small>
+          </div>
+          <div class="derive" id="derive"></div>
+        </div>
+      </section>
+
+      <!-- INTERPRETATION -->
+      <section class="block" aria-labelledby="h-grades">
+        <div class="section-head"><h2 id="h-grades"><span class="en">Reading the result</span><span class="tr">Sonucu yorumlama</span></h2><span class="tag"><span class="en">EU Regulation 2568/91 limits</span><span class="tr">AB 2568/91 ve Türk Gıda Kodeksi sınırları</span></span></div>
+        <div class="card" style="display:grid; gap:12px">
+          <div class="tbl-wrap">
+          <table class="grades en">
+            <thead><tr><th>Category</th><th>Free acidity</th><th>What it means</th></tr></thead>
+            <tbody>
+              <tr><td>Extra virgin</td><td class="mono">≤ 0.80 %</td><td>Sound fruit, milled quickly, stored well. Good fresh oil is often 0.1–0.4 %.</td></tr>
+              <tr><td>Virgin</td><td class="mono">≤ 2.0 %</td><td>Edible, but shows fruit damage, delays before milling, or age.</td></tr>
+              <tr><td>Lampante</td><td class="mono">&gt; 2.0 %</td><td>Not fit to eat without refining.</td></tr>
+            </tbody>
+          </table>
+          <table class="grades tr">
+            <thead><tr><th>Kategori</th><th>Serbest asitlik</th><th>Anlamı</th></tr></thead>
+            <tbody>
+              <tr><td>Natürel sızma</td><td class="mono">≤ %0,80</td><td>Sağlam meyve, hızlı sıkım, iyi muhafaza. İyi ve taze yağ çoğunlukla %0,1–0,4 arasındadır.</td></tr>
+              <tr><td>Natürel birinci</td><td class="mono">≤ %2,0</td><td>Yenilebilir; ancak meyve hasarı, sıkım öncesi bekleme veya yaşlanma izi taşır.</td></tr>
+              <tr><td>Lampant</td><td class="mono">&gt; %2,0</td><td>Rafine edilmeden yenmeye uygun değildir.</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="lede en" style="font-size:0.92rem">Free acidity is the share of fatty acids that have broken off their glycerol backbone (hydrolysis). It rises with bruised or fermented olives, delays between harvest and milling, and poor storage. Low acidity is required for extra virgin but doesn't prove it. The official grade also needs peroxide value, UV absorbance (K232/K270) and a tasting panel.</p>
+          <p class="lede tr" style="font-size:0.92rem">Serbest asitlik, gliserol iskeletinden kopmuş (hidroliz) yağ asitlerinin oranıdır. Ezilmiş veya fermente olmuş zeytin, hasat ile sıkım arasındaki bekleme ve kötü muhafaza ile artar. Natürel sızma için düşük asitlik şarttır ama tek başına bunu kanıtlamaz. Resmî sınıflandırma ayrıca peroksit değeri, UV absorbansı (K232/K270) ve duyusal panel gerektirir.</p>
+        </div>
+      </section>
+
+      <footer>
+        <span class="en">Method based on ISO 660 and EU Regulation 2568/91 (free fatty acids, cold method), adapted for home use. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10. Results are an estimate for your own use, not a certified analysis.</span>
+        <span class="tr">Yöntem ISO 660 ve AB 2568/91 (serbest yağ asitleri, soğuk yöntem) esas alınarak ev kullanımına uyarlanmıştır. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur. Sonuçlar kendi kullanımınız için bir tahmindir, akredite bir analiz değildir.</span>
+      </footer>
+    </div>
+
+    <!-- PANEL -->
+    <aside class="panel" aria-labelledby="h-result">
+      <div class="card">
+        <div>
+          <div class="k-label" id="h-result"><span class="en">Free acidity · mean of runs</span><span class="tr">Serbest asitlik · denemelerin ortalaması</span></div>
+          <div class="result-big" id="pMean">—</div>
+          <div class="result-sub" id="pMeanSub"></div>
+        </div>
+        <span class="chip none" id="pChip"></span>
+        <div class="gauge" aria-hidden="true">
+          <div class="gauge-bar"><div class="seg-g"></div><div class="seg-w"></div><div class="seg-b"></div><div class="gauge-marker" id="pMarker" style="left:0%; display:none"></div></div>
+          <div class="gauge-scale"><span class="first" style="left:0">0</span><span style="left:32%"><span class="en">0.8</span><span class="tr">0,8</span></span><span style="left:80%"><span class="en">2.0</span><span class="tr">2,0</span></span><span class="last" style="left:100%"><span class="en">2.5 %</span><span class="tr">%2,5</span></span></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="v" id="pN">0</div><div class="k"><span class="en">valid runs</span><span class="tr">geçerli deneme</span></div></div>
+          <div class="stat"><div class="v" id="pRange">—</div><div class="k"><span class="en">spread (max − min)</span><span class="tr">fark (maks − min)</span></div></div>
+          <div class="stat"><div class="v" id="pAV">—</div><div class="k"><span class="en">acid value, mg KOH/g</span><span class="tr">asit değeri, mg KOH/g</span></div></div>
+          <div class="stat"><div class="v" id="pSD">—</div><div class="k"><span class="en">std. deviation</span><span class="tr">std. sapma</span></div></div>
+        </div>
+        <div class="run-list" id="pRuns"></div>
+        <div class="notes" id="pNotes"></div>
+        <div class="panel-actions">
+          <button type="button" id="copyBtn"><span class="en">Copy results</span><span class="tr">Sonuçları kopyala</span></button>
+          <button type="button" class="ghost" id="resetBtn"></button>
+        </div>
+        <div class="copy-msg" id="copyMsg" aria-live="polite"></div>
+        <textarea class="copy-fallback" id="copyFallback" readonly hidden aria-label="Results"></textarea>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "olive-acidity-v1";
+  var LANG_KEY = "olive-acidity-lang";
+  var FACTOR = 28.2;          // ISO 660 factor for oleic acid
+  var M_OLEIC = 282.46;       // g/mol
+  var M_KOH = 56.11;          // g/mol, for acid value
+
+  var MASS_REC = {
+    low:  { m: 20,  lo: 0.1, hi: 1.0 },
+    mid:  { m: 10,  lo: 1.0, hi: 4.0 },
+    high: { m: 2.5, lo: 4.0, hi: 15.0 }
+  };
+
+  var lang = document.documentElement.lang === "tr" ? "tr" : "en";
+
+  // ---------- number formatting ----------
+  function f(x, d) {
+    if (!isFinite(x)) return "—";
+    var s = x.toFixed(d);
+    return lang === "tr" ? s.replace(".", ",") : s;
+  }
+  function pct(x, d) { return lang === "tr" ? "%" + f(x, d) : f(x, d) + " %"; }
+
+  // ---------- strings ----------
+  var T = {
+    en: {
+      optLow: "Below 1% (extra virgin / virgin)",
+      optMid: "1 to 4% (lower quality)",
+      optHigh: "4 to 15% (very poor / lampante)",
+      placeholder: "e.g. 2026 harvest, tin 1",
+      run: "Run", fill: "Fill", remove: "Remove",
+      modeAria: function (n) { return "Weighing method for run " + n; },
+      modes: { diff: "By difference", direct: "Tared flask", vol: "By volume" },
+      before: "Cup with oil, before pouring", after: "Cup after pouring into flask",
+      direct: "Oil mass on tared scale", vol: "Oil volume from cylinder", volHint: "Converted with the density from Test setup.",
+      start: "Start reading", end: "End reading", rmFillAria: function (n) { return "Remove fill " + n; },
+      addFill: "Add another pipette fill",
+      blank: "Blank (optional)", blankHint: "Leave empty if you neutralized the solvent in step 3.",
+      partMass: "Step 4 · Oil mass, m", partVol: "Step 6 · Titrant volume, V", partCalc: "Calculation",
+      kM: "m (oil mass)", kV: "V (titrant)", kN: "N (normality)", kA: "Acidity",
+      waiting: "waiting for readings", setN: "set in Test setup", tared: "(read on tared scale)", blankTag: "(blank)",
+      nDiff: "The cup should weigh less after pouring. Check that 'before' and 'after' aren't swapped.",
+      nBlank: "The blank is larger than the titration volume. Check the readings.",
+      nSmallV: "Less than 0.5 mL of titrant was used, so a single drop (≈ 0.05 mL) is over 10% of the reading. For a more precise result, use more oil (e.g. 30–40 g).",
+      nBigV: "More than 10 mL was needed. The oil is quite acidic. Next time use less oil (see Test setup) so one pipette fill is enough.",
+      nMass: function (m) { return "Oil mass is far from the recommended " + m + " g. The result is still valid, but precision may suffer."; },
+      nAbove: "The result is above the expected range. Consider setting a higher expected acidity in Test setup and using less oil.",
+      gNone: "No result yet", gEV: "Extra virgin range (≤ 0.80%)", gV: "Virgin range (≤ 2.0%)", gL: "Lampante range (> 2.0%)",
+      unitOleic: "% oleic acid",
+      enterRun: "Enter a run to see the result.",
+      single: "From a single run. Add a second run to confirm.",
+      meanOf: function (n) { return "Mean of " + n + " runs."; },
+      incomplete: "incomplete",
+      agree: function (l) { return "Runs agree within " + l + " points, a good repeat."; },
+      differ: function (l) { return "Runs differ by more than " + l + " points. Do another run and look for an overshot endpoint or a weighing slip."; },
+      nearLimit: "Close to the 0.80% extra-virgin limit. Small errors matter here, so run a third replicate.",
+      deriveFrom: function (n) { return "with the numbers from Run " + n; },
+      deriveSample: "with sample numbers until a run is complete",
+      d: [
+        ["How much base was used", "Normality is mmol per mL, so mL × N gives millimoles of NaOH."],
+        ["How much acid that neutralized", "Each fatty acid molecule has one –COOH group and reacts with exactly one OH⁻, so moles of acid = moles of base."],
+        ["Convert to mass, as oleic acid", "Olive oil contains a mix of fatty acids. By convention they're all counted as oleic acid (C₁₈H₃₄O₂, 282.46 g/mol = 282.46 mg/mmol), the main one in olive oil."],
+        ["Express as % of the oil", "Divide by the oil mass (converted to mg) and multiply by 100."],
+        ["Fold it into one formula", "Steps 1–4 combined: V × N × 282.46 ÷ (m × 1000) × 100 = V × N × 28.246 ÷ m. ISO 660 rounds the factor to 28.2. The difference is below 0.2% of the result."],
+        ["Bonus: acid value", "Some labs report acid value instead: mg of KOH needed per gram of oil. It's the same measurement with KOH's molar mass (56.11). Acid value ≈ 1.99 × acidity %."]
+      ],
+      eqMass: "mass", eqAcids: "n(free fatty acids)",
+      recNoN: "Enter the titrant normality to see the recommended sample size.",
+      rec1: function (m, ml) { return "Weigh about <strong>" + m + " g</strong> of oil" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + " for each run."; },
+      rec2: function (range, vlo, vhi, N) { return "At " + range + " acidity this will use roughly <strong>" + vlo + "–" + vhi + " mL</strong> of " + N + " N titrant. Rearranged formula: V = acidity × m ÷ (N × 28.2)."; },
+      ranges: { low: "below 1%", mid: "1 to 4%", high: "4 to 15%" },
+      stepsDone: function (d, t) { return d + " of " + t + " done"; },
+      reset: "Start new test", resetArm: "Click again to clear all runs",
+      copied: "Results copied.", copyManual: "Copy the text below manually.",
+      cTitle: "Olive oil free acidity", cTitrant: function (N) { return "Titrant: " + N + " N NaOH · factor 28.2 (oleic acid)"; },
+      cRun: function (i, m, V, a) { return "Run " + i + ": m = " + m + " g, V = " + V + " mL → " + a; },
+      cIncomplete: function (i) { return "Run " + i + ": incomplete"; },
+      cMean: function (a, n) { return "Mean acidity: " + a + " as oleic acid (" + n + " run" + (n > 1 ? "s" : "") + ")"; },
+      cSpread: function (r, sd) { return "Spread: " + r + " points · SD " + sd; },
+      cAV: function (av) { return "Acid value: " + av + " mg KOH/g"; },
+      cCat: function (g) { return "Category by acidity: " + g; }
+    },
+    tr: {
+      optLow: "%1’in altında (natürel sızma / natürel birinci)",
+      optMid: "%1 – %4 (düşük kalite)",
+      optHigh: "%4 – %15 (çok kötü / lampant)",
+      placeholder: "ör. 2026 hasadı, 1. teneke",
+      run: "Deneme", fill: "Dolum", remove: "Sil",
+      modeAria: function (n) { return n + ". deneme için tartım yöntemi"; },
+      modes: { diff: "Farkla tartım", direct: "Darası alınmış erlen", vol: "Hacimle" },
+      before: "Yağlı kap, dökmeden önce", after: "Kap, erlene döktükten sonra",
+      direct: "Darası alınmış terazide yağ kütlesi", vol: "Mezürden yağ hacmi", volHint: "Test ayarlarındaki yoğunlukla grama çevrilir.",
+      start: "Başlangıç okuması", end: "Bitiş okuması", rmFillAria: function (n) { return n + ". dolumu sil"; },
+      addFill: "Bir pipet dolumu daha ekle",
+      blank: "Kör deneme (isteğe bağlı)", blankHint: "Çözücüyü 3. adımda nötrleştirdiyseniz boş bırakın.",
+      partMass: "4. adım · Yağ kütlesi, m", partVol: "6. adım · Titrant hacmi, V", partCalc: "Hesaplama",
+      kM: "m (yağ kütlesi)", kV: "V (titrant)", kN: "N (normalite)", kA: "Asitlik",
+      waiting: "okumalar bekleniyor", setN: "Test ayarlarından girin", tared: "(darası alınmış terazide okundu)", blankTag: "(kör)",
+      nDiff: "Kap döktükten sonra daha hafif olmalı. ‘Önce’ ve ‘sonra’ değerlerinin yer değiştirmediğini kontrol edin.",
+      nBlank: "Kör deneme hacmi titrasyon hacminden büyük. Okumaları kontrol edin.",
+      nSmallV: "0,5 mL’den az titrant harcandı; tek bir damla (≈ 0,05 mL) okumanın %10’undan fazlası. Daha hassas sonuç için daha çok yağ kullanın (ör. 30–40 g).",
+      nBigV: "10 mL’den fazla gerekti; yağ oldukça asidik. Bir dahaki sefere tek pipet dolumu yetsin diye daha az yağ kullanın (Test ayarlarına bakın).",
+      nMass: function (m) { return "Yağ kütlesi önerilen " + String(m).replace(".", ",") + " g’dan çok farklı. Sonuç yine geçerli ama hassasiyet düşebilir."; },
+      nAbove: "Sonuç beklenen aralığın üstünde. Test ayarlarında daha yüksek bir beklenen asitlik seçip daha az yağ kullanmayı düşünün.",
+      gNone: "Henüz sonuç yok", gEV: "Natürel sızma aralığı (≤ %0,80)", gV: "Natürel birinci aralığı (≤ %2,0)", gL: "Lampant aralığı (> %2,0)",
+      unitOleic: "oleik asit",
+      enterRun: "Sonucu görmek için bir deneme girin.",
+      single: "Tek denemeden. Doğrulamak için ikinci bir deneme ekleyin.",
+      meanOf: function (n) { return n + " denemenin ortalaması."; },
+      incomplete: "eksik",
+      agree: function (l) { return "Denemeler " + l + " puan içinde uyuşuyor; iyi bir tekrar."; },
+      differ: function (l) { return "Denemeler " + l + " puandan fazla farklı. Bir deneme daha yapın; fazla kaçan bir dönüm noktası veya tartım hatası arayın."; },
+      nearLimit: "%0,80 natürel sızma sınırına yakın. Burada küçük hatalar önemli; üçüncü bir tekrar yapın.",
+      deriveFrom: function (n) { return n + ". denemenin değerleriyle"; },
+      deriveSample: "bir deneme tamamlanana kadar örnek değerlerle",
+      d: [
+        ["Ne kadar baz harcandı", "Normalite mL başına mmol’dür; bu yüzden mL × N, NaOH’ın milimol miktarını verir."],
+        ["Bu ne kadar asidi nötrleştirdi", "Her yağ asidi molekülünde bir –COOH grubu vardır ve tam olarak bir OH⁻ ile tepkimeye girer; yani asidin mol sayısı = bazın mol sayısı."],
+        ["Oleik asit olarak kütleye çevirin", "Zeytinyağı farklı yağ asitlerinin karışımını içerir. Geleneksel olarak hepsi, zeytinyağındaki başlıca yağ asidi olan oleik asit (C₁₈H₃₄O₂, 282,46 g/mol = 282,46 mg/mmol) olarak sayılır."],
+        ["Yağın yüzdesi olarak ifade edin", "Yağ kütlesine (mg’a çevrilmiş) bölüp 100 ile çarpın."],
+        ["Tek formülde birleştirin", "1–4. adımlar birlikte: V × N × 282,46 ÷ (m × 1000) × 100 = V × N × 28,246 ÷ m. ISO 660 katsayıyı 28,2’ye yuvarlar; fark sonucun %0,2’sinden azdır."],
+        ["Ek: asit değeri", "Bazı laboratuvarlar bunun yerine asit değeri verir: gram yağ başına gereken mg KOH. Aynı ölçümdür, yalnızca KOH’ın mol kütlesi (56,11) kullanılır. Asit değeri ≈ 1,99 × asitlik %."]
+      ],
+      eqMass: "kütle", eqAcids: "n(serbest yağ asitleri)",
+      recNoN: "Önerilen numune miktarını görmek için titrant normalitesini girin.",
+      rec1: function (m, ml) { return "Her deneme için yaklaşık <strong>" + m + " g</strong> yağ tartın" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + "."; },
+      rec2: function (range, vlo, vhi, N) { return range + " asitlikte bu, " + N + " N titranttan yaklaşık <strong>" + vlo + "–" + vhi + " mL</strong> harcatır. Ters çevrilmiş formül: V = asitlik × m ÷ (N × 28,2)."; },
+      ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
+      stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
+      reset: "Yeni test başlat", resetArm: "Tüm denemeleri silmek için tekrar tıklayın",
+      copied: "Sonuçlar kopyalandı.", copyManual: "Aşağıdaki metni elle kopyalayın.",
+      cTitle: "Zeytinyağı serbest asitlik", cTitrant: function (N) { return "Titrant: " + N + " N NaOH · katsayı 28,2 (oleik asit)"; },
+      cRun: function (i, m, V, a) { return i + ". deneme: m = " + m + " g, V = " + V + " mL → " + a; },
+      cIncomplete: function (i) { return i + ". deneme: eksik"; },
+      cMean: function (a, n) { return "Ortalama asitlik: " + a + " oleik asit cinsinden (" + n + " deneme)"; },
+      cSpread: function (r, sd) { return "Fark: " + r + " puan · SS " + sd; },
+      cAV: function (av) { return "Asit değeri: " + av + " mg KOH/g"; },
+      cCat: function (g) { return "Asitliğe göre kategori: " + g; }
+    }
+  };
+  function t(k) { return T[lang][k]; }
+
+  // ---------- state ----------
+  function exampleState() {
+    return {
+      example: true, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
+      runs: [
+        { id: 1, mode: "diff", before: "87.42", after: "67.31", direct: "", vol: "", blank: "", fills: [{ start: "0.00", end: "2.35" }] },
+        { id: 2, mode: "diff", before: "67.31", after: "47.05", direct: "", vol: "", blank: "", fills: [{ start: "2.35", end: "4.72" }] }
+      ]
+    };
+  }
+  function blankRun(id) {
+    return { id: id, mode: "diff", before: "", after: "", direct: "", vol: "", blank: "", fills: [{ start: "", end: "" }] };
+  }
+  function freshState(keepSettings) {
+    var s = { example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)] };
+    if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; }
+    return s;
+  }
+
+  var state;
+  try {
+    var raw = window.localStorage.getItem(KEY);
+    state = raw ? JSON.parse(raw) : exampleState();
+    if (!state || !Array.isArray(state.runs)) state = exampleState();
+  } catch (e) { state = exampleState(); }
+
+  function save() {
+    try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+
+  function num(v) {
+    if (v === null || v === undefined) return NaN;
+    var s = String(v).trim().replace(",", ".");
+    if (s === "") return NaN;
+    var n = Number(s);
+    return isFinite(n) ? n : NaN;
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  // ---------- computation ----------
+  function compute(run) {
+    var N = num(state.N), rho = num(state.density);
+    var out = { m: NaN, mExpr: "", V: NaN, vExpr: "", blank: 0, acidity: NaN, av: NaN, notes: [], fillVols: [] };
+
+    if (run.mode === "diff") {
+      var b = num(run.before), a = num(run.after);
+      if (isFinite(b) && isFinite(a)) {
+        out.m = b - a;
+        out.mExpr = f(b, 2) + " − " + f(a, 2) + " = " + f(out.m, 2) + " g";
+        if (out.m <= 0) out.notes.push(["bad", t("nDiff")]);
+      }
+    } else if (run.mode === "direct") {
+      var d = num(run.direct);
+      if (isFinite(d)) { out.m = d; out.mExpr = f(d, 2) + " g " + t("tared"); }
+    } else {
+      var v = num(run.vol);
+      if (isFinite(v) && isFinite(rho)) {
+        out.m = v * rho;
+        out.mExpr = f(v, 1) + " mL × " + f(rho, 3) + " g/mL = " + f(out.m, 2) + " g";
+      }
+    }
+
+    var total = 0, any = false, parts = [];
+    run.fills.forEach(function (fl) {
+      var s = num(fl.start), e = num(fl.end);
+      if (isFinite(s) && isFinite(e)) {
+        var dv = Math.abs(e - s);
+        out.fillVols.push(dv);
+        total += dv; any = true;
+        parts.push("|" + f(e, 2) + " − " + f(s, 2) + "|");
+      } else {
+        out.fillVols.push(NaN);
+      }
+    });
+    if (any) {
+      var bl = num(run.blank);
+      out.blank = isFinite(bl) ? bl : 0;
+      out.V = total - out.blank;
+      out.vExpr = parts.join(" + ") + (out.blank ? " − " + f(out.blank, 2) + " " + t("blankTag") : "") + " = " + f(out.V, 2) + " mL";
+      if (out.V < 0) out.notes.push(["bad", t("nBlank")]);
+    }
+
+    if (isFinite(out.m) && out.m > 0 && isFinite(out.V) && out.V >= 0 && isFinite(N) && N > 0) {
+      out.acidity = out.V * N * FACTOR / out.m;
+      out.av = out.V * N * M_KOH / out.m;
+      var rec = MASS_REC[state.expected] || MASS_REC.low;
+      if (out.V > 0 && out.V < 0.5) out.notes.push(["warn", t("nSmallV")]);
+      if (out.V > 10) out.notes.push(["warn", t("nBigV")]);
+      if (out.m < rec.m * 0.5 || out.m > rec.m * 2) out.notes.push(["warn", t("nMass")(rec.m)]);
+      if (state.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
+    }
+    return out;
+  }
+
+  function grade(a) {
+    if (!isFinite(a)) return { cls: "none", text: t("gNone") };
+    if (a <= 0.8) return { cls: "good", text: t("gEV") };
+    if (a <= 2.0) return { cls: "warn", text: t("gV") };
+    return { cls: "bad", text: t("gL") };
+  }
+
+  // ---------- rendering ----------
+  var runsEl = document.getElementById("runs");
+
+  function fieldInput(run, field, label, unit, hint) {
+    var id = "r" + run.id + "-" + field;
+    return '<div class="field"><label for="' + id + '">' + label + '</label>' +
+      '<div class="unit-input"><input type="text" inputmode="decimal" id="' + id + '" data-run="' + run.id + '" data-field="' + field + '" value="' + esc(run[field]) + '"><span>' + unit + '</span></div>' +
+      (hint ? '<span class="hint">' + hint + '</span>' : '') + '</div>';
+  }
+
+  function renderRuns() {
+    var html = "";
+    var modes = t("modes");
+    state.runs.forEach(function (run, idx) {
+      var seg = '<div class="seg" role="radiogroup" aria-label="' + esc(t("modeAria")(idx + 1)) + '">' + ["diff", "direct", "vol"].map(function (m) {
+        return '<label><input type="radio" name="mode-' + run.id + '" value="' + m + '" data-run="' + run.id + '" data-mode="1"' + (run.mode === m ? " checked" : "") + '><span>' + modes[m] + '</span></label>';
+      }).join("") + '</div>';
+
+      var massFields;
+      if (run.mode === "diff") {
+        massFields = '<div class="fields">' + fieldInput(run, "before", t("before"), "g", "") + fieldInput(run, "after", t("after"), "g", "") + '</div>';
+      } else if (run.mode === "direct") {
+        massFields = '<div class="fields">' + fieldInput(run, "direct", t("direct"), "g", "") + '</div>';
+      } else {
+        massFields = '<div class="fields">' + fieldInput(run, "vol", t("vol"), "mL", t("volHint")) + '</div>';
+      }
+
+      var fills = run.fills.map(function (fl, fi) {
+        var sid = "r" + run.id + "-f" + fi + "-start", eid = "r" + run.id + "-f" + fi + "-end";
+        return '<div class="fill-row">' +
+          '<span class="fill-name">' + t("fill") + ' ' + (fi + 1) + '</span>' +
+          '<div class="field"><label for="' + sid + '">' + t("start") + '</label><div class="unit-input"><input type="text" inputmode="decimal" id="' + sid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="start" value="' + esc(fl.start) + '"><span>mL</span></div></div>' +
+          '<div class="field"><label for="' + eid + '">' + t("end") + '</label><div class="unit-input"><input type="text" inputmode="decimal" id="' + eid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="end" value="' + esc(fl.end) + '"><span>mL</span></div></div>' +
+          '<span class="fill-vol" id="fv-' + run.id + '-' + fi + '">—</span>' +
+          (run.fills.length > 1 ? '<button type="button" class="x" data-act="rmfill" data-run="' + run.id + '" data-fill="' + fi + '" aria-label="' + esc(t("rmFillAria")(fi + 1)) + '">×</button>' : '<span></span>') +
+          '</div>';
+      }).join("");
+
+      html += '<article class="run" data-run-card="' + run.id + '">' +
+        '<div class="run-head"><h3>' + t("run") + ' ' + (idx + 1) + '</h3><span class="res" id="rres-' + run.id + '">—</span>' +
+        (state.runs.length > 1 ? '<button type="button" class="small danger" data-act="rmrun" data-run="' + run.id + '">' + t("remove") + '</button>' : '') + '</div>' +
+        '<div class="run-body">' +
+          '<div class="run-part"><span class="label">' + t("partMass") + '</span>' + seg + massFields + '</div>' +
+          '<div class="run-part"><span class="label">' + t("partVol") + '</span>' + fills +
+            '<div><button type="button" class="small ghost" data-act="addfill" data-run="' + run.id + '">' + t("addFill") + '</button></div>' +
+            '<div class="fields">' + fieldInput(run, "blank", t("blank"), "mL", t("blankHint")) + '</div>' +
+          '</div>' +
+          '<div class="run-part"><span class="label">' + t("partCalc") + '</span><div class="calc" id="calc-' + run.id + '"></div><div class="notes" id="notes-' + run.id + '"></div></div>' +
+        '</div></article>';
+    });
+    runsEl.innerHTML = html;
+  }
+
+  function updateComputed() {
+    var N = num(state.N);
+    var results = [];
+    state.runs.forEach(function (run, idx) {
+      var c = compute(run);
+      c.idx = idx;
+      results.push(c);
+      c.fillVols.forEach(function (v, fi) {
+        var el = document.getElementById("fv-" + run.id + "-" + fi);
+        if (el) el.textContent = isFinite(v) ? "= " + f(v, 2) + " mL" : "—";
+      });
+      var calc = document.getElementById("calc-" + run.id);
+      if (calc) {
+        calc.innerHTML =
+          '<div class="row"><span class="k">' + t("kM") + '</span><span class="v">' + (c.mExpr || t("waiting")) + '</span></div>' +
+          '<div class="row"><span class="k">' + t("kV") + '</span><span class="v">' + (c.vExpr || t("waiting")) + '</span></div>' +
+          '<div class="row"><span class="k">' + t("kN") + '</span><span class="v">' + (isFinite(N) ? f(N, 3) + " mol/L" : t("setN")) + '</span></div>' +
+          '<div class="row final"><span class="k">' + t("kA") + '</span><span class="v">' +
+            (isFinite(c.acidity) ? f(c.V, 2) + " × " + f(N, 3) + " × " + f(FACTOR, 1) + " ÷ " + f(c.m, 2) + " = " + pct(c.acidity, 3) : "V × N × " + f(FACTOR, 1) + " ÷ m") + '</span></div>';
+      }
+      var notes = document.getElementById("notes-" + run.id);
+      if (notes) notes.innerHTML = c.notes.map(function (n) { return '<div class="note ' + n[0] + '">' + n[1] + '</div>'; }).join("");
+      var rres = document.getElementById("rres-" + run.id);
+      if (rres) rres.textContent = isFinite(c.acidity) ? pct(c.acidity, 2) : "—";
+    });
+
+    var valid = results.filter(function (c) { return isFinite(c.acidity); });
+    renderPanel(valid, results);
+    renderDerive(valid[0]);
+    renderRecommend();
+  }
+
+  function stats(valid) {
+    var n = valid.length;
+    if (!n) return null;
+    var vals = valid.map(function (c) { return c.acidity; });
+    var mean = vals.reduce(function (a, b) { return a + b; }, 0) / n;
+    var avMean = valid.reduce(function (a, c) { return a + c.av; }, 0) / n;
+    var mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals);
+    var sd = NaN;
+    if (n > 1) {
+      var ss = vals.reduce(function (a, v) { return a + (v - mean) * (v - mean); }, 0);
+      sd = Math.sqrt(ss / (n - 1));
+    }
+    return { n: n, mean: mean, av: avMean, range: mx - mn, sd: sd };
+  }
+
+  function renderPanel(valid, all) {
+    var s = stats(valid);
+    var meanEl = document.getElementById("pMean");
+    var sub = document.getElementById("pMeanSub");
+    var chip = document.getElementById("pChip");
+    var marker = document.getElementById("pMarker");
+    var notes = [];
+    if (!s) {
+      meanEl.innerHTML = "—";
+      sub.textContent = t("enterRun");
+      chip.className = "chip none"; chip.textContent = t("gNone");
+      marker.style.display = "none";
+      document.getElementById("pN").textContent = "0";
+      ["pRange", "pAV", "pSD"].forEach(function (id) { document.getElementById(id).textContent = "—"; });
+    } else {
+      meanEl.innerHTML = (lang === "tr" ? "%" + f(s.mean, 2) : f(s.mean, 2)) + "<small>" + t("unitOleic") + "</small>";
+      sub.textContent = s.n === 1 ? t("single") : t("meanOf")(s.n);
+      var g = grade(s.mean);
+      chip.className = "chip " + g.cls; chip.textContent = g.text;
+      var pos = Math.max(0, Math.min(100, s.mean / 2.5 * 100));
+      marker.style.left = pos + "%"; marker.style.display = "block";
+      document.getElementById("pN").textContent = s.n;
+      document.getElementById("pRange").textContent = s.n > 1 ? f(s.range, 3) : "—";
+      document.getElementById("pAV").textContent = f(s.av, 2);
+      document.getElementById("pSD").textContent = s.n > 1 ? f(s.sd, 3) : "—";
+      if (s.n > 1) {
+        var limit = Math.max(0.05, 0.1 * s.mean);
+        if (s.range <= limit) notes.push(["ok", t("agree")(f(limit, 2))]);
+        else notes.push(["warn", t("differ")(f(limit, 2))]);
+      }
+      if (s.mean > 0.7 && s.mean <= 0.9) notes.push(["warn", t("nearLimit")]);
+    }
+    document.getElementById("pRuns").innerHTML = all.map(function (c) {
+      return '<div class="r"><span class="muted">' + t("run") + ' ' + (c.idx + 1) + '</span><span>' + (isFinite(c.acidity) ? pct(c.acidity, 3) : t("incomplete")) + '</span></div>';
+    }).join("");
+    document.getElementById("pNotes").innerHTML = notes.map(function (n) { return '<div class="note ' + n[0] + '">' + n[1] + '</div>'; }).join("");
+  }
+
+  function renderDerive(c) {
+    var el = document.getElementById("derive");
+    var src = document.getElementById("deriveSource");
+    var N = num(state.N);
+    var has = !!c;
+    var V = has ? c.V : 2.35, m = has ? c.m : 20.0, n = isFinite(N) && N > 0 ? N : 0.1;
+    src.textContent = has ? t("deriveFrom")(c.idx + 1) : t("deriveSample");
+    var mmol = V * n;
+    var mg = mmol * M_OLEIC;
+    var p = mg / (m * 1000) * 100;
+    var exact = V * n * FACTOR / m;
+    var eqs = [
+      "n(NaOH) = V × N = " + f(V, 2) + " mL × " + f(n, 3) + " mmol/mL = " + f(mmol, 4) + " mmol",
+      t("eqAcids") + " = " + f(mmol, 4) + " mmol",
+      t("eqMass") + " = " + f(mmol, 4) + " mmol × " + f(M_OLEIC, 2) + " mg/mmol = " + f(mg, 2) + " mg",
+      f(mg, 2) + " mg ÷ " + f(m * 1000, 0) + " mg × 100 = " + pct(p, 3),
+      "V × N × " + f(FACTOR, 1) + " ÷ m = " + f(V, 2) + " × " + f(n, 3) + " × " + f(FACTOR, 1) + " ÷ " + f(m, 2) + " = " + pct(exact, 3),
+      "AV = V × N × " + f(M_KOH, 2) + " ÷ m = " + f(V * n * M_KOH / m, 2) + " mg KOH/g"
+    ];
+    var d = t("d");
+    el.innerHTML = d.map(function (s, i) {
+      return '<div class="d-step"><span class="i">' + (i + 1) + '.</span><div><b>' + s[0] + '.</b> ' + s[1] + '<div class="eq">' + eqs[i] + '</div></div></div>';
+    }).join("");
+  }
+
+  function renderRecommend() {
+    var rec = MASS_REC[state.expected] || MASS_REC.low;
+    var N = num(state.N);
+    var rho = num(state.density);
+    var el = document.getElementById("recommend");
+    if (!(N > 0)) { el.innerHTML = t("recNoN"); return; }
+    var vlo = rec.lo * rec.m / (N * FACTOR), vhi = rec.hi * rec.m / (N * FACTOR);
+    var mlOil = isFinite(rho) && rho > 0 ? f(rec.m / rho, 0) : null;
+    var mStr = lang === "tr" ? String(rec.m).replace(".", ",") : String(rec.m);
+    el.innerHTML = '<div>' + t("rec1")(mStr, mlOil) + '</div><div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(vlo, 1), f(vhi, 1), f(N, 3)) + '</div>';
+  }
+
+  function renderSteps() {
+    var done = 0, total = 0;
+    document.querySelectorAll("[data-step]").forEach(function (cb) {
+      total++;
+      var key = cb.getAttribute("data-step");
+      cb.checked = !!state.steps[key];
+      if (cb.checked) done++;
+      var box = document.querySelector('[data-step-box="' + key + '"]');
+      if (box) box.classList.toggle("done", cb.checked);
+    });
+    document.getElementById("stepCount").textContent = t("stepsDone")(done, total);
+  }
+
+  function renderStaticText() {
+    var sel = document.getElementById("expected");
+    sel.options[0].textContent = t("optLow");
+    sel.options[1].textContent = t("optMid");
+    sel.options[2].textContent = t("optHigh");
+    document.getElementById("sampleName").placeholder = t("placeholder");
+    document.getElementById("resetBtn").textContent = resetArmed ? t("resetArm") : t("reset");
+    document.querySelectorAll(".lang-switch button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
+    });
+  }
+
+  function renderSettings() {
+    document.getElementById("sampleName").value = state.name || "";
+    document.getElementById("normality").value = state.N;
+    document.getElementById("density").value = state.density;
+    document.getElementById("expected").value = state.expected;
+    document.getElementById("exampleBanner").hidden = !state.example;
+  }
+
+  function renderAll() {
+    renderStaticText();
+    renderSettings();
+    renderSteps();
+    renderRuns();
+    updateComputed();
+  }
+
+  function findRun(id) {
+    id = Number(id);
+    for (var i = 0; i < state.runs.length; i++) if (state.runs[i].id === id) return state.runs[i];
+    return null;
+  }
+
+  // ---------- events ----------
+  document.querySelectorAll(".lang-switch button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      document.documentElement.lang = lang;
+      try { window.localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      document.getElementById("copyMsg").textContent = "";
+      document.getElementById("copyFallback").hidden = true;
+      renderStaticText();
+      renderSteps();
+      renderRuns();
+      updateComputed();
+    });
+  });
+
+  runsEl.addEventListener("input", function (e) {
+    var el = e.target;
+    if (!el.hasAttribute("data-field")) return;
+    var run = findRun(el.getAttribute("data-run"));
+    if (!run) return;
+    if (el.hasAttribute("data-fill")) run.fills[Number(el.getAttribute("data-fill"))][el.getAttribute("data-field")] = el.value;
+    else run[el.getAttribute("data-field")] = el.value;
+    save(); updateComputed();
+  });
+  runsEl.addEventListener("change", function (e) {
+    var el = e.target;
+    if (!el.hasAttribute("data-mode")) return;
+    var run = findRun(el.getAttribute("data-run"));
+    if (!run) return;
+    run.mode = el.value;
+    save(); renderRuns(); updateComputed();
+  });
+  runsEl.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]");
+    if (!el) return;
+    var run = findRun(el.getAttribute("data-run"));
+    var act = el.getAttribute("data-act");
+    if (act === "addfill" && run) {
+      run.fills.push({ start: "", end: "" });
+    } else if (act === "rmfill" && run) {
+      run.fills.splice(Number(el.getAttribute("data-fill")), 1);
+    } else if (act === "rmrun" && run) {
+      state.runs = state.runs.filter(function (r) { return r !== run; });
+    }
+    save(); renderRuns(); updateComputed();
+  });
+
+  document.getElementById("addRun").addEventListener("click", function () {
+    state.runs.push(blankRun(state.nextId++));
+    save(); renderRuns(); updateComputed();
+    var cards = runsEl.querySelectorAll(".run");
+    var last = cards[cards.length - 1];
+    if (last) last.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  });
+
+  document.getElementById("sampleName").addEventListener("input", function (e) { state.name = e.target.value; save(); });
+  document.getElementById("normality").addEventListener("input", function (e) { state.N = e.target.value; save(); updateComputed(); });
+  document.getElementById("density").addEventListener("input", function (e) { state.density = e.target.value; save(); updateComputed(); });
+  document.getElementById("expected").addEventListener("change", function (e) { state.expected = e.target.value; save(); updateComputed(); });
+
+  document.querySelector(".steps").addEventListener("change", function (e) {
+    var el = e.target;
+    if (!el.hasAttribute("data-step")) return;
+    state.steps[el.getAttribute("data-step")] = el.checked;
+    save(); renderSteps();
+  });
+
+  document.getElementById("clearExample").addEventListener("click", function () {
+    state = freshState(false);
+    save(); renderAll();
+  });
+
+  var resetArmed = false, resetTimer = null;
+  var resetBtn = document.getElementById("resetBtn");
+  function disarm() { resetArmed = false; resetBtn.textContent = t("reset"); resetBtn.classList.remove("danger"); }
+  resetBtn.addEventListener("click", function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      resetBtn.textContent = t("resetArm");
+      resetBtn.classList.add("danger");
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(disarm, 4000);
+      return;
+    }
+    clearTimeout(resetTimer);
+    disarm();
+    state = freshState(true);
+    save(); renderAll();
+    window.scrollTo(0, 0);
+  });
+
+  function resultText() {
+    var N = num(state.N);
+    var lines = [];
+    lines.push(t("cTitle") + (state.name ? " · " + state.name : "") + " · " + new Date().toISOString().slice(0, 10));
+    lines.push(t("cTitrant")(f(N, 3)));
+    var valid = [];
+    state.runs.forEach(function (run, i) {
+      var c = compute(run);
+      if (isFinite(c.acidity)) {
+        valid.push(c);
+        lines.push(t("cRun")(i + 1, f(c.m, 2), f(c.V, 2), pct(c.acidity, 3)));
+      } else {
+        lines.push(t("cIncomplete")(i + 1));
+      }
+    });
+    var s = stats(valid);
+    if (s) {
+      lines.push(t("cMean")(pct(s.mean, 2), s.n));
+      if (s.n > 1) lines.push(t("cSpread")(f(s.range, 3), f(s.sd, 3)));
+      lines.push(t("cAV")(f(s.av, 2)));
+      lines.push(t("cCat")(grade(s.mean).text));
+    }
+    return lines.join("\n");
+  }
+
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var text = resultText();
+    var msg = document.getElementById("copyMsg");
+    var fb = document.getElementById("copyFallback");
+    function fallback() {
+      fb.hidden = false; fb.value = text; fb.focus(); fb.select();
+      msg.textContent = t("copyManual");
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          fb.hidden = true;
+          msg.textContent = t("copied");
+          setTimeout(function () { msg.textContent = ""; }, 2500);
+        }, fallback);
+      } else { fallback(); }
+    } catch (e) { fallback(); }
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
