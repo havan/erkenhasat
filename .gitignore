@@ -1,0 +1,3 @@
+# Built in CI by scripts/build-pdfs.sh
+site/**/field-sheet-*.pdf
+.DS_Store

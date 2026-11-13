@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Erken Hasat</title>
+<meta name="description" content="Small, offline-friendly tools for testing and producing olive oil.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  // Same language key as the tools, so a choice made here carries over.
+  (function () {
+    var l = null;
+    try { l = window.localStorage.getItem("olive-acidity-lang"); } catch (e) {}
+    if (l !== "en" && l !== "tr") l = (navigator.language || "").toLowerCase().indexOf("tr") === 0 ? "tr" : "en";
+    document.documentElement.lang = l;
+  })();
+</script>
+<style>
+:root {
+  --paper: #f5f6f0; --surface: #ffffff; --ink: #1d2118; --muted: #5d6555; --line: #d8dbcd;
+  --accent: #56631b; --accent-soft: #e9eccf; --pink: #c2255c;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12150e; --surface: #1b1f15; --ink: #e6e9dd; --muted: #a0a891; --line: #333a28;
+    --accent: #b8c76c; --accent-soft: #2a311a; --pink: #f0699a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12150e; --surface: #1b1f15; --ink: #e6e9dd; --muted: #a0a891; --line: #333a28;
+  --accent: #b8c76c; --accent-soft: #2a311a; --pink: #f0699a; color-scheme: dark;
+}
+html[lang="tr"] .en, html[lang="en"] .tr { display: none !important; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+h1, h2 { margin: 0; line-height: 1.2; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+.wrap { max-width: 880px; margin: 0 auto; padding: 32px 16px 64px; display: grid; gap: 28px; }
+header { display: grid; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 22px; }
+.top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; }
+header p { color: var(--muted); max-width: 64ch; }
+.lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.lang-switch button { font: inherit; cursor: pointer; border: 0; background: var(--surface); color: var(--muted); padding: 6px 12px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
+.lang-switch button + button { border-left: 1px solid var(--line); }
+.lang-switch button[aria-pressed="true"] { background: var(--accent); color: var(--paper); }
+.lang-switch button:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+.tools { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; list-style: none; margin: 0; padding: 0; }
+.tool { display: grid; gap: 8px; align-content: start; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 18px; text-decoration: none; color: inherit; height: 100%; }
+.tool:hover { border-color: var(--accent); }
+.tool:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+.tool h2 { font-size: 1.15rem; font-weight: 600; color: var(--ink); }
+.tool p { color: var(--muted); font-size: 0.93rem; }
+.tool .tag { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.tool.soon { border-left-color: var(--line); border-style: dashed; }
+.tool.soon h2 { color: var(--muted); }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top-row">
+      <span class="eyebrow"><span class="en">Olive oil tools</span><span class="tr">Zeytinyağı araçları</span></span>
+      <div class="lang-switch" role="group" aria-label="Language / Dil">
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+      </div>
+    </div>
+    <h1>Erken Hasat</h1>
+    <p class="en">Small tools for checking and making olive oil at home and in the field. Each one runs entirely in your browser, and each has a printable sheet for when there's no signal.</p>
+    <p class="tr">Zeytinyağını evde ve sahada kontrol etmek ve üretmek için küçük araçlar. Hepsi tamamen tarayıcınızda çalışır; çekmeyen yerler için her birinin yazdırılabilir bir formu vardır.</p>
+  </header>
+
+  <ul class="tools">
+    <li>
+      <a class="tool" href="acidity/">
+        <span class="tag"><span class="en">Lab test · ISO 660</span><span class="tr">Laboratuvar testi · ISO 660</span></span>
+        <h2><span class="en">Acidity titration</span><span class="tr">Asitlik titrasyonu</span></h2>
+        <p class="en">Measure free acidity (% oleic acid) with NaOH and phenolphthalein. Step-by-step guide, live calculation and a PDF field sheet.</p>
+        <p class="tr">NaOH ve fenolftalein ile serbest asitliği (% oleik asit) ölçün. Adım adım rehber, anlık hesaplama ve PDF saha formu.</p>
+      </a>
+    </li>
+    <li>
+      <div class="tool soon">
+        <span class="tag"><span class="en">Coming later</span><span class="tr">Yakında</span></span>
+        <h2><span class="en">More tools</span><span class="tr">Diğer araçlar</span></h2>
+        <p class="en">Further olive oil tools will be listed here.</p>
+        <p class="tr">Diğer zeytinyağı araçları burada listelenecek.</p>
+      </div>
+    </li>
+  </ul>
+
+  <footer>
+    <span class="en">Results from these tools are estimates for your own use, not certified analyses.</span>
+    <span class="tr">Bu araçların sonuçları kendi kullanımınız için tahmindir, akredite analiz değildir.</span>
+  </footer>
+</div>
+<script>
+(function () {
+  var buttons = document.querySelectorAll(".lang-switch button");
+  function sync() {
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === document.documentElement.lang ? "true" : "false"); });
+  }
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.documentElement.lang = b.getAttribute("data-lang");
+      try { window.localStorage.setItem("olive-acidity-lang", document.documentElement.lang); } catch (e) {}
+      sync();
+    });
+  });
+  sync();
+})();
+</script>
+</body>
+</html>

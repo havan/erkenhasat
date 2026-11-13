@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Olive Oil Acidity Titration</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -11,7 +12,9 @@
   // Pick the language before first paint: saved choice, else the browser language.
   (function () {
     var l = null;
-    try { l = window.localStorage.getItem("olive-acidity-lang"); } catch (e) {}
+    // ?lang=tr / ?lang=en forces a language without saving it (used to build the ready-made PDFs).
+    try { l = new URLSearchParams(window.location.search).get("lang"); } catch (e) {}
+    if (l !== "en" && l !== "tr") try { l = window.localStorage.getItem("olive-acidity-lang"); } catch (e) {}
     if (l !== "en" && l !== "tr") l = (navigator.language || "").toLowerCase().indexOf("tr") === 0 ? "tr" : "en";
     document.documentElement.lang = l;
   })();
@@ -268,6 +271,84 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* ---------- offline / field sheet ---------- */
+.offline { display: grid; gap: 8px; border-top: 1px dashed var(--line); padding-top: 12px; }
+.offline p { font-size: 0.85rem; color: var(--muted); }
+.offline .links { font-size: 0.85rem; }
+.top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.print-only { display: none; }
+.home-link { font-size: 0.86rem; }
+
+@media print {
+  /* Always print on a light palette, whatever the screen theme. Placed last so it wins over the dark rules. */
+  :root:not([data-x]), :root[data-theme] {
+    --paper: #ffffff; --surface: #ffffff; --ink: #000000; --muted: #444a3d; --line: #9aa08c;
+    --accent: #3f4a12; --accent-soft: #f1f3e2; --pink: #a3164a; --pink-soft: #fbe3ec;
+    --good: #1f6b23; --warn: #8a5000; --bad: #9c1c12; --good-soft: #eef7ee; --warn-soft: #fdf4e3; --bad-soft: #fcecea;
+    color-scheme: light;
+  }
+  @page { size: A4; margin: 14mm 13mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-size: 10.5pt; line-height: 1.4; background: #fff; }
+  .wrap { max-width: none; padding: 0; }
+  .print-only { display: block; }
+  .screen-only, .lang-switch, .top-actions, #exampleBanner, aside.panel,
+  #setupSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
+  .layout { display: block; margin-top: 0 !important; }
+  .main { display: block; }
+  .main > * { margin-bottom: 14px; }
+  header.top { padding-bottom: 8px; margin-bottom: 10px; }
+  header.top > p { display: none; }
+  h1 { font-size: 18pt; }
+  h2 { font-size: 13pt; }
+  .card, .step { border-color: var(--line); padding: 10px 12px; }
+  ol.steps { gap: 8px; }
+  .step, .step.done { border-left: 4px solid var(--accent); break-inside: auto; }
+  .step-head { break-after: avoid; }
+  .step li, .why, .caution, .endpoint, .reaction { break-inside: avoid; }
+  .tbl-wrap { overflow: visible; }
+  .section-head { break-after: avoid; }
+  #gradesSection { break-inside: avoid; }
+  table.grades, .fs-lookup { break-inside: avoid; }
+  .step.done .step-head h3 { color: var(--ink); }
+  .step-head input[type="checkbox"] { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border: 1.5px solid #000; border-radius: 3px; margin: 0; }
+  .step-head label.check { color: var(--ink); }
+  .why, .caution { font-size: 9.5pt; }
+  .reaction { white-space: normal; }
+  a { color: inherit; text-decoration: none; }
+  footer { margin-top: 12px; font-size: 8.5pt; }
+  section.block { break-inside: auto; }
+  .fs-break { break-before: page; }
+}
+
+/* Field-sheet blocks (only ever visible in print, but styled with tokens so they read well in the PDF). */
+.fs-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 18px; font-size: 10pt; margin-bottom: 8px; }
+.fs-meta .ln { display: flex; gap: 6px; align-items: baseline; }
+.fs-meta .ln b { white-space: nowrap; font-weight: 600; }
+.fs-meta .ln i { flex: 1; border-bottom: 1px solid #000; min-height: 1.2em; font-style: normal; font-family: var(--font-mono); }
+.fs-setup { display: grid; gap: 4px; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 10pt; }
+.fs-setup strong { font-family: var(--font-mono); }
+.fs-runs { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.fs-run { border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 12px 10px; display: grid; gap: 7px; break-inside: avoid; font-size: 10pt; }
+.fs-run h3 { font-family: var(--font-mono); font-size: 11pt; }
+.fs-row { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
+.fs-row .lbl { color: var(--muted); min-width: 7.5em; }
+.fs-box { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #000; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.fs-blank { display: inline-block; min-width: 4.2em; border-bottom: 1px solid #000; height: 1.25em; vertical-align: bottom; }
+.fs-blank.w { min-width: 6em; }
+.fs-unit { font-family: var(--font-mono); font-size: 9pt; color: var(--muted); }
+.fs-res { border-top: 1px dashed var(--line); padding-top: 6px; font-family: var(--font-mono); }
+.fs-summary { border: 1.5px solid var(--pink); border-radius: 6px; padding: 8px 12px; display: grid; gap: 7px; font-size: 10pt; break-inside: avoid; }
+table.fs-lookup { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 9pt; font-variant-numeric: tabular-nums; }
+table.fs-lookup th, table.fs-lookup td { border: 1px solid var(--line); padding: 2px 6px; text-align: right; }
+table.fs-lookup thead th { background: var(--accent-soft); }
+table.fs-lookup tbody th { background: var(--accent-soft); font-weight: 600; }
+table.fs-lookup td.ev { color: var(--good); }
+table.fs-lookup td.v { color: var(--warn); }
+table.fs-lookup td.l { color: var(--bad); }
+table.fs-lookup td.rec { font-weight: 600; }
+.fs-small { font-size: 9pt; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -275,9 +356,13 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
   <header class="top">
     <div class="top-row">
       <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2568/91 method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2568/91 yöntemi</span></span>
-      <div class="lang-switch" role="group" aria-label="Language / Dil">
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-        <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+      <div class="top-actions">
+        <a href="../" class="home-link"><span class="en">All tools</span><span class="tr">Tüm araçlar</span></a>
+        <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet (PDF)</span><span class="tr">Saha formu (PDF)</span></button>
+        <div class="lang-switch" role="group" aria-label="Language / Dil">
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+          <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+        </div>
       </div>
     </div>
     <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
@@ -295,7 +380,17 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
     <div class="main">
 
       <!-- SETTINGS -->
-      <section class="block" aria-labelledby="h-setup">
+      <!-- FIELD SHEET HEADER (print only) -->
+      <section class="print-only" aria-hidden="true">
+        <div class="fs-meta">
+          <div class="ln"><b><span class="en">Sample</span><span class="tr">Numune</span></b><i id="fsName"></i></div>
+          <div class="ln"><b><span class="en">Date</span><span class="tr">Tarih</span></b><i></i></div>
+          <div class="ln"><b><span class="en">Operator</span><span class="tr">Uygulayan</span></b><i></i></div>
+        </div>
+        <div class="fs-setup" id="fsSetup"></div>
+      </section>
+
+      <section class="block" id="setupSection" aria-labelledby="h-setup">
         <div class="section-head"><h2 id="h-setup"><span class="en">Test setup</span><span class="tr">Test ayarları</span></h2><span class="tag"><span class="en">set once per test</span><span class="tr">her test için bir kez</span></span></div>
         <div class="card" style="display:grid; gap:16px">
           <div class="fields">
@@ -331,8 +426,9 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
       <!-- PROCEDURE -->
       <section class="block" aria-labelledby="h-proc">
         <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span></div>
-        <p class="lede en">Tick each step as you finish it. Steps 4 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>.</p>
-        <p class="lede tr">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her deneme için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki deneme kartlarına yazın.</p>
+        <p class="lede en screen-only">Tick each step as you finish it. Steps 4 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>.</p>
+        <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her deneme için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki deneme kartlarına yazın.</p>
+        <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 4 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 4–6. adımlar her deneme için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
 
         <ol class="steps">
           <li><div class="step" data-step-box="s1">
@@ -521,8 +617,20 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
         </ol>
       </section>
 
+      <!-- FIELD SHEET RECORD (print only) -->
+      <section class="print-only fs-break" aria-hidden="true">
+        <div class="section-head" style="margin-bottom:8px"><h2><span class="en">Record sheet</span><span class="tr">Kayıt formu</span></h2><span class="tag"><span class="en">one box per titration</span><span class="tr">her titrasyon için bir kutu</span></span></div>
+        <div class="fs-runs" id="fsRuns"></div>
+        <div class="fs-summary" id="fsSummary" style="margin-top:10px"></div>
+      </section>
+      <section class="print-only fs-break" aria-hidden="true">
+        <div class="section-head" style="margin-bottom:6px"><h2><span class="en">Quick lookup: acidity without a calculator</span><span class="tr">Hızlı tablo: hesap makinesi olmadan asitlik</span></h2></div>
+        <p class="fs-small" id="fsLookupLede" style="margin-bottom:6px"></p>
+        <table class="fs-lookup" id="fsLookup"></table>
+      </section>
+
       <!-- RUNS -->
-      <section class="block" aria-labelledby="h-runs">
+      <section class="block" id="runsSection" aria-labelledby="h-runs">
         <div class="section-head"><h2 id="h-runs"><span class="en">Measurements</span><span class="tr">Ölçümler</span></h2><span class="tag"><span class="en">one card per titration</span><span class="tr">her titrasyon için bir kart</span></span></div>
         <p class="lede en">Enter readings exactly as you see them. Commas work as decimal separators. Each card shows its calculation step by step.</p>
         <p class="lede tr">Okumaları gördüğünüz gibi girin. Ondalık ayırıcı olarak virgül de kullanılabilir. Her kart kendi hesabını adım adım gösterir.</p>
@@ -533,7 +641,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
       </section>
 
       <!-- DERIVATION -->
-      <section class="block" aria-labelledby="h-math">
+      <section class="block" id="mathSection" aria-labelledby="h-math">
         <div class="section-head"><h2 id="h-math"><span class="en">How the formula works</span><span class="tr">Formül nasıl çalışır</span></h2><span class="tag" id="deriveSource"></span></div>
         <div class="card" style="display:grid; gap:16px">
           <div class="big-formula"><span class="en">Acidity (% oleic) = V × N × 28.2 ÷ m</span><span class="tr">Asitlik (% oleik) = V × N × 28,2 ÷ m</span>
@@ -544,7 +652,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
       </section>
 
       <!-- INTERPRETATION -->
-      <section class="block" aria-labelledby="h-grades">
+      <section class="block" id="gradesSection" aria-labelledby="h-grades">
         <div class="section-head"><h2 id="h-grades"><span class="en">Reading the result</span><span class="tr">Sonucu yorumlama</span></h2><span class="tag"><span class="en">EU Regulation 2568/91 limits</span><span class="tr">AB 2568/91 ve Türk Gıda Kodeksi sınırları</span></span></div>
         <div class="card" style="display:grid; gap:12px">
           <div class="tbl-wrap">
@@ -603,6 +711,13 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
         </div>
         <div class="copy-msg" id="copyMsg" aria-live="polite"></div>
         <textarea class="copy-fallback" id="copyFallback" readonly hidden aria-label="Results"></textarea>
+        <div class="offline">
+          <div class="k-label"><span class="en">No internet in the field?</span><span class="tr">Sahada internet yok mu?</span></div>
+          <p class="en">Print the field sheet or save it as PDF: procedure, record boxes for 3 runs and a lookup table, using the normality and expected acidity set above.</p>
+          <p class="tr">Saha formunu yazdırın veya PDF olarak kaydedin: uygulama adımları, 3 deneme için kayıt kutuları ve bir hızlı tablo; yukarıda girilen normalite ve beklenen asitliğe göre.</p>
+          <div><button type="button" class="small" data-act="print"><span class="en">Print / save field sheet as PDF</span><span class="tr">Saha formunu yazdır / PDF kaydet</span></button></div>
+          <p class="links"><span class="en">Ready-made PDF (0.1 N, oil below 1%):</span><span class="tr">Hazır PDF (0,1 N, %1’in altındaki yağ):</span> <a href="field-sheet-en.pdf" download>English</a> · <a href="field-sheet-tr.pdf" download>Türkçe</a></p>
+        </div>
       </div>
     </aside>
   </div>
@@ -690,7 +805,18 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
       cMean: function (a, n) { return "Mean acidity: " + a + " as oleic acid (" + n + " run" + (n > 1 ? "s" : "") + ")"; },
       cSpread: function (r, sd) { return "Spread: " + r + " points · SD " + sd; },
       cAV: function (av) { return "Acid value: " + av + " mg KOH/g"; },
-      cCat: function (g) { return "Category by acidity: " + g; }
+      cCat: function (g) { return "Category by acidity: " + g; },
+      fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · expected acidity: " + range + "."; },
+      fsRun: function (n) { return "Run " + n; },
+      fsMethod: "Weighing", fsBefore: "Cup before", fsAfter: "Cup after", fsOr: "or tared / by volume",
+      fsMass: "Oil mass m", fsFill: function (n) { return "Fill " + n; }, fsStart: "start", fsEnd: "end",
+      fsBlank: "Blank (if no step 3)", fsV: "Titrant V",
+      fsAcid: function (N) { return "Acidity = V × " + N + " × 28.2 ÷ m ="; },
+      fsMean: "Mean of valid runs", fsSpread: "Spread (max − min)",
+      fsSpreadOk: "Good repeat if the spread is at most 0.05 points, or 10% of the mean when that is larger. Otherwise do another run.",
+      fsCat: "Category", fsAV: "Acid value ≈ 1.99 × acidity =",
+      fsLookupLede: function (N, rec) { return "Find the titrant volume V in the left column and the oil mass m along the top: the cell is the acidity in % oleic acid at " + N + " N. Bold column: the recommended " + rec + " g. Colour: green ≤ 0.80 (extra virgin), amber ≤ 2.0 (virgin), red above. For other values use acidity = V × N × 28.2 ÷ m."; },
+      fsVm: "V (mL) ↓ · m (g) →"
     },
     tr: {
       optLow: "%1’in altında (natürel sızma / natürel birinci)",
@@ -747,7 +873,18 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
       cMean: function (a, n) { return "Ortalama asitlik: " + a + " oleik asit cinsinden (" + n + " deneme)"; },
       cSpread: function (r, sd) { return "Fark: " + r + " puan · SS " + sd; },
       cAV: function (av) { return "Asit değeri: " + av + " mg KOH/g"; },
-      cCat: function (g) { return "Asitliğe göre kategori: " + g; }
+      cCat: function (g) { return "Asitliğe göre kategori: " + g; },
+      fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · beklenen asitlik: " + range + "."; },
+      fsRun: function (n) { return n + ". deneme"; },
+      fsMethod: "Tartım", fsBefore: "Kap, önce", fsAfter: "Kap, sonra", fsOr: "veya dara / hacimle",
+      fsMass: "Yağ kütlesi m", fsFill: function (n) { return n + ". dolum"; }, fsStart: "başlangıç", fsEnd: "bitiş",
+      fsBlank: "Kör (3. adım yoksa)", fsV: "Titrant V",
+      fsAcid: function (N) { return "Asitlik = V × " + N + " × 28,2 ÷ m ="; },
+      fsMean: "Geçerli denemelerin ortalaması", fsSpread: "Fark (maks − min)",
+      fsSpreadOk: "Fark en fazla 0,05 puan ise (ortalamanın %10’u daha büyükse o) tekrar iyidir. Değilse bir deneme daha yapın.",
+      fsCat: "Kategori", fsAV: "Asit değeri ≈ 1,99 × asitlik =",
+      fsLookupLede: function (N, rec) { return "Harcanan titrant hacmi V’yi sol sütunda, yağ kütlesi m’yi üst satırda bulun: kesişen hücre " + N + " N için % oleik asit cinsinden asitliktir. Kalın sütun: önerilen " + rec + " g. Renk: yeşil ≤ 0,80 (natürel sızma), turuncu ≤ 2,0 (natürel birinci), kırmızı daha yüksek. Diğer değerler için: asitlik = V × N × 28,2 ÷ m."; },
+      fsVm: "V (mL) ↓ · m (g) →"
     }
   };
   function t(k) { return T[lang][k]; }
@@ -936,6 +1073,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
     renderPanel(valid, results);
     renderDerive(valid[0]);
     renderRecommend();
+    renderFieldSheet();
   }
 
   function stats(valid) {
@@ -1026,6 +1164,74 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
     var mlOil = isFinite(rho) && rho > 0 ? f(rec.m / rho, 0) : null;
     var mStr = lang === "tr" ? String(rec.m).replace(".", ",") : String(rec.m);
     el.innerHTML = '<div>' + t("rec1")(mStr, mlOil) + '</div><div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(vlo, 1), f(vhi, 1), f(N, 3)) + '</div>';
+  }
+
+  // ---------- printable field sheet ----------
+  // Always rendered (it is cheap) so that Ctrl+P, the print button and headless PDF builds all get current values.
+  function renderFieldSheet() {
+    var rec = MASS_REC[state.expected] || MASS_REC.low;
+    var N = num(state.N);
+    var hasN = isFinite(N) && N > 0;
+    var Ns = hasN ? f(N, 3) : "____";
+    var rangeTxt = t("ranges")[state.expected] || t("ranges").low;
+    var blank = function (w) { return '<span class="fs-blank' + (w ? " w" : "") + '"></span>'; };
+    var box = '<span class="fs-box"></span>';
+    var opt = function (label) { return '<span style="white-space:nowrap; margin-right:14px">' + box + label + '</span>'; };
+    var unit = function (u) { return ' <span class="fs-unit">' + u + '</span>'; };
+
+    document.getElementById("fsName").textContent = state.name || "";
+    var setup = document.getElementById("fsSetup");
+    setup.innerHTML = '<div>' + t("fsSetup1")(Ns, rangeTxt) + '</div>' + document.getElementById("recommend").innerHTML;
+
+    var modes = t("modes");
+    var runs = "";
+    for (var i = 1; i <= 3; i++) {
+      runs += '<div class="fs-run"><h3>' + t("fsRun")(i) + '</h3>' +
+        '<div class="fs-row"><span class="lbl">' + t("fsMethod") + '</span>' +
+          opt(modes.diff) + opt(modes.direct) + opt(modes.vol) + '</div>' +
+        '<div class="fs-row"><span class="lbl">' + t("fsMass") + '</span>' +
+          t("fsBefore") + ' ' + blank() + unit("g") + ' − ' + t("fsAfter") + ' ' + blank() + unit("g") + ' = ' + blank() + unit("g") +
+          ' <span class="fs-small">(' + t("fsOr") + ')</span></div>' +
+        [1, 2].map(function (k) {
+          return '<div class="fs-row"><span class="lbl">' + t("fsFill")(k) + '</span>' +
+            t("fsEnd") + ' ' + blank() + unit("mL") + ' − ' + t("fsStart") + ' ' + blank() + unit("mL") + ' = ' + blank() + unit("mL") + '</div>';
+        }).join("") +
+        '<div class="fs-row"><span class="lbl">' + t("fsV") + '</span>' +
+          blank() + ' + ' + blank() + ' − ' + t("fsBlank") + ' ' + blank() + ' = ' + blank("w") + unit("mL") + '</div>' +
+        '<div class="fs-row fs-res">' + t("fsAcid")(Ns) + ' ' + blank("w") + unit("%") + '</div>' +
+      '</div>';
+    }
+    document.getElementById("fsRuns").innerHTML = runs;
+
+    document.getElementById("fsSummary").innerHTML =
+      '<div class="fs-row"><span class="lbl">' + t("fsMean") + '</span>' + blank("w") + unit("%") +
+        ' &nbsp; ' + t("fsSpread") + ' ' + blank() + '</div>' +
+      '<div class="fs-small">' + t("fsSpreadOk") + '</div>' +
+      '<div class="fs-row"><span class="lbl">' + t("fsCat") + '</span>' +
+        opt(t("gEV")) + opt(t("gV")) + opt(t("gL")) + '</div>' +
+      '<div class="fs-row"><span class="lbl">' + t("fsAV") + '</span>' + blank() + unit("mg KOH/g") + '</div>';
+
+    // Lookup grid: rows of titrant volume, columns of oil mass around the recommended mass.
+    var table = document.getElementById("fsLookup");
+    var lede = document.getElementById("fsLookupLede");
+    var mStr = lang === "tr" ? String(rec.m).replace(".", ",") : String(rec.m);
+    if (!hasN) { table.innerHTML = ""; lede.textContent = t("recNoN"); return; }
+    lede.textContent = t("fsLookupLede")(f(N, 3), mStr);
+    var masses = [0.8, 0.9, 0.95, 1, 1.05, 1.1, 1.2].map(function (k) { return rec.m * k; });
+    var vLo = rec.lo * rec.m / (N * FACTOR), vHi = rec.hi * rec.m / (N * FACTOR) * 1.15;
+    var step = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 5].filter(function (st) { return (vHi - vLo) / st <= 34; })[0] || 10;
+    var v0 = Math.max(step, Math.floor(vLo / step) * step);
+    var mDec = rec.m < 5 ? 2 : 1;
+    var html = '<thead><tr><th>' + t("fsVm") + '</th>' + masses.map(function (m) { return '<th>' + f(m, mDec) + '</th>'; }).join("") + '</tr></thead><tbody>';
+    for (var v = v0; v <= vHi + 1e-9; v += step) {
+      var vv = Math.round(v / step) * step;
+      html += '<tr><th>' + f(vv, step < 0.1 ? 2 : (step < 1 ? (step === 0.25 ? 2 : 1) : 0)) + '</th>' + masses.map(function (m, j) {
+        var a = vv * N * FACTOR / m;
+        var cls = a <= 0.8 ? "ev" : (a <= 2.0 ? "v" : "l");
+        return '<td class="' + cls + (j === 3 ? " rec" : "") + '">' + f(a, a < 10 ? 2 : 1) + '</td>';
+      }).join("") + '</tr>';
+    }
+    table.innerHTML = html + '</tbody>';
   }
 
   function renderSteps() {
@@ -1122,6 +1328,10 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
     save(); renderRuns(); updateComputed();
   });
 
+  document.querySelectorAll('[data-act="print"]').forEach(function (b) {
+    b.addEventListener("click", function () { renderFieldSheet(); window.print(); });
+  });
+
   document.getElementById("addRun").addEventListener("click", function () {
     state.runs.push(blankRun(state.nextId++));
     save(); renderRuns(); updateComputed();
@@ -1130,7 +1340,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
     if (last) last.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
 
-  document.getElementById("sampleName").addEventListener("input", function (e) { state.name = e.target.value; save(); });
+  document.getElementById("sampleName").addEventListener("input", function (e) { state.name = e.target.value; save(); renderFieldSheet(); });
   document.getElementById("normality").addEventListener("input", function (e) { state.N = e.target.value; save(); updateComputed(); });
   document.getElementById("density").addEventListener("input", function (e) { state.density = e.target.value; save(); updateComputed(); });
   document.getElementById("expected").addEventListener("change", function (e) { state.expected = e.target.value; save(); updateComputed(); });
