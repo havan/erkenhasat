@@ -276,7 +276,12 @@ table.grades td.mono { white-space: nowrap; }
 .copy-fallback { width: 100%; min-height: 140px; font-family: var(--font-mono); font-size: 0.8rem; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 8px; }
 .copy-fallback[hidden] { display: none; }
 
-footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
+.method-note { margin-top: 36px; max-width: 80ch; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 14px 16px; }
+.method-note > div { display: grid; gap: 8px; }
+.method-note h2 { font-size: 1rem; font-weight: 600; margin: 0; }
+.method-note p { margin: 0; font-size: 0.92rem; }
+.method-note b { color: var(--accent); }
+footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
@@ -327,7 +332,11 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
   .why, .caution { font-size: 9.5pt; }
   .reaction { white-space: normal; }
   a { color: inherit; text-decoration: none; }
-  footer { margin-top: 12px; font-size: 8.5pt; }
+  .method-note { margin-top: 12px; padding: 8px 12px; break-inside: avoid; }
+  .method-note > div { gap: 4px; }
+  .method-note h2 { font-size: 10.5pt; }
+  .method-note p { font-size: 9pt; }
+  footer { margin-top: 8px; font-size: 8.5pt; }
   section.block { break-inside: auto; }
   .fs-break { break-before: page; }
 }
@@ -423,7 +432,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 .print-mode { display: none; }
 
 /* One-page A4 test report */
-.rep { display: grid; gap: 5mm; font-size: 10pt; line-height: 1.4; }
+.rep { display: grid; gap: 3.5mm; font-size: 10pt; line-height: 1.4; }
 .rep-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 6mm; border-bottom: 0.5mm solid var(--accent); padding-bottom: 3mm; }
 .rep-head .brand { font-size: 11pt; margin-bottom: 2mm; }
 .rep-head .brand-mark { width: 7mm; height: 7mm; }
@@ -439,14 +448,17 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 .rep-stats .mono { color: var(--muted); }
 .rep h2 { font-size: 11pt; border-bottom: 0.2mm solid var(--line); padding-bottom: 1mm; margin-bottom: 2mm; }
 .rep table { width: 100%; border-collapse: collapse; font-size: 9pt; }
-.rep td, .rep th { padding: 1.2mm 2mm; border-bottom: 0.2mm solid var(--line); text-align: left; vertical-align: top; }
+.rep td, .rep th { padding: 0.9mm 2mm; border-bottom: 0.2mm solid var(--line); text-align: left; vertical-align: top; }
 .rep th { font-size: 8pt; color: var(--muted); font-weight: 500; }
-.rep td.k { color: var(--muted); width: 19%; }
-.rep td.v { width: 31%; }
+.rep td.k { color: var(--muted); width: 23%; }
+.rep td.v { width: 27%; }
 .rep .num { font-family: var(--font-mono); text-align: right; white-space: nowrap; }
 .rep-notes { white-space: pre-wrap; }
-.rep-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; margin-top: 8mm; }
+.rep-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; margin-top: 5mm; }
 .rep-sign div { border-top: 0.3mm solid #000; padding-top: 1mm; font-size: 8pt; color: var(--muted); }
+.rep .method-note { margin: 0; max-width: none; padding: 3mm 4mm; border-radius: 2mm; break-inside: avoid; }
+.rep .method-note h2 { border: 0; padding: 0; margin: 0; font-size: 10pt; }
+.rep .method-note p { font-size: 8.5pt; }
 .rep-foot { font-size: 7.5pt; color: var(--muted); }
 
 @media print {
@@ -475,12 +487,12 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2568/91 method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2568/91 yöntemi</span></span>
     <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
     <p class="en">Work through the steps in order. Enter the numbers you read on the scale and the pipette in the run cards, and the page calculates the acidity as % oleic acid, showing every formula with your values filled in. Your entries stay in this browser if the page reloads.</p>
-    <p class="tr">Adımları sırayla uygulayın. Terazide ve pipette okuduğunuz değerleri deneme kartlarına girin; sayfa asitliği % oleik asit olarak hesaplar ve her formülü sizin değerlerinizle gösterir. Sayfa yenilense de girdileriniz bu tarayıcıda kalır.</p>
+    <p class="tr">Adımları sırayla uygulayın. Terazide ve pipette okuduğunuz değerleri ölçüm kartlarına girin; sayfa asitliği % oleik asit olarak hesaplar ve her formülü sizin değerlerinizle gösterir. Sayfa yenilense de girdileriniz bu tarayıcıda kalır.</p>
   </header>
 
   <div class="banner" id="exampleBanner" hidden>
     <p class="en"><b>Example values loaded.</b> The runs and the oil details are filled with made-up values so you can see how the calculation, report and labels work. Clear them before your real test.</p>
-    <p class="tr"><b>Örnek değerler yüklü.</b> Denemeler ve yağ bilgileri, hesaplamanın, raporun ve etiketlerin nasıl çalıştığını görmeniz için uydurma değerlerle doldurulmuştur. Gerçek testten önce temizleyin.</p>
+    <p class="tr"><b>Örnek değerler yüklü.</b> Ölçümler ve yağ bilgileri, hesaplamanın, raporun ve etiketlerin nasıl çalıştığını görmeniz için uydurma değerlerle doldurulmuştur. Gerçek testten önce temizleyin.</p>
     <button type="button" id="clearExample"><span class="en">Clear example and start my test</span><span class="tr">Örneği temizle ve testime başla</span></button>
   </div>
 
@@ -552,8 +564,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       <section class="block" aria-labelledby="h-proc">
         <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span></div>
         <p class="lede en screen-only">Tick each step as you finish it. Steps 4 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>.</p>
-        <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her deneme için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki deneme kartlarına yazın.</p>
-        <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 4 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 4–6. adımlar her deneme için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
+        <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her ölçüm için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki ölçüm kartlarına yazın.</p>
+        <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 4 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 4–6. adımlar her ölçüm için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
 
         <ol class="steps">
           <li><div class="step" data-step-box="s1">
@@ -627,7 +639,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             </div>
             <div class="lang-body tr">
               <div class="why"><b>Neden:</b> çözücünün kendisi de etanol oksidasyonu, eter peroksitleri ve çözünmüş CO₂ kaynaklı eser miktarda asit içerir. Önce bunlar giderilmezse, onlar için harcanan NaOH yağdan gelen asit gibi sayılır ve sonuç yüksek çıkar. Koyu pembeye kadar fazla kaçırırsanız çözücü hafif bazik olur ve sonuç düşük çıkar. Dökün ve baştan başlayın.</div>
-              <p class="lede" style="font-size:0.9rem">Alternatif: bu adımı atlayıp <b>kör deneme</b> yapın. Yağ eklemeden 100 mL işlenmemiş çözücüyü titre edin ve bu hacmi deneme kartına kör deneme olarak girin. Sayfa bunu düşer.</p>
+              <p class="lede" style="font-size:0.9rem">Alternatif: bu adımı atlayıp <b>kör deneme</b> yapın. Yağ eklemeden 100 mL işlenmemiş çözücüyü titre edin ve bu hacmi ölçüm kartına kör deneme olarak girin. Sayfa bunu düşer.</p>
             </div>
           </div></li>
 
@@ -643,7 +655,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
               <div class="why"><b>Why by difference:</b> cheap scales ignore very slow, small changes (auto-zero tracking). Weighing the cup twice means the scale only ever reads a large, stable load, which is where it's accurate. With 20 g of oil, a ±0.1 g scale error changes the result by only ±0.5% of its value, which is negligible.</div>
             </div>
             <div class="lang-body tr">
-              <p>Test ayarlarında gösterilen kütleyi hedefleyin (iyi yağ için 20 g). Tam tutturmanız gerekmez; gerçekte ne tarttıysanız onu girin. Deneme kartında bir yöntem seçin:</p>
+              <p>Test ayarlarında gösterilen kütleyi hedefleyin (iyi yağ için 20 g). Tam tutturmanız gerekmez; gerçekte ne tarttıysanız onu girin. Ölçüm kartında bir yöntem seçin:</p>
               <ul>
                 <li><b>Farkla tartım (terazinizle en iyisi):</b> küçük bir kaba yaklaşık 40 mL yağ koyun. Kabı tartıp değeri yazın. Nötrleştirilmiş çözücünün bulunduğu erlene yaklaşık 22 mL (≈ 20 g) yağ dökün. Kabı tekrar tartın. Kabın kaybettiği ağırlık numunenizdir.</li>
                 <li><b>Darası alınmış erlen:</b> erleni teraziye koyup dara alın. Yağı birkaç gramlık porsiyonlarla dökün, her dökmeden sonra değerin oturmasını bekleyin.</li>
@@ -703,7 +715,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s7">
-            <div class="step-head"><span class="n">7</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. deneme)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">7</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. ölçüm)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Use a clean flask, fresh solvent (step 3 again) and a fresh portion of oil (steps 4–6).</li>
@@ -715,10 +727,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             <div class="lang-body tr">
               <ul>
                 <li>Temiz bir erlen, taze çözücü (yine 3. adım) ve yeni bir yağ porsiyonu (4–6. adımlar) kullanın.</li>
-                <li>Her tekrar için Ölçümler bölümünde <b>Deneme ekle</b>’ye basın.</li>
-                <li>Sonuç paneli ortalamayı ve denemelerin ne kadar uyuştuğunu gösterir.</li>
+                <li>Her tekrar için Ölçümler bölümünde <b>Ölçüm ekle</b>’ye basın.</li>
+                <li>Sonuç paneli ortalamayı ve ölçümlerin ne kadar uyuştuğunu gösterir.</li>
               </ul>
-              <div class="why"><b>Neden:</b> tek bir titrasyon, fazla kaçan bir damla ya da yanlış okunan bir menisküs yüzünden sapabilir. Birbiriyle uyuşan iki-üç deneme sonucun gerçek olduğunu gösterir; ortalamaları da tek tek her birinden daha hassastır.</div>
+              <div class="why"><b>Neden:</b> tek bir titrasyon, fazla kaçan bir damla ya da yanlış okunan bir menisküs yüzünden sapabilir. Birbiriyle uyuşan iki-üç ölçüm sonucun gerçek olduğunu gösterir; ortalamaları da tek tek her birinden daha hassastır.</div>
             </div>
           </div></li>
 
@@ -761,7 +773,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         <p class="lede tr">Okumaları gördüğünüz gibi girin. Ondalık ayırıcı olarak virgül de kullanılabilir. Her kart kendi hesabını adım adım gösterir.</p>
         <div class="runs" id="runs"></div>
         <div class="add-run">
-          <button type="button" id="addRun"><span class="en">Add run</span><span class="tr">Deneme ekle</span></button>
+          <button type="button" id="addRun"><span class="en">Add run</span><span class="tr">Ölçüm ekle</span></button>
         </div>
       </section>
 
@@ -844,9 +856,18 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         </div>
       </section>
 
+      <aside class="method-note" id="methodNote" aria-labelledby="h-method-note">
+        <div class="en"><h2 id="h-method-note">About this result</h2>
+          <p><b>Standard method.</b> This test follows the free-acidity titration of ISO 660 and the EU reference method (Regulation 2568/91) step by step: neutralized alcohol-ether solvent, phenolphthalein end point, the standard formula, and repeat runs that must agree. Followed exactly, it measures the same quantity laboratories report: free acidity as % oleic acid.</p>
+          <p><b>Not an accredited analysis.</b> It is done with your own equipment, outside an accredited laboratory, so the result can't be used for official grading, label claims or trade disputes.</p></div>
+        <div class="tr"><h2>Bu sonuç hakkında</h2>
+          <p><b>Standart yöntem.</b> Bu test, ISO 660 ve AB referans yönteminin (2568/91 sayılı Tüzük) serbest asitlik titrasyonunu adım adım izler: nötrleştirilmiş alkol-eter çözücü, fenolftalein dönüm noktası, standart formül ve birbiriyle uyuşması gereken tekrarlı ölçümler. Adımlar eksiksiz uygulandığında, laboratuvarların raporladığı büyüklüğü ölçer: % oleik asit cinsinden serbest asitlik.</p>
+          <p><b>Akredite analiz değildir.</b> Kendi ekipmanınızla, akredite bir laboratuvar dışında yapılır; bu nedenle sonuç resmî sınıflandırma, etiket beyanı veya ticari anlaşmazlıklarda kullanılamaz.</p></div>
+      </aside>
+
       <footer>
-        <span class="en">Method based on ISO 660 and EU Regulation 2568/91 (free fatty acids, cold method), adapted for home use. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10. Results are an estimate for your own use, not a certified analysis.<br>© 2026 Erken Hasat · free for non-commercial use under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> license · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
-        <span class="tr">Yöntem ISO 660 ve AB 2568/91 (serbest yağ asitleri, soğuk yöntem) esas alınarak ev kullanımına uyarlanmıştır. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur. Sonuçlar kendi kullanımınız için bir tahmindir, akredite bir analiz değildir.<br>© 2026 Erken Hasat · <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> lisansıyla ticari olmayan kullanım için ücretsiz · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
+        <span class="en">Method: ISO 660 and EU Regulation 2568/91, free fatty acids, cold method. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10.<br>© 2026 Erken Hasat · free for non-commercial use under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> license · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
+        <span class="tr">Yöntem: ISO 660 ve AB 2568/91, serbest yağ asitleri, soğuk yöntem. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur.<br>© 2026 Erken Hasat · <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> lisansıyla ticari olmayan kullanım için ücretsiz · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
       </footer>
     </div>
 
@@ -854,7 +875,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     <aside class="panel" aria-labelledby="h-result">
       <div class="card">
         <div>
-          <div class="k-label" id="h-result"><span class="en">Free acidity · mean of runs</span><span class="tr">Serbest asitlik · denemelerin ortalaması</span></div>
+          <div class="k-label" id="h-result"><span class="en">Free acidity · mean of runs</span><span class="tr">Serbest asitlik · ölçümlerin ortalaması</span></div>
           <div class="result-big" id="pMean">—</div>
           <div class="result-sub" id="pMeanSub"></div>
         </div>
@@ -864,7 +885,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           <div class="gauge-scale"><span class="first" style="left:0">0</span><span style="left:32%"><span class="en">0.8</span><span class="tr">0,8</span></span><span style="left:80%"><span class="en">2.0</span><span class="tr">2,0</span></span><span class="last" style="left:100%"><span class="en">2.5 %</span><span class="tr">%2,5</span></span></div>
         </div>
         <div class="stats">
-          <div class="stat"><div class="v" id="pN">0</div><div class="k"><span class="en">valid runs</span><span class="tr">geçerli deneme</span></div></div>
+          <div class="stat"><div class="v" id="pN">0</div><div class="k"><span class="en">valid runs</span><span class="tr">geçerli ölçüm</span></div></div>
           <div class="stat"><div class="v" id="pRange">—</div><div class="k"><span class="en">spread (max − min)</span><span class="tr">fark (maks − min)</span></div></div>
           <div class="stat"><div class="v" id="pAV">—</div><div class="k"><span class="en">acid value, mg KOH/g</span><span class="tr">asit değeri, mg KOH/g</span></div></div>
           <div class="stat"><div class="v" id="pSD">—</div><div class="k"><span class="en">std. deviation</span><span class="tr">std. sapma</span></div></div>
@@ -881,7 +902,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         <div class="offline">
           <div class="k-label"><span class="en">No internet in the field?</span><span class="tr">Sahada internet yok mu?</span></div>
           <p class="en">Print the field sheet or save it as PDF: procedure, record boxes for 3 runs and a lookup table, using the normality and expected acidity set above.</p>
-          <p class="tr">Saha formunu yazdırın veya PDF olarak kaydedin: uygulama adımları, 3 deneme için kayıt kutuları ve bir hızlı tablo; yukarıda girilen normalite ve beklenen asitliğe göre.</p>
+          <p class="tr">Saha formunu yazdırın veya PDF olarak kaydedin: uygulama adımları, 3 ölçüm için kayıt kutuları ve bir hızlı tablo; yukarıda girilen normalite ve beklenen asitliğe göre.</p>
           <div><button type="button" class="small" data-act="print"><span class="en">Print / save field sheet as PDF</span><span class="tr">Saha formunu yazdır / PDF kaydet</span></button></div>
           <p class="links"><span class="en">Ready-made PDF (0.1 N, oil below 1%):</span><span class="tr">Hazır PDF (0,1 N, %1’in altındaki yağ):</span> <a href="field-sheet-en.pdf" download>English</a> · <a href="field-sheet-tr.pdf" download>Türkçe</a></p>
         </div>
@@ -1034,16 +1055,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       lblOrigin: "Origin", lblHarvest: "Harvest", lblPressed: "Pressed", lblMill: "Mill", lblMalax: "Malaxation", lblStorage: "Storage", lblCold: "cold extraction",
       lblWait: function (r) { return r + " after picking"; },
       lblBy: "Test tool: Erken Hasat · havan.github.io/erkenhasat",
-      lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + " · ISO 660 titration. Home test, not a certified analysis."; },
-      lblTestedShort: function (date) { return "Tested " + date + " · ISO 660 titration"; },
+      lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + " · ISO 660 / EU method. Not an accredited lab analysis."; },
+      lblTestedShort: function (date) { return "Tested " + date + " · ISO 660 / EU method"; },
       lblSheet: function (per, n, pages) { return per + " labels per A4 sheet · printing " + n + " on " + pages + (pages === 1 ? " sheet" : " sheets") + "."; },
       repTitle: "Olive oil acidity test report", repDate: "Test date", repDetails: "Oil details", repRuns: "Runs", repMethod: "Method", repNotes: "Notes",
       repMean: function (n) { return n === 1 ? "From 1 run" : "Mean of " + n + " runs"; },
       repCols: ["Run", "Weighing", "m (g)", "V (mL)", "Acidity"],
       repStats: function (r, sd, av) { return (r ? "Spread " + r + " · SD " + sd + " · " : "") + "Acid value " + av + " mg KOH/g"; },
-      repMethodTxt: function (N) { return "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized alcohol-ether solvent (cold method after ISO 660 / EU Regulation 2568/91). Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
+      repMethodTxt: function (N) { return "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized alcohol-ether solvent, by the cold method of ISO 660 / EU 2568/91. Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
       repBy: "Tested by", repSig: "Signature",
-      repFoot: "Home test for your own use, not a certified analysis.",
       dHarvestH: "Picking took", dWait: "Picking to pressing", dCold: "Cold extraction (≤ 27 °C)", dYield: "Yield", yes: "yes", no: "no",
       noResultWarn: "No completed run yet: the labels and report will show “—” for acidity."
     },
@@ -1052,8 +1072,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       optMid: "%1 – %4 (düşük kalite)",
       optHigh: "%4 – %15 (çok kötü / lampant)",
       placeholder: "ör. 2026 hasadı, 1. teneke",
-      run: "Deneme", fill: "Dolum", remove: "Sil",
-      modeAria: function (n) { return n + ". deneme için tartım yöntemi"; },
+      run: "Ölçüm", fill: "Dolum", remove: "Sil",
+      modeAria: function (n) { return n + ". ölçüm için tartım yöntemi"; },
       modes: { diff: "Farkla tartım", direct: "Darası alınmış erlen", vol: "Hacimle" },
       before: "Yağlı kap, dökmeden önce", after: "Kap, erlene döktükten sonra",
       direct: "Darası alınmış terazide yağ kütlesi", vol: "Mezürden yağ hacmi", volHint: "Test ayarlarındaki yoğunlukla grama çevrilir.",
@@ -1071,15 +1091,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       nAbove: "Sonuç beklenen aralığın üstünde. Test ayarlarında daha yüksek bir beklenen asitlik seçip daha az yağ kullanmayı düşünün.",
       gNone: "Henüz sonuç yok", gEV: "Natürel sızma aralığı (≤ %0,80)", gV: "Natürel birinci aralığı (≤ %2,0)", gL: "Lampant aralığı (> %2,0)",
       unitOleic: "oleik asit",
-      enterRun: "Sonucu görmek için bir deneme girin.",
-      single: "Tek denemeden. Doğrulamak için ikinci bir deneme ekleyin.",
-      meanOf: function (n) { return n + " denemenin ortalaması."; },
+      enterRun: "Sonucu görmek için bir ölçüm girin.",
+      single: "Tek ölçümden. Doğrulamak için ikinci bir ölçüm ekleyin.",
+      meanOf: function (n) { return n + " ölçümün ortalaması."; },
       incomplete: "eksik",
-      agree: function (l) { return "Denemeler " + l + " puan içinde uyuşuyor; iyi bir tekrar."; },
-      differ: function (l) { return "Denemeler " + l + " puandan fazla farklı. Bir deneme daha yapın; fazla kaçan bir dönüm noktası veya tartım hatası arayın."; },
+      agree: function (l) { return "Ölçümler " + l + " puan içinde uyuşuyor; iyi bir tekrar."; },
+      differ: function (l) { return "Ölçümler " + l + " puandan fazla farklı. Bir ölçüm daha yapın; fazla kaçan bir dönüm noktası veya tartım hatası arayın."; },
       nearLimit: "%0,80 natürel sızma sınırına yakın. Burada küçük hatalar önemli; üçüncü bir tekrar yapın.",
-      deriveFrom: function (n) { return n + ". denemenin değerleriyle"; },
-      deriveSample: "bir deneme tamamlanana kadar örnek değerlerle",
+      deriveFrom: function (n) { return n + ". ölçümün değerleriyle"; },
+      deriveSample: "bir ölçüm tamamlanana kadar örnek değerlerle",
       d: [
         ["Ne kadar baz harcandı", "Normalite mL başına mmol’dür; bu yüzden mL × N, NaOH’ın milimol miktarını verir."],
         ["Bu ne kadar asidi nötrleştirdi", "Her yağ asidi molekülünde bir –COOH grubu vardır ve tam olarak bir OH⁻ ile tepkimeye girer; yani asidin mol sayısı = bazın mol sayısı."],
@@ -1090,27 +1110,27 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       ],
       eqMass: "kütle", eqAcids: "n(serbest yağ asitleri)",
       recNoN: "Önerilen numune miktarını görmek için titrant normalitesini girin.",
-      rec1: function (m, ml) { return "Her deneme için yaklaşık <strong>" + m + " g</strong> yağ tartın" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + "."; },
+      rec1: function (m, ml) { return "Her ölçüm için yaklaşık <strong>" + m + " g</strong> yağ tartın" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + "."; },
       rec2: function (range, vlo, vhi, N) { return range + " asitlikte bu, " + N + " N titranttan yaklaşık <strong>" + vlo + "–" + vhi + " mL</strong> harcatır. Ters çevrilmiş formül: V = asitlik × m ÷ (N × 28,2)."; },
       ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
       stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
-      reset: "Yeni test başlat", resetArm: "Tüm denemeleri silmek için tekrar tıklayın",
+      reset: "Yeni test başlat", resetArm: "Tüm ölçümleri silmek için tekrar tıklayın",
       copied: "Sonuçlar kopyalandı.", copyManual: "Aşağıdaki metni elle kopyalayın.",
       cTitle: "Zeytinyağı serbest asitlik", cTitrant: function (N) { return "Titrant: " + N + " N NaOH · katsayı 28,2 (oleik asit)"; },
-      cRun: function (i, m, V, a) { return i + ". deneme: m = " + m + " g, V = " + V + " mL → " + a; },
-      cIncomplete: function (i) { return i + ". deneme: eksik"; },
-      cMean: function (a, n) { return "Ortalama asitlik: " + a + " oleik asit cinsinden (" + n + " deneme)"; },
+      cRun: function (i, m, V, a) { return i + ". ölçüm: m = " + m + " g, V = " + V + " mL → " + a; },
+      cIncomplete: function (i) { return i + ". ölçüm: eksik"; },
+      cMean: function (a, n) { return "Ortalama asitlik: " + a + " oleik asit cinsinden (" + n + " ölçüm)"; },
       cSpread: function (r, sd) { return "Fark: " + r + " puan · SS " + sd; },
       cAV: function (av) { return "Asit değeri: " + av + " mg KOH/g"; },
       cCat: function (g) { return "Asitliğe göre kategori: " + g; },
       fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · beklenen asitlik: " + range + "."; },
-      fsRun: function (n) { return n + ". deneme"; },
+      fsRun: function (n) { return n + ". ölçüm"; },
       fsMethod: "Tartım", fsBefore: "Kap, önce", fsAfter: "Kap, sonra", fsOr: "veya dara / hacimle",
       fsMass: "Yağ kütlesi m", fsFill: function (n) { return n + ". dolum"; }, fsStart: "başlangıç", fsEnd: "bitiş",
       fsBlank: "Kör (3. adım yoksa)", fsV: "Titrant V",
       fsAcid: function (N) { return "Asitlik = V × " + N + " × 28,2 ÷ m ="; },
-      fsMean: "Geçerli denemelerin ortalaması", fsSpread: "Fark (maks − min)",
-      fsSpreadOk: "Fark en fazla 0,05 puan ise (ortalamanın %10’u daha büyükse o) tekrar iyidir. Değilse bir deneme daha yapın.",
+      fsMean: "Geçerli ölçümlerin ortalaması", fsSpread: "Fark (maks − min)",
+      fsSpreadOk: "Fark en fazla 0,05 puan ise (ortalamanın %10’u daha büyükse o) tekrar iyidir. Değilse bir ölçüm daha yapın.",
       fsCat: "Kategori", fsAV: "Asit değeri ≈ 1,99 × asitlik =",
       fsLookupLede: function (N, rec) { return "Harcanan titrant hacmi V’yi sol sütunda, yağ kütlesi m’yi üst satırda bulun: kesişen hücre " + N + " N için % oleik asit cinsinden asitliktir. Kalın sütun: önerilen " + rec + " g. Renk: yeşil ≤ 0,80 (natürel sızma), turuncu ≤ 2,0 (natürel birinci), kırmızı daha yüksek. Diğer değerler için: asitlik = V × N × 28,2 ÷ m."; },
       fsVm: "V (mL) ↓ · m (g) →",
@@ -1160,18 +1180,17 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       lblOrigin: "Menşe", lblHarvest: "Hasat", lblPressed: "Sıkım", lblMill: "Yağhane", lblMalax: "Malaksör", lblStorage: "Saklama", lblCold: "soğuk sıkım",
       lblWait: function (r) { return "toplamadan " + r + " sonra"; },
       lblBy: "Test aracı: Erken Hasat · havan.github.io/erkenhasat",
-      lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " deneme ortalaması" : "") + " · ISO 660 titrasyonu. Ev testidir, akredite analiz değildir."; },
-      lblTestedShort: function (date) { return "Test: " + date + " · ISO 660 titrasyonu"; },
+      lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " ölçüm ortalaması" : "") + " · ISO 660 / AB yöntemi. Akredite laboratuvar analizi değildir."; },
+      lblTestedShort: function (date) { return "Test: " + date + " · ISO 660 / AB yöntemi"; },
       lblSheet: function (per, n, pages) { return "A4 sayfada " + per + " etiket · " + pages + " sayfaya " + n + " etiket basılacak."; },
-      repTitle: "Zeytinyağı asitlik test raporu", repDate: "Test tarihi", repDetails: "Yağ bilgileri", repRuns: "Denemeler", repMethod: "Yöntem", repNotes: "Notlar",
-      repMean: function (n) { return n === 1 ? "1 denemeden" : n + " denemenin ortalaması"; },
-      repCols: ["Deneme", "Tartım", "m (g)", "V (mL)", "Asitlik"],
+      repTitle: "Zeytinyağı asitlik test raporu", repDate: "Test tarihi", repDetails: "Yağ bilgileri", repRuns: "Ölçümler", repMethod: "Yöntem", repNotes: "Notlar",
+      repMean: function (n) { return n === 1 ? "1 ölçümden" : n + " ölçümün ortalaması"; },
+      repCols: ["Ölçüm", "Tartım", "m (g)", "V (mL)", "Asitlik"],
       repStats: function (r, sd, av) { return (r ? "Fark " + r + " · SS " + sd + " · " : "") + "Asit değeri " + av + " mg KOH/g"; },
-      repMethodTxt: function (N) { return "Serbest yağ asitleri, nötrleştirilmiş alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile titre edilmiştir (ISO 660 / AB 2568/91 soğuk yöntemi esas alınarak). Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
+      repMethodTxt: function (N) { return "Serbest yağ asitleri, nötrleştirilmiş alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile ISO 660 / AB 2568/91 soğuk yöntemiyle titre edilmiştir. Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
       repBy: "Testi yapan", repSig: "İmza",
-      repFoot: "Kendi kullanımınız için ev testidir, akredite analiz değildir.",
       dHarvestH: "Toplama süresi", dWait: "Toplamadan sıkıma", dCold: "Soğuk sıkım (≤ 27 °C)", dYield: "Verim", yes: "evet", no: "hayır",
-      noResultWarn: "Henüz tamamlanmış deneme yok: etiket ve raporda asitlik “—” olarak görünür."
+      noResultWarn: "Henüz tamamlanmış ölçüm yok: etiket ve raporda asitlik “—” olarak görünür."
     }
   };
   function t(k) { return T[lang][k]; }
@@ -1646,6 +1665,12 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     document.getElementById("printLabels").innerHTML = pages.map(function (p) { return '<div class="sheet">' + (p || "") + '</div>'; }).join("");
   }
 
+  // The report reuses the page's "About this result" note, in the current language.
+  function methodNoteHTML() {
+    var el = document.querySelector("#methodNote > ." + (document.documentElement.lang === "tr" ? "tr" : "en"));
+    return el ? '<div class="method-note">' + el.innerHTML.replace(/ id="[^"]*"/g, "") + '</div>' : "";
+  }
+
   function buildReport() {
     var modes = t("modes"), cols = t("repCols"), valid = [], runRows = "";
     state.runs.forEach(function (run, idx) {
@@ -1680,8 +1705,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       (notes ? '<section><h2>' + t("repNotes") + '</h2><p class="rep-notes">' + esc(notes) + '</p></section>' : '') +
       '<section><h2>' + t("repRuns") + '</h2><table><thead><tr>' + cols.map(function (c, j) { return '<th' + (j > 1 ? ' class="num"' : '') + '>' + c + '</th>'; }).join("") + '</tr></thead><tbody>' + runRows + '</tbody></table></section>' +
       '<section><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
+      methodNoteHTML() +
       '<div class="rep-sign"><div>' + t("repBy") + '</div><div>' + t("repSig") + '</div></div>' +
-      '<div class="rep-foot">' + t("repFoot") + ' · Erken Hasat · havan.github.io/erkenhasat</div></div>';
+      '<div class="rep-foot">Erken Hasat · havan.github.io/erkenhasat</div></div>';
   }
 
   function renderLabelControls() {
