@@ -1,3 +1,5 @@
+<p><img src="site/assets/logo.svg" alt="Erken Hasat" height="56"></p>
+
 # Erken Hasat
 
 Small, browser-only tools for testing and producing olive oil, published at
@@ -8,7 +10,7 @@ works without a server, and has a printable field sheet for places with no inter
 
 | Tool | Path | What it does |
 | --- | --- | --- |
-| Acidity titration | [`site/acidity/`](site/acidity/) | Free acidity (% oleic acid) by NaOH titration (ISO 660 / EU 2568/91), with a step-by-step guide, live calculation and a PDF field sheet. |
+| Acidity titration | [`site/acidity/`](site/acidity/) | Free acidity (% oleic acid) by NaOH titration (ISO 660 / EU 2568/91), with a step-by-step guide, live calculation, a PDF field sheet, optional oil details (variety, harvest and pressing, mill, malaxation, storage), an A4 test report and bottle labels. |
 
 ## Layout
 
@@ -34,6 +36,16 @@ tick boxes, record boxes for the runs, a lookup table and the grading table).
 - **Ready-made:** the deploy workflow also builds `field-sheet-en.pdf` and `field-sheet-tr.pdf`
   next to each tool with default settings, linked from the page.
 
+## Report and bottle labels
+
+After a test, the acidity tool prints either a one-page A4 report (result, oil details, every
+run, method and a signature line) or bottle labels. Labels come in two sizes laid out for common
+A4 sticker sheets: 99.1 × 67.7 mm, 8 per sheet (Avery L7165 or compatible), and 63.5 × 38.1 mm,
+21 per sheet (L7160). You can set the number of labels and the start position for part-used
+sheets, and turn on cut lines for plain paper. Print at 100% scale.
+
+Ctrl+P on its own always prints the field sheet; the report and labels have their own buttons.
+
 ## Local development
 
 ```sh
@@ -51,3 +63,9 @@ scripts/build-pdfs.sh                 # optional: build the PDFs locally (needs 
 3. If it has a field sheet, add `<tool>` to `TOOLS` in `scripts/build-pdfs.sh`.
 
 Push to `main` and the workflow publishes it.
+
+## License
+
+Erken Hasat is free to use, change and share for **non-commercial** purposes under the
+[PolyForm Noncommercial License 1.0.0](LICENSE.md). Commercial use needs a separate license
+from the author.

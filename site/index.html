@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Erken Hasat</title>
 <meta name="description" content="Small, offline-friendly tools for testing and producing olive oil.">
+<meta name="theme-color" content="#56631b">
+<meta property="og:site_name" content="Erken Hasat">
+<meta property="og:title" content="Erken Hasat · olive oil tools">
+<meta property="og:description" content="Small, offline-friendly tools for testing and producing olive oil.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +51,8 @@ a { color: var(--accent); }
 header { display: grid; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 22px; }
 .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
-h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 44px; height: 44px; color: var(--accent); flex: none; }
 header p { color: var(--muted); max-width: 64ch; }
 .lang-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .lang-switch button { font: inherit; cursor: pointer; border: 0; background: var(--surface); color: var(--muted); padding: 6px 12px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500; }
@@ -76,7 +81,7 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
         <button type="button" data-lang="tr" aria-pressed="false">TR</button>
       </div>
     </div>
-    <h1>Erken Hasat</h1>
+    <h1><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg>Erken Hasat</h1>
     <p class="en">Small tools for checking and making olive oil at home and in the field. Each one runs entirely in your browser, and each has a printable sheet for when there's no signal.</p>
     <p class="tr">Zeytinyağını evde ve sahada kontrol etmek ve üretmek için küçük araçlar. Hepsi tamamen tarayıcınızda çalışır; çekmeyen yerler için her birinin yazdırılabilir bir formu vardır.</p>
   </header>
@@ -86,8 +91,8 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
       <a class="tool" href="acidity/">
         <span class="tag"><span class="en">Lab test · ISO 660</span><span class="tr">Laboratuvar testi · ISO 660</span></span>
         <h2><span class="en">Acidity titration</span><span class="tr">Asitlik titrasyonu</span></h2>
-        <p class="en">Measure free acidity (% oleic acid) with NaOH and phenolphthalein. Step-by-step guide, live calculation and a PDF field sheet.</p>
-        <p class="tr">NaOH ve fenolftalein ile serbest asitliği (% oleik asit) ölçün. Adım adım rehber, anlık hesaplama ve PDF saha formu.</p>
+        <p class="en">Measure free acidity (% oleic acid) with NaOH and phenolphthalein. Step-by-step guide, live calculation, a PDF field sheet, an A4 test report and bottle labels.</p>
+        <p class="tr">NaOH ve fenolftalein ile serbest asitliği (% oleik asit) ölçün. Adım adım rehber, anlık hesaplama, PDF saha formu, A4 test raporu ve şişe etiketleri.</p>
       </a>
     </li>
     <li>
@@ -101,8 +106,8 @@ footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--li
   </ul>
 
   <footer>
-    <span class="en">Results from these tools are estimates for your own use, not certified analyses.</span>
-    <span class="tr">Bu araçların sonuçları kendi kullanımınız için tahmindir, akredite analiz değildir.</span>
+    <p><span class="en">Results from these tools are estimates for your own use, not certified analyses.</span><span class="tr">Bu araçların sonuçları kendi kullanımınız için tahmindir, akredite analiz değildir.</span></p>
+    <p style="margin-top:6px">© 2026 Erken Hasat · <span class="en">free for non-commercial use under the</span><span class="tr">ticari olmayan kullanım için ücretsiz,</span> <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a><span class="tr"> lisansıyla</span> · <a href="https://github.com/havan/erkenhasat">GitHub</a></p>
   </footer>
 </div>
 <script>

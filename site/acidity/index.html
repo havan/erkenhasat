@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Olive Oil Acidity Titration</title>
+<title>Acidity Titration · Erken Hasat</title>
+<meta name="theme-color" content="#56631b">
+<meta property="og:site_name" content="Erken Hasat">
+<meta property="og:title" content="Olive oil acidity titration · Erken Hasat">
+<meta property="og:description" content="Measure olive oil free acidity by titration: guide, live calculation, PDF field sheet, report and bottle labels.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -119,7 +123,7 @@ aside.panel { position: sticky; top: 16px; }
   aside.panel { position: static; order: -1; }
 }
 
-section.block { display: grid; gap: 14px; }
+section.block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .section-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .section-head .tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
 .lede { color: var(--muted); max-width: 68ch; }
@@ -135,14 +139,14 @@ section.block { display: grid; gap: 14px; }
 .field { display: grid; gap: 4px; align-content: start; }
 .field label { font-size: 0.86rem; font-weight: 500; }
 .field .hint { font-size: 0.8rem; color: var(--muted); }
-input[type="text"], select {
+input[type="text"], input[type="date"], select, textarea {
   font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums;
   color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 7px;
   padding: 8px 10px; width: 100%; min-width: 0;
 }
 select { font-family: var(--font-body); }
 input.wide-text { font-family: var(--font-body); }
-input[type="text"]:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .unit-input { display: flex; align-items: stretch; }
 .unit-input input { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .unit-input span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line); border-left: 0;
@@ -192,8 +196,8 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: fit-content; max-width: 100%; }
 .seg label { position: relative; cursor: pointer; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg span { display: block; padding: 7px 12px; font-size: 0.88rem; border-right: 1px solid var(--line); background: var(--paper); }
-.seg label:last-child span { border-right: 0; }
+.seg label > span { display: block; padding: 7px 12px; font-size: 0.88rem; border-right: 1px solid var(--line); background: var(--paper); }
+.seg label:last-child > span { border-right: 0; }
 .seg input:checked + span { background: var(--accent); color: var(--paper); font-weight: 500; }
 
 .fill-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 90px 32px; gap: 10px; align-items: end; }
@@ -220,7 +224,7 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .add-run { display: flex; gap: 10px; flex-wrap: wrap; }
 
 .derive { display: grid; gap: 10px; }
-.derive .d-step { display: grid; grid-template-columns: 2.2em 1fr; gap: 8px; align-items: start; }
+.derive .d-step { display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 8px; align-items: start; }
 .derive .d-step .i { font-family: var(--font-mono); color: var(--accent); font-weight: 600; }
 .derive .d-step .eq { font-family: var(--font-mono); font-size: 0.9rem; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; margin-top: 4px; overflow-x: auto; white-space: nowrap; }
 .big-formula { font-family: var(--font-mono); font-size: 1.15rem; text-align: center; padding: 16px; background: var(--accent-soft); border-radius: 8px; overflow-x: auto; white-space: nowrap; }
@@ -278,7 +282,6 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
 .offline .links { font-size: 0.85rem; }
 .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .print-only { display: none; }
-.home-link { font-size: 0.86rem; }
 
 @media print {
   /* Always print on a light palette, whatever the screen theme. Placed last so it wins over the dark rules. */
@@ -294,7 +297,7 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
   .wrap { max-width: none; padding: 0; }
   .print-only { display: block; }
   .screen-only, .lang-switch, .top-actions, #exampleBanner, aside.panel,
-  #setupSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
+  #setupSection, #infoSection, #reportSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
   .layout { display: block; margin-top: 0 !important; }
   .main { display: block; }
   .main > * { margin-bottom: 14px; }
@@ -329,17 +332,17 @@ footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line);
 .fs-meta .ln i { flex: 1; border-bottom: 1px solid #000; min-height: 1.2em; font-style: normal; font-family: var(--font-mono); }
 .fs-setup { display: grid; gap: 4px; background: var(--accent-soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 10pt; }
 .fs-setup strong { font-family: var(--font-mono); }
-.fs-runs { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.fs-run { border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 12px 10px; display: grid; gap: 7px; break-inside: avoid; font-size: 10pt; }
+.fs-runs { display: grid; grid-template-columns: 1fr; gap: 7px; }
+.fs-run { border: 1.5px solid var(--ink); border-radius: 6px; padding: 6px 12px 8px; display: grid; gap: 5px; break-inside: avoid; font-size: 9.5pt; }
 .fs-run h3 { font-family: var(--font-mono); font-size: 11pt; }
-.fs-row { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
-.fs-row .lbl { color: var(--muted); min-width: 7.5em; }
+.fs-row { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: flex-end; }
+.fs-row .fs-lbl { color: var(--muted); min-width: 7.5em; }
 .fs-box { display: inline-block; width: 11px; height: 11px; border: 1.3px solid #000; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
-.fs-blank { display: inline-block; min-width: 4.2em; border-bottom: 1px solid #000; height: 1.25em; vertical-align: bottom; }
+.fs-blank { display: inline-block; min-width: 4.2em; border-bottom: 1px solid #000; height: 6.5mm; }
 .fs-blank.w { min-width: 6em; }
 .fs-unit { font-family: var(--font-mono); font-size: 9pt; color: var(--muted); }
 .fs-res { border-top: 1px dashed var(--line); padding-top: 6px; font-family: var(--font-mono); }
-.fs-summary { border: 1.5px solid var(--pink); border-radius: 6px; padding: 8px 12px; display: grid; gap: 7px; font-size: 10pt; break-inside: avoid; }
+.fs-summary { border: 1.5px solid var(--pink); border-radius: 6px; padding: 6px 12px; display: grid; gap: 5px; font-size: 9.5pt; break-inside: avoid; }
 table.fs-lookup { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 9pt; font-variant-numeric: tabular-nums; }
 table.fs-lookup th, table.fs-lookup td { border: 1px solid var(--line); padding: 2px 6px; text-align: right; }
 table.fs-lookup thead th { background: var(--accent-soft); }
@@ -349,15 +352,110 @@ table.fs-lookup td.v { color: var(--warn); }
 table.fs-lookup td.l { color: var(--bad); }
 table.fs-lookup td.rec { font-weight: 600; }
 .fs-small { font-size: 9pt; color: var(--muted); }
+
+/* ---------- brand ---------- */
+.brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; }
+.brand-mark { width: 26px; height: 26px; color: var(--accent); flex: none; }
+.brand small { font-family: var(--font-mono); font-weight: 400; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.brand:hover .brand-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.brand:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- oil details ---------- */
+textarea { font-family: var(--font-body); resize: vertical; min-height: 64px; }
+details.info-card > summary { cursor: pointer; font-weight: 500; list-style: revert; }
+details.info-card[open] > summary { margin-bottom: 14px; }
+.info-count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-left: 6px; }
+.subhead { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-top: 6px; }
+.field.span2 { grid-column: 1 / -1; }
+.note.info { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+#infoNotes { margin-top: 12px; }
+
+/* ---------- report & labels ---------- */
+.field .flabel { font-size: 0.86rem; font-weight: 500; }
+.check-inline { display: flex; gap: 8px; align-items: center; font-size: 0.9rem; cursor: pointer; padding: 8px 0; }
+.check-inline input { width: 18px; height: 18px; accent-color: var(--accent); }
+.label-preview { overflow-x: auto; background: var(--paper); border: 1px dashed var(--line); border-radius: 8px; padding: 16px; }
+.label-preview > div { width: fit-content; margin: 0 auto; }
+.label-preview { min-width: 0; }
+section.block > .card { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 480px) { .label-preview { padding: 10px; } .label-preview > div { zoom: 0.76; } }
+.label-preview .lbl { box-shadow: 0 1px 2px rgba(0,0,0,.18), 0 4px 14px rgba(0,0,0,.10); }
+.print-hint { font-size: 0.85rem; color: var(--muted); }
+.panel-links { font-size: 0.86rem; }
+
+/* A bottle label. Physical object, so always dark ink on white, sized in mm. */
+.lbl { box-sizing: border-box; background: #fff; color: #1d2118; font-family: var(--font-body); overflow: hidden;
+  display: flex; flex-direction: column; gap: 1.3mm; padding: 3.2mm 3.8mm 2.6mm; border-radius: 2.5mm; line-height: 1.2; }
+.lbl.large { width: 99.1mm; height: 67.7mm; }
+.lbl.small { width: 63.5mm; height: 38.1mm; padding: 2.3mm 2.8mm 1.8mm; gap: 0.8mm; border-radius: 2mm; }
+.lbl-head { display: flex; justify-content: space-between; gap: 2mm; align-items: flex-start; }
+.lbl-name { font-weight: 700; font-size: 11.5pt; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.lbl.small .lbl-name { font-size: 7.6pt; -webkit-line-clamp: 1; }
+.lbl-sub { font-family: var(--font-mono); font-size: 7.2pt; color: #56631b; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.4mm; }
+.lbl.small .lbl-sub { font-size: 5.6pt; }
+.lbl-brand { display: flex; align-items: center; gap: 1mm; font-size: 6pt; font-weight: 700; color: #56631b; white-space: nowrap; }
+.lbl-brand svg { width: 3.6mm; height: 3.6mm; color: #56631b; }
+.lbl-res { display: flex; align-items: center; gap: 2.6mm; border-top: 0.3mm solid #56631b; border-bottom: 0.3mm solid #56631b; padding: 1.3mm 0; }
+.lbl.small .lbl-res { padding: 0.7mm 0; gap: 2mm; }
+.lbl-acid { font-family: var(--font-mono); font-weight: 600; font-size: 24pt; color: #a3164a; line-height: 1; white-space: nowrap; }
+.lbl-acid small { font-size: 0.55em; margin: 0 0.3mm; }
+.lbl.small .lbl-acid { font-size: 13pt; }
+.lbl-acid-k { font-size: 7.4pt; color: #4a5142; line-height: 1.3; }
+.lbl.small .lbl-acid-k { font-size: 5.6pt; }
+.lbl-acid-k b { font-weight: 700; }
+.lbl .ev { color: #1f6b23; } .lbl .v { color: #8a5000; } .lbl .l { color: #9c1c12; }
+.lbl-rows { display: grid; grid-template-columns: auto 1fr; gap: 0.8mm 2.4mm; font-size: 7.8pt; margin: 0; }
+.lbl.small .lbl-rows { font-size: 5.8pt; gap: 0.2mm 1.6mm; }
+.lbl-rows dt { color: #5d6555; }
+.lbl-rows dd { margin: 0; font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lbl-foot { margin-top: auto; font-size: 6.2pt; color: #5d6555; line-height: 1.25; }
+.lbl.small .lbl-foot { font-size: 5pt; }
+
+.print-mode { display: none; }
+
+/* One-page A4 test report */
+.rep { display: grid; gap: 5mm; font-size: 10pt; line-height: 1.4; }
+.rep-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 6mm; border-bottom: 0.5mm solid var(--accent); padding-bottom: 3mm; }
+.rep-head .brand { font-size: 11pt; margin-bottom: 2mm; }
+.rep-head .brand-mark { width: 7mm; height: 7mm; }
+.rep-eyebrow { font-family: var(--font-mono); font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.rep h1 { font-size: 16pt; margin-top: 1mm; }
+.rep-name { font-size: 12pt; font-weight: 600; margin-top: 1mm; }
+.rep-date { text-align: right; font-size: 8.5pt; color: var(--muted); white-space: nowrap; }
+.rep-date b { display: block; color: var(--ink); font-size: 11pt; }
+.rep-result { display: flex; gap: 8mm; align-items: center; border: 0.4mm solid var(--pink); border-radius: 2mm; padding: 4mm 5mm; break-inside: avoid; }
+.rep-big { font-family: var(--font-mono); font-size: 28pt; font-weight: 600; color: var(--pink); line-height: 1; white-space: nowrap; }
+.rep-big small { display: block; font-family: var(--font-body); font-size: 8.5pt; font-weight: 400; color: var(--muted); margin-top: 2mm; }
+.rep-stats { display: grid; gap: 1.5mm; font-size: 9pt; }
+.rep-stats .mono { color: var(--muted); }
+.rep h2 { font-size: 11pt; border-bottom: 0.2mm solid var(--line); padding-bottom: 1mm; margin-bottom: 2mm; }
+.rep table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+.rep td, .rep th { padding: 1.2mm 2mm; border-bottom: 0.2mm solid var(--line); text-align: left; vertical-align: top; }
+.rep th { font-size: 8pt; color: var(--muted); font-weight: 500; }
+.rep td.k { color: var(--muted); width: 19%; }
+.rep td.v { width: 31%; }
+.rep .num { font-family: var(--font-mono); text-align: right; white-space: nowrap; }
+.rep-notes { white-space: pre-wrap; }
+.rep-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; margin-top: 8mm; }
+.rep-sign div { border-top: 0.3mm solid #000; padding-top: 1mm; font-size: 8pt; color: var(--muted); }
+.rep-foot { font-size: 7.5pt; color: var(--muted); }
+
+@media print {
+  html[data-print] .wrap { display: none !important; }
+  html[data-print="labels"] #printLabels, html[data-print="report"] #printReport { display: block; }
+  #printLabels .sheet { position: relative; width: 210mm; height: 296mm; overflow: hidden; break-after: page; }
+  #printLabels .sheet:last-child { break-after: auto; }
+  .lbl-slot { position: absolute; }
+  .lbl-slot.cut .lbl { outline: 0.2mm dashed #9aa08c; }
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div class="top-row">
-      <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2568/91 method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2568/91 yöntemi</span></span>
+      <a class="brand" href="../" title="Erken Hasat · all tools / tüm araçlar"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-name">Erken Hasat</span></a>
       <div class="top-actions">
-        <a href="../" class="home-link"><span class="en">All tools</span><span class="tr">Tüm araçlar</span></a>
         <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet (PDF)</span><span class="tr">Saha formu (PDF)</span></button>
         <div class="lang-switch" role="group" aria-label="Language / Dil">
           <button type="button" data-lang="en" aria-pressed="false">EN</button>
@@ -365,14 +463,15 @@ table.fs-lookup td.rec { font-weight: 600; }
         </div>
       </div>
     </div>
+    <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2568/91 method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2568/91 yöntemi</span></span>
     <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
     <p class="en">Work through the steps in order. Enter the numbers you read on the scale and the pipette in the run cards, and the page calculates the acidity as % oleic acid, showing every formula with your values filled in. Your entries stay in this browser if the page reloads.</p>
     <p class="tr">Adımları sırayla uygulayın. Terazide ve pipette okuduğunuz değerleri deneme kartlarına girin; sayfa asitliği % oleik asit olarak hesaplar ve her formülü sizin değerlerinizle gösterir. Sayfa yenilense de girdileriniz bu tarayıcıda kalır.</p>
   </header>
 
   <div class="banner" id="exampleBanner" hidden>
-    <p class="en"><b>Example values loaded.</b> The two runs below are filled with made-up numbers so you can see how the calculation works. Clear them before your real test.</p>
-    <p class="tr"><b>Örnek değerler yüklü.</b> Aşağıdaki iki deneme, hesaplamanın nasıl çalıştığını görmeniz için uydurma sayılarla doldurulmuştur. Gerçek testten önce temizleyin.</p>
+    <p class="en"><b>Example values loaded.</b> The runs and the oil details are filled with made-up values so you can see how the calculation, report and labels work. Clear them before your real test.</p>
+    <p class="tr"><b>Örnek değerler yüklü.</b> Denemeler ve yağ bilgileri, hesaplamanın, raporun ve etiketlerin nasıl çalıştığını görmeniz için uydurma değerlerle doldurulmuştur. Gerçek testten önce temizleyin.</p>
     <button type="button" id="clearExample"><span class="en">Clear example and start my test</span><span class="tr">Örneği temizle ve testime başla</span></button>
   </div>
 
@@ -387,6 +486,7 @@ table.fs-lookup td.rec { font-weight: 600; }
           <div class="ln"><b><span class="en">Date</span><span class="tr">Tarih</span></b><i></i></div>
           <div class="ln"><b><span class="en">Operator</span><span class="tr">Uygulayan</span></b><i></i></div>
         </div>
+        <div class="fs-meta" id="fsMeta2"></div>
         <div class="fs-setup" id="fsSetup"></div>
       </section>
 
@@ -397,7 +497,12 @@ table.fs-lookup td.rec { font-weight: 600; }
             <div class="field">
               <label for="sampleName"><span class="en">Sample name</span><span class="tr">Numune adı</span></label>
               <input type="text" class="wide-text" id="sampleName">
-              <span class="hint"><span class="en">Used in the copied results.</span><span class="tr">Kopyalanan sonuçlarda kullanılır.</span></span>
+              <span class="hint"><span class="en">Used in the copied results, report and labels.</span><span class="tr">Kopyalanan sonuçlarda, raporda ve etiketlerde kullanılır.</span></span>
+            </div>
+            <div class="field">
+              <label for="testDate"><span class="en">Test date</span><span class="tr">Test tarihi</span></label>
+              <input type="date" id="testDate">
+              <span class="hint"><span class="en">Shown on the report and labels.</span><span class="tr">Rapor ve etiketlerde görünür.</span></span>
             </div>
             <div class="field">
               <label for="normality"><span class="en">Titrant normality, N</span><span class="tr">Titrant normalitesi, N</span></label>
@@ -421,6 +526,17 @@ table.fs-lookup td.rec { font-weight: 600; }
           </div>
           <div class="recommend" id="recommend"></div>
         </div>
+      </section>
+
+      <!-- OIL DETAILS -->
+      <section class="block" id="infoSection" aria-labelledby="h-info">
+        <div class="section-head"><h2 id="h-info"><span class="en">About this oil</span><span class="tr">Bu yağ hakkında</span></h2><span class="tag"><span class="en">optional · shown on the report and labels</span><span class="tr">isteğe bağlı · rapor ve etiketlerde görünür</span></span></div>
+        <details class="card info-card" id="infoDetails">
+          <summary><span class="en">Variety, origin, harvest and pressing, mill, malaxation, storage</span><span class="tr">Çeşit, menşe, hasat ve sıkım, yağhane, malaksör, saklama</span><span class="info-count" id="infoCount"></span></summary>
+          <div class="fields" id="infoFields"></div>
+          <div class="notes" id="infoNotes"></div>
+        </details>
+        <datalist id="varietyList"></datalist>
       </section>
 
       <!-- PROCEDURE -->
@@ -640,6 +756,47 @@ table.fs-lookup td.rec { font-weight: 600; }
         </div>
       </section>
 
+      <!-- REPORT & LABELS -->
+      <section class="block" id="reportSection" aria-labelledby="h-report">
+        <div class="section-head"><h2 id="h-report"><span class="en">Report and bottle labels</span><span class="tr">Rapor ve şişe etiketleri</span></h2><span class="tag"><span class="en">print after the test</span><span class="tr">testten sonra yazdırın</span></span></div>
+        <p class="lede en">Print a one-page A4 report to keep with the batch, or labels to stick on the bottles. Both use the mean result, the test date and whatever you filled in under <a href="#h-info">About this oil</a>. Empty details are left out.</p>
+        <p class="lede tr">Partiyle birlikte saklamak için tek sayfalık A4 rapor ya da şişelere yapıştırmak için etiket yazdırın. İkisi de ortalama sonucu, test tarihini ve <a href="#h-info">Bu yağ hakkında</a> bölümüne girdiklerinizi kullanır. Boş bilgiler gösterilmez.</p>
+        <div class="card" style="display:grid; gap:16px">
+          <div class="fields">
+            <div class="field">
+              <span class="flabel"><span class="en">Label size</span><span class="tr">Etiket boyutu</span></span>
+              <div class="seg" role="radiogroup" aria-label="Label size / Etiket boyutu">
+                <label><input type="radio" name="lblSize" value="large"><span><span class="en">Large · 8 per sheet</span><span class="tr">Büyük · sayfada 8</span></span></label>
+                <label><input type="radio" name="lblSize" value="small"><span><span class="en">Small · 21 per sheet</span><span class="tr">Küçük · sayfada 21</span></span></label>
+              </div>
+              <span class="hint"><span class="en">99.1 × 67.7 mm or 63.5 × 38.1 mm.</span><span class="tr">99,1 × 67,7 mm veya 63,5 × 38,1 mm.</span></span>
+            </div>
+            <div class="field">
+              <label for="lblCopies"><span class="en">Number of labels</span><span class="tr">Etiket sayısı</span></label>
+              <input type="text" inputmode="numeric" id="lblCopies">
+              <span class="hint"><span class="en">Empty fills the rest of the sheet.</span><span class="tr">Boş bırakılırsa sayfanın kalanı doldurulur.</span></span>
+            </div>
+            <div class="field">
+              <label for="lblStart"><span class="en">Start at position</span><span class="tr">Başlangıç konumu</span></label>
+              <input type="text" inputmode="numeric" id="lblStart">
+              <span class="hint"><span class="en">For a partly used sheet. 1 is top left, counting across.</span><span class="tr">Kısmen kullanılmış sayfa için. 1 sol üsttür, soldan sağa sayılır.</span></span>
+            </div>
+            <div class="field">
+              <label class="check-inline"><input type="checkbox" id="lblCut"> <span class="en">Print cut lines</span><span class="tr">Kesim çizgisi bas</span></label>
+              <span class="hint"><span class="en">For plain paper. Leave off on sticker sheets.</span><span class="tr">Düz kâğıt için. Etiket kâğıdında kapalı bırakın.</span></span>
+            </div>
+          </div>
+          <div class="label-preview" aria-label="Label preview / Etiket önizleme"><div id="labelPreview"></div></div>
+          <div class="panel-actions">
+            <button type="button" data-act="print-labels"><span class="en">Print labels</span><span class="tr">Etiketleri yazdır</span></button>
+            <button type="button" class="ghost" data-act="print-report"><span class="en">Print report (A4)</span><span class="tr">Raporu yazdır (A4)</span></button>
+          </div>
+          <p class="print-hint" id="labelInfo"></p>
+          <p class="print-hint en">Print at 100% scale ("Actual size", not "Fit to page") so the labels line up with A4 sticker sheets such as Avery L7165 (8 per sheet) or L7160 (21 per sheet), or compatible ones. To keep a file instead, choose "Save as PDF" in the print dialog.</p>
+          <p class="print-hint tr">Etiketlerin A4 etiket kâğıtlarıyla (ör. Avery L7165, sayfada 8; L7160, sayfada 21 veya muadilleri) hizalanması için %100 ölçekte yazdırın ("Gerçek boyut", "Sayfaya sığdır" değil). Dosya olarak saklamak için yazdırma penceresinde "PDF olarak kaydet"i seçin.</p>
+        </div>
+      </section>
+
       <!-- DERIVATION -->
       <section class="block" id="mathSection" aria-labelledby="h-math">
         <div class="section-head"><h2 id="h-math"><span class="en">How the formula works</span><span class="tr">Formül nasıl çalışır</span></h2><span class="tag" id="deriveSource"></span></div>
@@ -679,8 +836,8 @@ table.fs-lookup td.rec { font-weight: 600; }
       </section>
 
       <footer>
-        <span class="en">Method based on ISO 660 and EU Regulation 2568/91 (free fatty acids, cold method), adapted for home use. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10. Results are an estimate for your own use, not a certified analysis.</span>
-        <span class="tr">Yöntem ISO 660 ve AB 2568/91 (serbest yağ asitleri, soğuk yöntem) esas alınarak ev kullanımına uyarlanmıştır. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur. Sonuçlar kendi kullanımınız için bir tahmindir, akredite bir analiz değildir.</span>
+        <span class="en">Method based on ISO 660 and EU Regulation 2568/91 (free fatty acids, cold method), adapted for home use. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10. Results are an estimate for your own use, not a certified analysis.<br>© 2026 Erken Hasat · free for non-commercial use under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> license · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
+        <span class="tr">Yöntem ISO 660 ve AB 2568/91 (serbest yağ asitleri, soğuk yöntem) esas alınarak ev kullanımına uyarlanmıştır. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur. Sonuçlar kendi kullanımınız için bir tahmindir, akredite bir analiz değildir.<br>© 2026 Erken Hasat · <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> lisansıyla ticari olmayan kullanım için ücretsiz · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
       </footer>
     </div>
 
@@ -709,6 +866,7 @@ table.fs-lookup td.rec { font-weight: 600; }
           <button type="button" id="copyBtn"><span class="en">Copy results</span><span class="tr">Sonuçları kopyala</span></button>
           <button type="button" class="ghost" id="resetBtn"></button>
         </div>
+        <a class="panel-links" href="#h-report"><span class="en">Print report or bottle labels ↓</span><span class="tr">Rapor veya şişe etiketi yazdır ↓</span></a>
         <div class="copy-msg" id="copyMsg" aria-live="polite"></div>
         <textarea class="copy-fallback" id="copyFallback" readonly hidden aria-label="Results"></textarea>
         <div class="offline">
@@ -722,6 +880,10 @@ table.fs-lookup td.rec { font-weight: 600; }
     </aside>
   </div>
 </div>
+
+<div class="print-mode" id="printLabels"></div>
+<div class="print-mode" id="printReport"></div>
+<style id="pageRule"></style>
 
 <script>
 (function () {
@@ -816,7 +978,61 @@ table.fs-lookup td.rec { font-weight: 600; }
       fsSpreadOk: "Good repeat if the spread is at most 0.05 points, or 10% of the mean when that is larger. Otherwise do another run.",
       fsCat: "Category", fsAV: "Acid value ≈ 1.99 × acidity =",
       fsLookupLede: function (N, rec) { return "Find the titrant volume V in the left column and the oil mass m along the top: the cell is the acidity in % oleic acid at " + N + " N. Bold column: the recommended " + rec + " g. Colour: green ≤ 0.80 (extra virgin), amber ≤ 2.0 (virgin), red above. For other values use acidity = V × N × 28.2 ÷ m."; },
-      fsVm: "V (mL) ↓ · m (g) →"
+      fsVm: "V (mL) ↓ · m (g) →",
+      fsVariety: "Variety", fsOrigin: "Origin", fsHarvest: "Harvested", fsPressed: "Pressed", fsMill: "Mill", fsMalax: "Malaxation",
+      min: "min",
+      info: {
+        origin: ["Origin", "Village, region or grove."],
+        variety: ["Olive variety", "Pick from the list or type your own."],
+        ripeness: ["Ripeness at harvest", ""],
+        harvestDate: ["Harvest date", ""],
+        harvestMethod: ["Harvest method", ""],
+        transport: ["Olives carried in", "Ventilated crates keep olives cooler and less bruised than sacks."],
+        pressDate: ["Pressing date", ""],
+        mill: ["Olive mill (press house)", "Name and town."],
+        extraction: ["Extraction system", ""],
+        malaxTime: ["Malaxation time", "Time the paste spends in the malaxer. Usually 30–45 min."],
+        malaxTemp: ["Malaxation temperature", "27 °C or less counts as cold extraction."],
+        olivesKg: ["Olives pressed", ""],
+        oilL: ["Oil obtained", ""],
+        filtration: ["Filtration", ""],
+        container: ["Stored in", ""],
+        notes: ["Notes", "Anything else: taste, colour, irrigation, organic, …"]
+      },
+      groups: { olives: "Olives", pressing: "Pressing", storage: "Oil and storage" },
+      opts: {
+        ripeness: { early: "Early harvest (green)", turning: "Turning (green-purple)", ripe: "Ripe (black)", mixed: "Mixed" },
+        harvestMethod: { hand: "Hand-picked", comb: "Hand rakes / combs", shaker: "Mechanical shaker", pole: "Beaten with poles", ground: "Collected from the ground", mixed: "Mixed" },
+        transport: { crates: "Ventilated crates", sacks: "Sacks", bulk: "Bulk (trailer / pile)" },
+        extraction: { two: "Continuous, 2-phase", three: "Continuous, 3-phase", press: "Traditional press" },
+        filtration: { unfiltered: "Unfiltered", settled: "Settled and racked", filtered: "Filtered" },
+        container: { darkGlass: "Dark glass bottle", clearGlass: "Clear glass bottle", steel: "Stainless steel tank", tin: "Tin can", plasticFood: "Food-grade plastic jerrycan", pet: "Reused PET bottles", clay: "Clay jar", other: "Other" }
+      },
+      infoCount: function (n) { return n ? n + " filled" : ""; },
+      iDaysBad: "The pressing date is before the harvest date.",
+      iDaysOk: function (d) { return (d === 0 ? "Pressed on the day of harvest." : "Pressed the day after harvest.") + " Quick pressing keeps acidity low."; },
+      iDaysLate: function (d) { return "The olives waited " + d + " days before pressing. Ideally press within 24 hours: waiting, especially in sacks or piles, raises acidity."; },
+      iCold: "Malaxed at 27 °C or less: counts as cold extraction.",
+      iWarm: "Malaxed above 27 °C: more oil, but fewer polyphenols and less aroma, and it can't be called cold extraction.",
+      iLong: "Malaxation over 60 minutes increases oxidation and lowers polyphenols.",
+      iYield: function (p, k) { return "Yield ≈ " + p + "% by weight, about " + k + " kg of olives per litre of oil."; },
+      iPet: "Reused PET lets in oxygen and light and can pass on flavours. For storage, prefer stainless steel, tin or dark glass, kept cool and dark.",
+      iClear: "Clear glass lets light in, which spoils oil. Keep the bottles in a dark cupboard.",
+      lblOil: "Olive oil", lblAcidK: "free acidity, as oleic acid", lblNoResult: "no result yet",
+      lblOrigin: "Origin", lblHarvest: "Harvest", lblPressed: "Pressed", lblMill: "Mill", lblMalax: "Malaxation", lblStorage: "Storage", lblCold: "cold extraction",
+      lblDays: function (d) { return d === 0 ? "same day" : d + (d === 1 ? " day" : " days") + " after harvest"; },
+      lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + " · ISO 660 titration. Home test, not a certified analysis."; },
+      lblTestedShort: function (date) { return "Tested " + date + " · ISO 660 titration"; },
+      lblSheet: function (per, n, pages) { return per + " labels per A4 sheet · printing " + n + " on " + pages + (pages === 1 ? " sheet" : " sheets") + "."; },
+      repTitle: "Olive oil acidity test report", repDate: "Test date", repDetails: "Oil details", repRuns: "Runs", repMethod: "Method", repNotes: "Notes",
+      repMean: function (n) { return n === 1 ? "From 1 run" : "Mean of " + n + " runs"; },
+      repCols: ["Run", "Weighing", "m (g)", "V (mL)", "Acidity"],
+      repStats: function (r, sd, av) { return (r ? "Spread " + r + " · SD " + sd + " · " : "") + "Acid value " + av + " mg KOH/g"; },
+      repMethodTxt: function (N) { return "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized alcohol-ether solvent (cold method after ISO 660 / EU Regulation 2568/91). Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
+      repBy: "Tested by", repSig: "Signature",
+      repFoot: "Home test for your own use, not a certified analysis.",
+      dDays: "Harvest to pressing", dCold: "Cold extraction (≤ 27 °C)", dYield: "Yield", yes: "yes", no: "no",
+      noResultWarn: "No completed run yet: the labels and report will show “—” for acidity."
     },
     tr: {
       optLow: "%1’in altında (natürel sızma / natürel birinci)",
@@ -884,7 +1100,61 @@ table.fs-lookup td.rec { font-weight: 600; }
       fsSpreadOk: "Fark en fazla 0,05 puan ise (ortalamanın %10’u daha büyükse o) tekrar iyidir. Değilse bir deneme daha yapın.",
       fsCat: "Kategori", fsAV: "Asit değeri ≈ 1,99 × asitlik =",
       fsLookupLede: function (N, rec) { return "Harcanan titrant hacmi V’yi sol sütunda, yağ kütlesi m’yi üst satırda bulun: kesişen hücre " + N + " N için % oleik asit cinsinden asitliktir. Kalın sütun: önerilen " + rec + " g. Renk: yeşil ≤ 0,80 (natürel sızma), turuncu ≤ 2,0 (natürel birinci), kırmızı daha yüksek. Diğer değerler için: asitlik = V × N × 28,2 ÷ m."; },
-      fsVm: "V (mL) ↓ · m (g) →"
+      fsVm: "V (mL) ↓ · m (g) →",
+      fsVariety: "Çeşit", fsOrigin: "Menşe", fsHarvest: "Hasat", fsPressed: "Sıkım", fsMill: "Yağhane", fsMalax: "Malaksör",
+      min: "dk",
+      info: {
+        origin: ["Menşe", "Köy, bölge veya bahçe."],
+        variety: ["Zeytin çeşidi", "Listeden seçin veya kendiniz yazın."],
+        ripeness: ["Hasattaki olgunluk", ""],
+        harvestDate: ["Hasat tarihi", ""],
+        harvestMethod: ["Hasat yöntemi", ""],
+        transport: ["Zeytin taşıma şekli", "Havalandırmalı kasa, zeytini çuvala göre daha serin ve daha az ezilmiş tutar."],
+        pressDate: ["Sıkım tarihi", ""],
+        mill: ["Yağhane", "Adı ve yeri."],
+        extraction: ["Sıkım sistemi", ""],
+        malaxTime: ["Malaksör süresi", "Hamurun malaksörde kaldığı süre. Genellikle 30–45 dk."],
+        malaxTemp: ["Malaksör sıcaklığı", "27 °C ve altı soğuk sıkım sayılır."],
+        olivesKg: ["Sıkılan zeytin", ""],
+        oilL: ["Alınan yağ", ""],
+        filtration: ["Filtrasyon", ""],
+        container: ["Saklama kabı", ""],
+        notes: ["Notlar", "Diğer bilgiler: tat, renk, sulama, organik, …"]
+      },
+      groups: { olives: "Zeytin", pressing: "Sıkım", storage: "Yağ ve saklama" },
+      opts: {
+        ripeness: { early: "Erken hasat (yeşil)", turning: "Alacalı (yeşil-mor)", ripe: "Olgun (siyah)", mixed: "Karışık" },
+        harvestMethod: { hand: "Elle toplama", comb: "Tarak / el tırmığı", shaker: "Sarsma makinesi", pole: "Sırıkla çırpma", ground: "Yerden toplama", mixed: "Karışık" },
+        transport: { crates: "Havalandırmalı kasa", sacks: "Çuval", bulk: "Dökme (römork / yığın)" },
+        extraction: { two: "Kontinü, 2 fazlı", three: "Kontinü, 3 fazlı", press: "Geleneksel baskı (pres)" },
+        filtration: { unfiltered: "Filtresiz", settled: "Dinlendirilip aktarılmış", filtered: "Filtreli" },
+        container: { darkGlass: "Koyu renk cam şişe", clearGlass: "Şeffaf cam şişe", steel: "Paslanmaz çelik tank / bidon", tin: "Teneke", plasticFood: "Gıdaya uygun plastik bidon", pet: "Kullanılmış PET şişe", clay: "Toprak küp", other: "Diğer" }
+      },
+      infoCount: function (n) { return n ? n + " alan dolu" : ""; },
+      iDaysBad: "Sıkım tarihi hasat tarihinden önce.",
+      iDaysOk: function (d) { return (d === 0 ? "Hasat günü sıkılmış." : "Hasattan bir gün sonra sıkılmış.") + " Hızlı sıkım asitliği düşük tutar."; },
+      iDaysLate: function (d) { return "Zeytinler sıkımdan önce " + d + " gün beklemiş. İdeali 24 saat içinde sıkmaktır: özellikle çuvalda veya yığında bekleme asitliği yükseltir."; },
+      iCold: "27 °C veya altında malakse edilmiş: soğuk sıkım sayılır.",
+      iWarm: "27 °C üstünde malakse edilmiş: verim artar ama polifenol ve aroma azalır; soğuk sıkım denemez.",
+      iLong: "60 dakikayı aşan malaksör süresi oksidasyonu artırır, polifenolleri düşürür.",
+      iYield: function (p, k) { return "Verim ≈ ağırlıkça %" + p + "; litre yağ başına yaklaşık " + k + " kg zeytin."; },
+      iPet: "Kullanılmış PET şişe oksijen ve ışık geçirir, koku ve tat bulaştırabilir. Saklamak için paslanmaz çelik, teneke veya koyu renk cam tercih edin; serin ve karanlıkta tutun.",
+      iClear: "Şeffaf cam ışık geçirir ve yağı bozar. Şişeleri karanlık bir dolapta saklayın.",
+      lblOil: "Zeytinyağı", lblAcidK: "serbest asitlik, oleik asit cinsinden", lblNoResult: "henüz sonuç yok",
+      lblOrigin: "Menşe", lblHarvest: "Hasat", lblPressed: "Sıkım", lblMill: "Yağhane", lblMalax: "Malaksör", lblStorage: "Saklama", lblCold: "soğuk sıkım",
+      lblDays: function (d) { return d === 0 ? "aynı gün" : "hasattan " + d + " gün sonra"; },
+      lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " deneme ortalaması" : "") + " · ISO 660 titrasyonu. Ev testidir, akredite analiz değildir."; },
+      lblTestedShort: function (date) { return "Test: " + date + " · ISO 660 titrasyonu"; },
+      lblSheet: function (per, n, pages) { return "A4 sayfada " + per + " etiket · " + pages + " sayfaya " + n + " etiket basılacak."; },
+      repTitle: "Zeytinyağı asitlik test raporu", repDate: "Test tarihi", repDetails: "Yağ bilgileri", repRuns: "Denemeler", repMethod: "Yöntem", repNotes: "Notlar",
+      repMean: function (n) { return n === 1 ? "1 denemeden" : n + " denemenin ortalaması"; },
+      repCols: ["Deneme", "Tartım", "m (g)", "V (mL)", "Asitlik"],
+      repStats: function (r, sd, av) { return (r ? "Fark " + r + " · SS " + sd + " · " : "") + "Asit değeri " + av + " mg KOH/g"; },
+      repMethodTxt: function (N) { return "Serbest yağ asitleri, nötrleştirilmiş alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile titre edilmiştir (ISO 660 / AB 2568/91 soğuk yöntemi esas alınarak). Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
+      repBy: "Testi yapan", repSig: "İmza",
+      repFoot: "Kendi kullanımınız için ev testidir, akredite analiz değildir.",
+      dDays: "Hasattan sıkıma", dCold: "Soğuk sıkım (≤ 27 °C)", dYield: "Verim", yes: "evet", no: "hayır",
+      noResultWarn: "Henüz tamamlanmış deneme yok: etiket ve raporda asitlik “—” olarak görünür."
     }
   };
   function t(k) { return T[lang][k]; }
@@ -892,7 +1162,11 @@ table.fs-lookup td.rec { font-weight: 600; }
   // ---------- state ----------
   function exampleState() {
     return {
-      example: true, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
+      example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
+      testDate: todayISO(), label: defaultLabel(),
+      info: { origin: "Ayvalık, Balıkesir", variety: "Ayvalık (Edremit)", ripeness: "early", harvestDate: "2026-10-18", harvestMethod: "comb",
+        transport: "crates", pressDate: "2026-10-19", extraction: "two", malaxTime: "35", malaxTemp: "26", olivesKg: "500", oilL: "68",
+        filtration: "unfiltered", container: "steel" },
       runs: [
         { id: 1, mode: "diff", before: "87.42", after: "67.31", direct: "", vol: "", blank: "", fills: [{ start: "0.00", end: "2.35" }] },
         { id: 2, mode: "diff", before: "67.31", after: "47.05", direct: "", vol: "", blank: "", fills: [{ start: "2.35", end: "4.72" }] }
@@ -903,7 +1177,8 @@ table.fs-lookup td.rec { font-weight: 600; }
     return { id: id, mode: "diff", before: "", after: "", direct: "", vol: "", blank: "", fills: [{ start: "", end: "" }] };
   }
   function freshState(keepSettings) {
-    var s = { example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)] };
+    var s = { example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)],
+      info: {}, testDate: todayISO(), label: (state && state.label) || defaultLabel() };
     if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; }
     return s;
   }
@@ -914,6 +1189,16 @@ table.fs-lookup td.rec { font-weight: 600; }
     state = raw ? JSON.parse(raw) : exampleState();
     if (!state || !Array.isArray(state.runs)) state = exampleState();
   } catch (e) { state = exampleState(); }
+  // Fields added after the first version: fill them in for state saved by older versions.
+  if (!state.info || typeof state.info !== "object") state.info = {};
+  if (!state.label || typeof state.label !== "object") state.label = defaultLabel();
+  if (!state.testDate) state.testDate = todayISO();
+
+  function defaultLabel() { return { size: "large", copies: "", start: "1", cut: false }; }
+  function todayISO() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
 
   function save() {
     try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
@@ -1074,6 +1359,8 @@ table.fs-lookup td.rec { font-weight: 600; }
     renderDerive(valid[0]);
     renderRecommend();
     renderFieldSheet();
+    renderInfoNotes();
+    renderPrintables();
   }
 
   function stats(valid) {
@@ -1166,6 +1453,229 @@ table.fs-lookup td.rec { font-weight: 600; }
     el.innerHTML = '<div>' + t("rec1")(mStr, mlOil) + '</div><div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(vlo, 1), f(vhi, 1), f(N, 3)) + '</div>';
   }
 
+  // ---------- oil details ----------
+  var INFO_GROUPS = [
+    ["olives", [["origin", "text"], ["variety", "text"], ["ripeness", "select"], ["harvestDate", "date"], ["harvestMethod", "select"], ["transport", "select"]]],
+    ["pressing", [["pressDate", "date"], ["mill", "text"], ["extraction", "select"], ["malaxTime", "num", "min"], ["malaxTemp", "num", "°C"], ["olivesKg", "num", "kg"], ["oilL", "num", "L"]]],
+    ["storage", [["filtration", "select"], ["container", "select"], ["notes", "textarea"]]]
+  ];
+  var VARIETIES = ["Ayvalık (Edremit)", "Memecik", "Gemlik", "Domat", "Erkence", "Çekişte", "Uslu", "Trilye", "Nizip Yağlık", "Kilis Yağlık",
+    "Halhalı", "Sarı Ulak", "Saurani", "Eşek Zeytini", "Tavşan Yüreği", "Çakır", "Arbequina", "Koroneiki", "Picual", "Frantoio", "Leccino"];
+
+  function unitFor(k, fallback) { return k === "malaxTime" ? t("min") : fallback; }
+
+  function parseDate(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  function fmtDate(s) {
+    var d = parseDate(s);
+    return d ? d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
+  }
+
+  // Display text for one detail, HTML-escaped, with its unit; "" when empty.
+  function infoVal(k) {
+    var v = state.info[k];
+    if (v == null || String(v).trim() === "") return "";
+    v = String(v).trim();
+    var O = t("opts");
+    if (O[k]) return O[k][v] ? esc(O[k][v]) : "";
+    if (k === "harvestDate" || k === "pressDate") return esc(fmtDate(v));
+    var units = { malaxTime: t("min"), malaxTemp: "°C", olivesKg: "kg", oilL: "L" };
+    return esc(v) + (units[k] ? " " + units[k] : "");
+  }
+  function infoFilled() {
+    return Object.keys(state.info).filter(function (k) { return String(state.info[k] || "").trim() !== ""; }).length;
+  }
+
+  function renderInfo() {
+    var L = t("info"), O = t("opts"), G = t("groups");
+    var html = "";
+    INFO_GROUPS.forEach(function (g) {
+      html += '<div class="subhead">' + G[g[0]] + '</div>';
+      g[1].forEach(function (fd) {
+        var k = fd[0], type = fd[1], id = "info-" + k, val = state.info[k] || "", ctl;
+        if (type === "select") {
+          ctl = '<select id="' + id + '" data-info="' + k + '"><option value="">—</option>' + Object.keys(O[k]).map(function (o) {
+            return '<option value="' + o + '"' + (val === o ? " selected" : "") + '>' + esc(O[k][o]) + '</option>';
+          }).join("") + '</select>';
+        } else if (type === "textarea") {
+          ctl = '<textarea id="' + id + '" data-info="' + k + '" rows="3">' + esc(val) + '</textarea>';
+        } else if (type === "num") {
+          ctl = '<div class="unit-input"><input type="text" inputmode="decimal" id="' + id + '" data-info="' + k + '" value="' + esc(val) + '"><span>' + unitFor(k, fd[2]) + '</span></div>';
+        } else {
+          ctl = '<input type="' + (type === "date" ? "date" : "text") + '"' + (type === "text" ? ' class="wide-text"' : "") + ' id="' + id + '" data-info="' + k + '" value="' + esc(val) + '"' + (k === "variety" ? ' list="varietyList"' : "") + '>';
+        }
+        html += '<div class="field' + (type === "textarea" ? " span2" : "") + '"><label for="' + id + '">' + L[k][0] + '</label>' + ctl +
+          (L[k][1] ? '<span class="hint">' + L[k][1] + '</span>' : "") + '</div>';
+      });
+    });
+    document.getElementById("infoFields").innerHTML = html;
+    renderInfoNotes();
+  }
+
+  function infoDerived() {
+    var i = state.info, out = { notes: [], days: NaN };
+    var h = parseDate(i.harvestDate), p = parseDate(i.pressDate);
+    if (h && p) {
+      out.days = Math.round((p - h) / 86400000);
+      if (out.days < 0) out.notes.push(["bad", t("iDaysBad")]);
+      else if (out.days <= 1) out.notes.push(["ok", t("iDaysOk")(out.days)]);
+      else out.notes.push(["warn", t("iDaysLate")(out.days)]);
+    }
+    var temp = num(i.malaxTemp), time = num(i.malaxTime);
+    if (isFinite(temp)) { out.cold = temp <= 27; out.notes.push(out.cold ? ["ok", t("iCold")] : ["warn", t("iWarm")]); }
+    if (isFinite(time) && time > 60) out.notes.push(["warn", t("iLong")]);
+    var kg = num(i.olivesKg), L = num(i.oilL), rho = num(state.density);
+    if (kg > 0 && L > 0) {
+      out.yieldPct = L * (rho > 0 ? rho : 0.916) / kg * 100;
+      out.kgPerL = kg / L;
+      out.notes.push(["info", t("iYield")(f(out.yieldPct, 1), f(out.kgPerL, 1))]);
+    }
+    if (i.container === "pet") out.notes.push(["warn", t("iPet")]);
+    if (i.container === "clearGlass") out.notes.push(["warn", t("iClear")]);
+    return out;
+  }
+
+  function renderInfoNotes() {
+    var d = infoDerived();
+    document.getElementById("infoNotes").innerHTML = d.notes.map(function (n) { return '<div class="note ' + n[0] + '">' + n[1] + '</div>'; }).join("");
+    document.getElementById("infoCount").textContent = t("infoCount")(infoFilled());
+  }
+
+  // ---------- bottle labels and A4 report ----------
+  // Positions match common A4 sticker sheets (Avery L7165: 8 up, L7160: 21 up), in mm.
+  var SHEETS = {
+    large: { cols: 2, rows: 4, left: 4.65, top: 13.1, dx: 101.6, dy: 67.7 },
+    small: { cols: 3, rows: 7, left: 7.21, top: 15.15, dx: 66.04, dy: 38.1 }
+  };
+  var BRAND_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/></svg>';
+
+  function summary() {
+    return stats(state.runs.map(function (r) { return compute(r); }).filter(function (c) { return isFinite(c.acidity); }));
+  }
+  function clampInt(v, lo, hi, dflt) {
+    var n = parseInt(v, 10);
+    return isFinite(n) ? Math.max(lo, Math.min(hi, n)) : dflt;
+  }
+
+  function labelHTML(size) {
+    var s = summary(), d = infoDerived(), g = s ? grade(s.mean) : null;
+    var acid = s ? (lang === "tr" ? "<small>%</small>" + f(s.mean, 2) : f(s.mean, 2) + "<small>%</small>") : "—";
+    var sub = [infoVal("variety"), infoVal("ripeness")].filter(Boolean).join(" · ");
+    var tested = esc(fmtDate(state.testDate));
+    var rows = [], harvest = infoVal("harvestDate"), pressed = infoVal("pressDate");
+    if (size === "large") {
+      if (infoVal("origin")) rows.push([t("lblOrigin"), infoVal("origin")]);
+      if (harvest) rows.push([t("lblHarvest"), [harvest, infoVal("harvestMethod")].filter(Boolean).join(" · ")]);
+      if (pressed) rows.push([t("lblPressed"), pressed + (d.days >= 0 ? " (" + t("lblDays")(d.days) + ")" : "")]);
+      var mill = [infoVal("mill"), infoVal("extraction")].filter(Boolean).join(" · ");
+      if (mill) rows.push([t("lblMill"), mill]);
+      var mx = [infoVal("malaxTime"), infoVal("malaxTemp")].filter(Boolean).join(" · ");
+      if (mx) rows.push([t("lblMalax"), mx + (d.cold ? " · " + t("lblCold") : "")]);
+      var st = [infoVal("filtration"), infoVal("container")].filter(Boolean).join(" · ");
+      if (st) rows.push([t("lblStorage"), st]);
+    } else {
+      if (harvest) rows.push([t("lblHarvest"), harvest]);
+      if (pressed) rows.push([t("lblPressed"), pressed]);
+    }
+    return '<div class="lbl ' + size + '">' +
+      '<div class="lbl-head"><div><div class="lbl-name">' + esc(state.name || t("lblOil")) + '</div>' + (sub ? '<div class="lbl-sub">' + sub + '</div>' : '') + '</div>' +
+        '<div class="lbl-brand">' + BRAND_SVG + (size === "large" ? 'Erken Hasat' : '') + '</div></div>' +
+      '<div class="lbl-res"><span class="lbl-acid">' + acid + '</span><span class="lbl-acid-k">' + t("lblAcidK") + '<br><b class="' + (g ? { good: "ev", warn: "v", bad: "l" }[g.cls] : "") + '">' + (g ? g.text : t("lblNoResult")) + '</b></span></div>' +
+      (rows.length ? '<dl class="lbl-rows">' + rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + r[1] + '</dd>'; }).join("") + '</dl>' : '') +
+      '<div class="lbl-foot">' + (size === "large" ? t("lblTested")(tested, s ? s.n : 0) : t("lblTestedShort")(tested) + " · Erken Hasat") + '</div></div>';
+  }
+
+  function labelPlan() {
+    var L = state.label, sh = SHEETS[L.size] || SHEETS.large, per = sh.cols * sh.rows;
+    var start = clampInt(L.start, 1, per, 1);
+    var copies = clampInt(L.copies, 1, 500, per - start + 1);
+    return { sh: sh, per: per, start: start, copies: copies, pages: Math.ceil((start - 1 + copies) / per) };
+  }
+
+  function buildLabelSheets() {
+    var P = labelPlan(), one = labelHTML(state.label.size === "small" ? "small" : "large"), pages = [];
+    for (var c = 0; c < P.copies; c++) {
+      var slot = P.start - 1 + c, pg = Math.floor(slot / P.per), pos = slot % P.per;
+      var col = pos % P.sh.cols, row = Math.floor(pos / P.sh.cols);
+      pages[pg] = (pages[pg] || "") + '<div class="lbl-slot' + (state.label.cut ? " cut" : "") + '" style="left:' + (P.sh.left + col * P.sh.dx).toFixed(2) + 'mm;top:' + (P.sh.top + row * P.sh.dy).toFixed(2) + 'mm">' + one + '</div>';
+    }
+    document.getElementById("printLabels").innerHTML = pages.map(function (p) { return '<div class="sheet">' + (p || "") + '</div>'; }).join("");
+  }
+
+  function buildReport() {
+    var modes = t("modes"), cols = t("repCols"), valid = [], runRows = "";
+    state.runs.forEach(function (run, idx) {
+      var c = compute(run);
+      if (isFinite(c.acidity)) valid.push(c);
+      runRows += '<tr><td>' + (idx + 1) + '</td><td>' + modes[run.mode] + '</td><td class="num">' + (isFinite(c.m) ? f(c.m, 2) : "—") +
+        '</td><td class="num">' + (isFinite(c.V) ? f(c.V, 2) : "—") + '</td><td class="num">' + (isFinite(c.acidity) ? pct(c.acidity, 3) : t("incomplete")) + '</td></tr>';
+    });
+    var s = stats(valid), g = grade(s ? s.mean : NaN), d = infoDerived(), N = num(state.N);
+    var det = [];
+    INFO_GROUPS.forEach(function (grp) {
+      grp[1].forEach(function (fd) { if (fd[0] !== "notes" && infoVal(fd[0])) det.push([t("info")[fd[0]][0], infoVal(fd[0])]); });
+    });
+    if (d.days >= 0) det.push([t("dDays"), t("lblDays")(d.days)]);
+    if (d.cold !== undefined) det.push([t("dCold"), d.cold ? t("yes") : t("no")]);
+    if (isFinite(d.yieldPct)) det.push([t("dYield"), pct(d.yieldPct, 1) + " · " + f(d.kgPerL, 1) + " kg/L"]);
+    var detRows = "";
+    for (var i = 0; i < det.length; i += 2) {
+      detRows += '<tr><td class="k">' + det[i][0] + '</td><td class="v">' + det[i][1] + '</td>' +
+        (det[i + 1] ? '<td class="k">' + det[i + 1][0] + '</td><td class="v">' + det[i + 1][1] + '</td>' : '<td></td><td></td>') + '</tr>';
+    }
+    var notes = String(state.info.notes || "").trim();
+    document.getElementById("printReport").innerHTML = '<div class="rep">' +
+      '<div class="rep-head"><div><div class="brand">' + BRAND_SVG.replace("<svg", '<svg class="brand-mark"') + '<span>Erken Hasat</span></div>' +
+        '<div class="rep-eyebrow">ISO 660 · EU 2568/91</div><h1>' + t("repTitle") + '</h1>' + (state.name ? '<div class="rep-name">' + esc(state.name) + '</div>' : '') + '</div>' +
+        '<div class="rep-date">' + t("repDate") + '<b>' + esc(fmtDate(state.testDate)) + '</b></div></div>' +
+      '<div class="rep-result"><div class="rep-big">' + (s ? pct(s.mean, 2) : "—") + '<small>' + t("lblAcidK") + '</small></div>' +
+        '<div class="rep-stats"><span class="chip ' + g.cls + '">' + g.text + '</span>' +
+        (s ? '<span>' + t("repMean")(s.n) + '</span><span class="mono">' + t("repStats")(s.n > 1 ? f(s.range, 3) : "", f(s.sd, 3), f(s.av, 2)) + '</span>' : '') + '</div></div>' +
+      (detRows ? '<section><h2>' + t("repDetails") + '</h2><table>' + detRows + '</table></section>' : '') +
+      (notes ? '<section><h2>' + t("repNotes") + '</h2><p class="rep-notes">' + esc(notes) + '</p></section>' : '') +
+      '<section><h2>' + t("repRuns") + '</h2><table><thead><tr>' + cols.map(function (c, j) { return '<th' + (j > 1 ? ' class="num"' : '') + '>' + c + '</th>'; }).join("") + '</tr></thead><tbody>' + runRows + '</tbody></table></section>' +
+      '<section><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
+      '<div class="rep-sign"><div>' + t("repBy") + '</div><div>' + t("repSig") + '</div></div>' +
+      '<div class="rep-foot">' + t("repFoot") + ' · Erken Hasat</div></div>';
+  }
+
+  function renderLabelControls() {
+    var L = state.label;
+    document.querySelectorAll('input[name="lblSize"]').forEach(function (r) { r.checked = r.value === (L.size === "small" ? "small" : "large"); });
+    document.getElementById("lblCopies").value = L.copies || "";
+    document.getElementById("lblStart").value = L.start || "";
+    document.getElementById("lblCut").checked = !!L.cut;
+  }
+
+  function renderPrintables() {
+    var P = labelPlan();
+    document.getElementById("labelPreview").innerHTML = labelHTML(state.label.size === "small" ? "small" : "large");
+    document.getElementById("lblCopies").placeholder = String(P.per - P.start + 1);
+    document.getElementById("labelInfo").textContent = t("lblSheet")(P.per, P.copies, P.pages) + (summary() ? "" : " " + t("noResultWarn"));
+  }
+
+  // Print modes: the field sheet (default, also for Ctrl+P), bottle labels, or the A4 report.
+  var printing = false;
+  function printMode(mode) {
+    if (mode === "labels") buildLabelSheets();
+    else if (mode === "report") buildReport();
+    else renderFieldSheet();
+    if (mode === "sheet") document.documentElement.removeAttribute("data-print");
+    else document.documentElement.setAttribute("data-print", mode);
+    document.getElementById("pageRule").textContent = mode === "labels" ? "@media print { @page { size: A4; margin: 0; } }" : "";
+    printing = true;
+    window.print();
+  }
+  window.addEventListener("beforeprint", function () {
+    if (printing) return;
+    document.documentElement.removeAttribute("data-print");   // plain Ctrl+P prints the field sheet
+    document.getElementById("pageRule").textContent = "";
+    renderFieldSheet();
+  });
+  window.addEventListener("afterprint", function () { printing = false; });
+
   // ---------- printable field sheet ----------
   // Always rendered (it is cheap) so that Ctrl+P, the print button and headless PDF builds all get current values.
   function renderFieldSheet() {
@@ -1179,7 +1689,14 @@ table.fs-lookup td.rec { font-weight: 600; }
     var opt = function (label) { return '<span style="white-space:nowrap; margin-right:14px">' + box + label + '</span>'; };
     var unit = function (u) { return ' <span class="fs-unit">' + u + '</span>'; };
 
-    document.getElementById("fsName").textContent = state.name || "";
+    // Example data never goes on a field sheet: those lines stay blank to fill in by hand.
+    var ex = !!state.example, iv = function (k) { return ex ? "" : infoVal(k); };
+    document.getElementById("fsName").textContent = ex ? "" : (state.name || "");
+    var malax = [iv("malaxTime"), iv("malaxTemp")].filter(Boolean).join(" · ");
+    document.getElementById("fsMeta2").innerHTML = [
+      [t("fsVariety"), iv("variety")], [t("fsOrigin"), iv("origin")], [t("fsMill"), iv("mill")],
+      [t("fsHarvest"), iv("harvestDate")], [t("fsPressed"), iv("pressDate")], [t("fsMalax"), malax]
+    ].map(function (p) { return '<div class="ln"><b>' + p[0] + '</b><i>' + p[1] + '</i></div>'; }).join("");
     var setup = document.getElementById("fsSetup");
     setup.innerHTML = '<div>' + t("fsSetup1")(Ns, rangeTxt) + '</div>' + document.getElementById("recommend").innerHTML;
 
@@ -1187,16 +1704,15 @@ table.fs-lookup td.rec { font-weight: 600; }
     var runs = "";
     for (var i = 1; i <= 3; i++) {
       runs += '<div class="fs-run"><h3>' + t("fsRun")(i) + '</h3>' +
-        '<div class="fs-row"><span class="lbl">' + t("fsMethod") + '</span>' +
+        '<div class="fs-row"><span class="fs-lbl">' + t("fsMethod") + '</span>' +
           opt(modes.diff) + opt(modes.direct) + opt(modes.vol) + '</div>' +
-        '<div class="fs-row"><span class="lbl">' + t("fsMass") + '</span>' +
-          t("fsBefore") + ' ' + blank() + unit("g") + ' − ' + t("fsAfter") + ' ' + blank() + unit("g") + ' = ' + blank() + unit("g") +
-          ' <span class="fs-small">(' + t("fsOr") + ')</span></div>' +
+        '<div class="fs-row"><span class="fs-lbl">' + t("fsMass") + '</span>' +
+          t("fsBefore") + ' ' + blank() + unit("g") + ' − ' + t("fsAfter") + ' ' + blank() + unit("g") + ' = ' + blank() + unit("g") + '</div>' +
         [1, 2].map(function (k) {
-          return '<div class="fs-row"><span class="lbl">' + t("fsFill")(k) + '</span>' +
+          return '<div class="fs-row"><span class="fs-lbl">' + t("fsFill")(k) + '</span>' +
             t("fsEnd") + ' ' + blank() + unit("mL") + ' − ' + t("fsStart") + ' ' + blank() + unit("mL") + ' = ' + blank() + unit("mL") + '</div>';
         }).join("") +
-        '<div class="fs-row"><span class="lbl">' + t("fsV") + '</span>' +
+        '<div class="fs-row"><span class="fs-lbl">' + t("fsV") + '</span>' +
           blank() + ' + ' + blank() + ' − ' + t("fsBlank") + ' ' + blank() + ' = ' + blank("w") + unit("mL") + '</div>' +
         '<div class="fs-row fs-res">' + t("fsAcid")(Ns) + ' ' + blank("w") + unit("%") + '</div>' +
       '</div>';
@@ -1204,12 +1720,12 @@ table.fs-lookup td.rec { font-weight: 600; }
     document.getElementById("fsRuns").innerHTML = runs;
 
     document.getElementById("fsSummary").innerHTML =
-      '<div class="fs-row"><span class="lbl">' + t("fsMean") + '</span>' + blank("w") + unit("%") +
+      '<div class="fs-row"><span class="fs-lbl">' + t("fsMean") + '</span>' + blank("w") + unit("%") +
         ' &nbsp; ' + t("fsSpread") + ' ' + blank() + '</div>' +
       '<div class="fs-small">' + t("fsSpreadOk") + '</div>' +
-      '<div class="fs-row"><span class="lbl">' + t("fsCat") + '</span>' +
+      '<div class="fs-row"><span class="fs-lbl">' + t("fsCat") + '</span>' +
         opt(t("gEV")) + opt(t("gV")) + opt(t("gL")) + '</div>' +
-      '<div class="fs-row"><span class="lbl">' + t("fsAV") + '</span>' + blank() + unit("mg KOH/g") + '</div>';
+      '<div class="fs-row"><span class="fs-lbl">' + t("fsAV") + '</span>' + blank() + unit("mg KOH/g") + '</div>';
 
     // Lookup grid: rows of titrant volume, columns of oil mass around the recommended mass.
     var table = document.getElementById("fsLookup");
@@ -1263,11 +1779,15 @@ table.fs-lookup td.rec { font-weight: 600; }
     document.getElementById("sampleName").value = state.name || "";
     document.getElementById("normality").value = state.N;
     document.getElementById("density").value = state.density;
+    document.getElementById("testDate").value = state.testDate || "";
     document.getElementById("expected").value = state.expected;
     document.getElementById("exampleBanner").hidden = !state.example;
   }
 
   function renderAll() {
+    renderInfo();
+    renderLabelControls();
+    document.getElementById("infoDetails").open = infoFilled() > 0;
     renderStaticText();
     renderSettings();
     renderSteps();
@@ -1292,6 +1812,7 @@ table.fs-lookup td.rec { font-weight: 600; }
       renderStaticText();
       renderSteps();
       renderRuns();
+      renderInfo();
       updateComputed();
     });
   });
@@ -1329,7 +1850,7 @@ table.fs-lookup td.rec { font-weight: 600; }
   });
 
   document.querySelectorAll('[data-act="print"]').forEach(function (b) {
-    b.addEventListener("click", function () { renderFieldSheet(); window.print(); });
+    b.addEventListener("click", function () { printMode("sheet"); });
   });
 
   document.getElementById("addRun").addEventListener("click", function () {
@@ -1340,7 +1861,27 @@ table.fs-lookup td.rec { font-weight: 600; }
     if (last) last.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
 
-  document.getElementById("sampleName").addEventListener("input", function (e) { state.name = e.target.value; save(); renderFieldSheet(); });
+  document.getElementById("sampleName").addEventListener("input", function (e) { state.name = e.target.value; save(); renderFieldSheet(); renderPrintables(); });
+  document.getElementById("testDate").addEventListener("change", function (e) { state.testDate = e.target.value; save(); renderPrintables(); });
+
+  document.getElementById("varietyList").innerHTML = VARIETIES.map(function (v) { return '<option value="' + esc(v) + '">'; }).join("");
+  function onInfo(e) {
+    var k = e.target.getAttribute("data-info");
+    if (!k) return;
+    state.info[k] = e.target.value;
+    save(); renderInfoNotes(); renderFieldSheet(); renderPrintables();
+  }
+  document.getElementById("infoFields").addEventListener("input", onInfo);
+  document.getElementById("infoFields").addEventListener("change", onInfo);
+
+  document.querySelectorAll('input[name="lblSize"]').forEach(function (r) {
+    r.addEventListener("change", function () { state.label.size = r.value; save(); renderPrintables(); });
+  });
+  document.getElementById("lblCopies").addEventListener("input", function (e) { state.label.copies = e.target.value; save(); renderPrintables(); });
+  document.getElementById("lblStart").addEventListener("input", function (e) { state.label.start = e.target.value; save(); renderPrintables(); });
+  document.getElementById("lblCut").addEventListener("change", function (e) { state.label.cut = e.target.checked; save(); });
+  document.querySelector('[data-act="print-labels"]').addEventListener("click", function () { printMode("labels"); });
+  document.querySelector('[data-act="print-report"]').addEventListener("click", function () { printMode("report"); });
   document.getElementById("normality").addEventListener("input", function (e) { state.N = e.target.value; save(); updateComputed(); });
   document.getElementById("density").addEventListener("input", function (e) { state.density = e.target.value; save(); updateComputed(); });
   document.getElementById("expected").addEventListener("change", function (e) { state.expected = e.target.value; save(); updateComputed(); });
@@ -1381,6 +1922,13 @@ table.fs-lookup td.rec { font-weight: 600; }
     var lines = [];
     lines.push(t("cTitle") + (state.name ? " · " + state.name : "") + " · " + new Date().toISOString().slice(0, 10));
     lines.push(t("cTitrant")(f(N, 3)));
+    INFO_GROUPS.forEach(function (grp) {
+      grp[1].forEach(function (fd) {
+        if (fd[0] === "notes" || !infoVal(fd[0])) return;
+        var tmp = document.createElement("textarea"); tmp.innerHTML = infoVal(fd[0]);   // un-escape for plain text
+        lines.push(t("info")[fd[0]][0] + ": " + tmp.value);
+      });
+    });
     var valid = [];
     state.runs.forEach(function (run, i) {
       var c = compute(run);
