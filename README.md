@@ -20,6 +20,7 @@ site/                    # everything here is published to GitHub Pages as-is
   assets/                # shared files (favicon, ...)
   acidity/index.html     # one self-contained page per tool
 scripts/build-pdfs.sh    # renders each tool's field sheet to PDF (EN + TR) with headless Chrome
+scripts/stamp-build.sh   # CI: writes the build date and commit into each page footer ("Version …")
 .github/workflows/pages.yml
 ```
 

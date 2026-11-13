@@ -166,8 +166,13 @@ button:hover { filter: brightness(1.06); }
 ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .step { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; }
 .step.done { border-left-color: var(--good); }
-.step-head { display: flex; gap: 12px; align-items: flex-start; }
-.step-head .n { font-family: var(--font-mono); font-weight: 600; color: var(--accent); min-width: 2ch; }
+.step-head { display: flex; gap: 12px; align-items: center; }
+/* Step number: a glossy olive. Turns green once the step is done. */
+.step-head .n { flex: none; display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%;
+  font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; line-height: 1; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  background: radial-gradient(circle at 32% 26%, #e4ecb4 0%, #9aab3c 22%, #56631b 62%, #343d0f 100%);
+  box-shadow: inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 2px rgba(255,255,255,0.45), 0 2px 5px rgba(40,48,10,0.35); }
+.step.done .step-head .n { background: radial-gradient(circle at 32% 26%, #d3f0d4 0%, #5cb860 22%, #2e7d32 62%, #1a4a1d 100%); }
 .step-head h3 { flex: 1; }
 .step-head label.check { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); white-space: nowrap; cursor: pointer; }
 .step-head input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--good); }
@@ -281,6 +286,7 @@ table.grades td.mono { white-space: nowrap; }
 .method-note h2 { font-size: 1rem; font-weight: 600; margin: 0; }
 .method-note p { margin: 0; font-size: 0.92rem; }
 .method-note b { color: var(--accent); }
+.build { margin-top: 6px; font-family: var(--font-mono); font-size: 0.75rem; }
 footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; max-width: 80ch; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -868,6 +874,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       <footer>
         <span class="en">Method: ISO 660 and EU Regulation 2568/91, free fatty acids, cold method. The factor 28.2 is the molar mass of oleic acid (282 g/mol) ÷ 10.<br>© 2026 Erken Hasat · free for non-commercial use under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> license · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
         <span class="tr">Yöntem: ISO 660 ve AB 2568/91, serbest yağ asitleri, soğuk yöntem. 28,2 katsayısı oleik asidin mol kütlesi (282 g/mol) ÷ 10’dur.<br>© 2026 Erken Hasat · <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a> lisansıyla ticari olmayan kullanım için ücretsiz · <a href="https://github.com/havan/erkenhasat">GitHub</a></span>
+        <div class="build"><span class="en">Version</span><span class="tr">Sürüm</span> <span class="build-id">dev</span></div>
       </footer>
     </div>
 
@@ -1055,7 +1062,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       lblOrigin: "Origin", lblHarvest: "Harvest", lblPressed: "Pressed", lblMill: "Mill", lblMalax: "Malaxation", lblStorage: "Storage", lblCold: "cold extraction",
       lblWait: function (r) { return r + " after picking"; },
       lblBy: "Test tool: Erken Hasat · havan.github.io/erkenhasat",
-      lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + " · ISO 660 / EU method. Not an accredited lab analysis."; },
+      lblTested: function (date, n) { return "Tested " + date + (n ? " · mean of " + n + (n === 1 ? " run" : " runs") : "") + "<br>ISO 660 / EU method. Not an accredited lab analysis."; },
       lblTestedShort: function (date) { return "Tested " + date + " · ISO 660 / EU method"; },
       lblSheet: function (per, n, pages) { return per + " labels per A4 sheet · printing " + n + " on " + pages + (pages === 1 ? " sheet" : " sheets") + "."; },
       repTitle: "Olive oil acidity test report", repDate: "Test date", repDetails: "Oil details", repRuns: "Runs", repMethod: "Method", repNotes: "Notes",
@@ -1180,7 +1187,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       lblOrigin: "Menşe", lblHarvest: "Hasat", lblPressed: "Sıkım", lblMill: "Yağhane", lblMalax: "Malaksör", lblStorage: "Saklama", lblCold: "soğuk sıkım",
       lblWait: function (r) { return "toplamadan " + r + " sonra"; },
       lblBy: "Test aracı: Erken Hasat · havan.github.io/erkenhasat",
-      lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " ölçüm ortalaması" : "") + " · ISO 660 / AB yöntemi. Akredite laboratuvar analizi değildir."; },
+      lblTested: function (date, n) { return "Test: " + date + (n ? " · " + n + " ölçüm ortalaması" : "") + "<br>ISO 660 / AB yöntemi. Akredite laboratuvar analizi değildir."; },
       lblTestedShort: function (date) { return "Test: " + date + " · ISO 660 / AB yöntemi"; },
       lblSheet: function (per, n, pages) { return "A4 sayfada " + per + " etiket · " + pages + " sayfaya " + n + " etiket basılacak."; },
       repTitle: "Zeytinyağı asitlik test raporu", repDate: "Test tarihi", repDetails: "Yağ bilgileri", repRuns: "Ölçümler", repMethod: "Yöntem", repNotes: "Notlar",

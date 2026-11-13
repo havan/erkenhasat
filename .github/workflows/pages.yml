@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Stamp build date and commit
+        run: scripts/stamp-build.sh site
       - name: Build field-sheet PDFs
         run: scripts/build-pdfs.sh site
       - uses: actions/configure-pages@v6
