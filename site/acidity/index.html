@@ -167,12 +167,11 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .step { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; }
 .step.done { border-left-color: var(--good); }
 .step-head { display: flex; gap: 12px; align-items: center; }
-/* Step number: a glossy olive. Turns green once the step is done. */
-.step-head .n { flex: none; display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem; border-radius: 50%;
-  font-family: var(--font-mono); font-weight: 700; font-size: 1.15rem; line-height: 1; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,0.4);
-  background: radial-gradient(circle at 32% 26%, #e4ecb4 0%, #9aab3c 22%, #56631b 62%, #343d0f 100%);
-  box-shadow: inset 0 -3px 5px rgba(0,0,0,0.3), inset 0 2px 2px rgba(255,255,255,0.45), 0 2px 5px rgba(40,48,10,0.35); }
-.step.done .step-head .n { background: radial-gradient(circle at 32% 26%, #d3f0d4 0%, #5cb860 22%, #2e7d32 62%, #1a4a1d 100%); }
+/* Step number: laboratory index tag. Turns soft green once done. */
+.step-head .n { flex: none; display: inline-grid; place-items: center; min-width: 2.2rem; height: 1.75rem; padding: 0 6px; border-radius: 5px;
+  font-family: var(--font-mono); font-weight: 600; font-size: 0.88rem; line-height: 1;
+  color: var(--accent); background: var(--accent-soft); border: 1px solid var(--line); }
+.step.done .step-head .n { color: var(--good); background: var(--good-soft); border-color: var(--good); }
 .step-head h3 { flex: 1; }
 .step-head label.check { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); white-space: nowrap; cursor: pointer; }
 .step-head input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--good); }
@@ -575,7 +574,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
         <ol class="steps">
           <li><div class="step" data-step-box="s1">
-            <div class="step-head"><span class="n">1</span><h3><span class="en">Prepare the workspace</span><span class="tr">Çalışma alanını hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s1"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">01</span><h3><span class="en">Prepare the workspace</span><span class="tr">Çalışma alanını hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s1"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Work at a table near an open window, or outdoors out of direct sun.</li>
@@ -597,7 +596,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s2">
-            <div class="step-head"><span class="n">2</span><h3><span class="en">Prepare the titrant</span><span class="tr">Titrantı hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s2"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">02</span><h3><span class="en">Prepare the titrant</span><span class="tr">Titrantı hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s2"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Pour about 20–30 mL of 0.1 N NaOH into the small clean glass jar, then <b>close the NaOH bottle straight away</b>.</li>
@@ -617,7 +616,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s3">
-            <div class="step-head"><span class="n">3</span><h3><span class="en">Measure and neutralize the solvent</span><span class="tr">Çözücüyü ölçün ve nötrleştirin</span></h3><label class="check"><input type="checkbox" data-step="s3"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">03</span><h3><span class="en">Measure and neutralize the solvent</span><span class="tr">Çözücüyü ölçün ve nötrleştirin</span></h3><label class="check"><input type="checkbox" data-step="s3"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Measure <b>100 mL</b> of alcohol-ether solution with the 100 mL cylinder and pour it into an Erlenmeyer flask.</li>
@@ -650,7 +649,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s4">
-            <div class="step-head"><span class="n">4</span><h3><span class="en">Weigh the oil</span><span class="tr">Yağı tartın</span></h3><label class="check"><input type="checkbox" data-step="s4"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">04</span><h3><span class="en">Weigh the oil</span><span class="tr">Yağı tartın</span></h3><label class="check"><input type="checkbox" data-step="s4"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <p>Aim for the mass shown in Test setup (20 g for good oil). You don't need to hit it exactly: enter whatever you actually weighed. Choose one method in the run card:</p>
               <ul>
@@ -672,7 +671,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s5">
-            <div class="step-head"><span class="n">5</span><h3><span class="en">Dissolve the oil</span><span class="tr">Yağı çözün</span></h3><label class="check"><input type="checkbox" data-step="s5"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">05</span><h3><span class="en">Dissolve the oil</span><span class="tr">Yağı çözün</span></h3><label class="check"><input type="checkbox" data-step="s5"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Swirl the flask until the oil has dissolved completely and the liquid is <b>clear and uniform</b>, with no oily streaks or droplets.</li>
@@ -692,7 +691,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s6">
-            <div class="step-head"><span class="n">6</span><h3><span class="en">Titrate to the endpoint</span><span class="tr">Dönüm noktasına kadar titre edin</span></h3><label class="check"><input type="checkbox" data-step="s6"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">06</span><h3><span class="en">Titrate to the endpoint</span><span class="tr">Dönüm noktasına kadar titre edin</span></h3><label class="check"><input type="checkbox" data-step="s6"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Draw NaOH into the pipette a little above a marked line, then release it down to that line exactly. Write down this <b>start reading</b>. Read the bottom of the meniscus with your eye level to it.</li>
@@ -721,7 +720,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s7">
-            <div class="step-head"><span class="n">7</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. ölçüm)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">07</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. ölçüm)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Use a clean flask, fresh solvent (step 3 again) and a fresh portion of oil (steps 4–6).</li>
@@ -741,7 +740,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           </div></li>
 
           <li><div class="step" data-step-box="s8">
-            <div class="step-head"><span class="n">8</span><h3><span class="en">Clean up</span><span class="tr">Temizlik</span></h3><label class="check"><input type="checkbox" data-step="s8"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">08</span><h3><span class="en">Clean up</span><span class="tr">Temizlik</span></h3><label class="check"><input type="checkbox" data-step="s8"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Leave the used solvent-oil mixture in an open container outdoors, away from any flame, until the ether and alcohol have evaporated. Then dispose of the oily residue like used cooking oil.</li>
