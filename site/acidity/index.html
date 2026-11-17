@@ -313,7 +313,7 @@ footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);
   .wrap { max-width: none; padding: 0; }
   .print-only { display: block; }
   .screen-only, .lang-switch, .top-actions, #exampleBanner, aside.panel,
-  #setupSection, #infoSection, #reportSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
+  #savedSection, #setupSection, #infoSection, #reportSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
   .layout { display: block; margin-top: 0 !important; }
   .main { display: block; }
   .main > * { margin-bottom: 14px; }
@@ -476,6 +476,32 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   .lbl-slot { position: absolute; }
   .lbl-slot.cut .lbl { outline: 0.2mm dashed #9aa08c; }
 }
+
+/* ---------- saved tests & import/export ---------- */
+.saved-body { display: grid; gap: 14px; }
+.saved-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.import-drop { border: 1.5px dashed var(--line); border-radius: 8px; padding: 12px 14px; background: var(--paper); display: grid; gap: 8px; }
+.import-drop.drag { border-color: var(--accent); background: var(--accent-soft); }
+.import-drop-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+.import-drop-hint { font-size: 0.86rem; color: var(--muted); }
+.paste-box { display: grid; gap: 8px; }
+.paste-box[hidden] { display: none; }
+.paste-box textarea { font-family: var(--font-mono); font-size: 0.8rem; min-height: 110px; }
+.saved-list { display: grid; gap: 10px; }
+.saved-empty { font-size: 0.9rem; color: var(--muted); padding: 4px 0; }
+.saved-item { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--paper);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.saved-item.active { border-left-color: var(--accent); background: var(--surface); }
+.saved-main { display: grid; gap: 4px; min-width: 0; flex: 1 1 240px; }
+.saved-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 600; }
+.saved-badge { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.saved-meta { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); word-break: break-word; }
+.saved-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.saved-res { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; color: var(--pink); }
+.saved-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.save-status { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.saved-search { max-width: 260px; }
+.saved-search[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -484,6 +510,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     <div class="top-row">
       <a class="brand" href="../" title="Erken Hasat · all tools / tüm araçlar"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-text"><span class="brand-name">Erken Hasat</span><span class="brand-url">havan.github.io/erkenhasat</span></span></a>
       <div class="top-actions">
+        <button type="button" class="small ghost" id="savedJumpBtn"><span class="en">Saved tests</span><span class="tr">Kayıtlı testler</span> <span class="mono" id="savedJumpCount"></span></button>
         <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet (PDF)</span><span class="tr">Saha formu (PDF)</span></button>
         <div class="lang-switch" role="group" aria-label="Language / Dil">
           <button type="button" data-lang="en" aria-pressed="false">EN</button>
@@ -516,6 +543,40 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         </div>
         <div class="fs-meta" id="fsMeta2"></div>
         <div class="fs-setup" id="fsSetup"></div>
+      </section>
+
+      <!-- SAVED TESTS & IMPORT/EXPORT -->
+      <section class="block screen-only" id="savedSection" aria-labelledby="h-saved">
+        <div class="section-head"><h2 id="h-saved"><span class="en">Saved tests &amp; import</span><span class="tr">Kayıtlı testler ve içe aktar</span></h2><span class="tag"><span class="en">auto-saved in browser · export or import .txt</span><span class="tr">tarayıcıda otomatik kayıt · .txt dışa / içe aktar</span></span></div>
+        <details class="card info-card" id="savedDetails">
+          <summary><span class="en">Browse saved tests or import a test file to print PDFs</span><span class="tr">Kayıtlı testlere göz atın veya PDF yazdırmak için test dosyası içe aktarın</span><span class="info-count" id="savedCount"></span></summary>
+          <div class="saved-body">
+            <div class="saved-toolbar">
+              <button type="button" class="small" data-act="save-browser"><span class="en">Save to browser</span><span class="tr">Tarayıcıya kaydet</span></button>
+              <button type="button" class="small ghost" data-act="export-txt"><span class="en">Export as text file (.txt)</span><span class="tr">Metin dosyası olarak dışa aktar (.txt)</span></button>
+              <input type="text" class="wide-text saved-search" id="savedSearch" hidden aria-label="Filter saved tests / Kayıtlı testlerde ara">
+            </div>
+            <div class="import-drop" id="importDrop">
+              <div class="import-drop-row">
+                <span class="import-drop-hint"><span class="en">Import a saved <code>.txt</code> test file (or drop it here) to load its measurements and print report / labels.</span><span class="tr">Ölçümlerini yükleyip rapor / etiket yazdırmak için dışa aktarılmış <code>.txt</code> dosyasını içe aktarın (veya buraya bırakın).</span></span>
+                <div class="saved-actions">
+                  <button type="button" class="small" id="importFileBtn"><span class="en">Import file (.txt)</span><span class="tr">Dosya içe aktar (.txt)</span></button>
+                  <button type="button" class="small ghost" id="togglePasteBtn"><span class="en">Paste text</span><span class="tr">Metin yapıştır</span></button>
+                </div>
+                <input type="file" id="importFileInput" accept=".txt,.json,text/plain,application/json" hidden>
+              </div>
+              <div class="paste-box" id="pasteBox" hidden>
+                <textarea id="pasteInput" aria-label="Paste exported test text / Dışa aktarılan test metnini yapıştırın"></textarea>
+                <div class="saved-actions">
+                  <button type="button" class="small" id="importPasteBtn"><span class="en">Load pasted test</span><span class="tr">Yapıştırılan testi yükle</span></button>
+                  <button type="button" class="small ghost" id="cancelPasteBtn"><span class="en">Cancel</span><span class="tr">İptal</span></button>
+                </div>
+              </div>
+            </div>
+            <div class="notes" id="importMsg" aria-live="polite"></div>
+            <div class="saved-list" id="savedList"></div>
+          </div>
+        </details>
       </section>
 
       <section class="block" id="setupSection" aria-labelledby="h-setup">
@@ -820,6 +881,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           <div class="panel-actions">
             <button type="button" data-act="print-labels"><span class="en">Print labels</span><span class="tr">Etiketleri yazdır</span></button>
             <button type="button" class="ghost" data-act="print-report"><span class="en">Print report (A4)</span><span class="tr">Raporu yazdır (A4)</span></button>
+            <button type="button" class="ghost" data-act="export-txt"><span class="en">Export test (.txt)</span><span class="tr">Testi dışa aktar (.txt)</span></button>
           </div>
           <p class="print-hint" id="labelInfo"></p>
           <p class="print-hint en">Print at 100% scale ("Actual size", not "Fit to page") so the labels line up with A4 sticker sheets such as Avery L7165 (8 per sheet) or L7160 (21 per sheet), or compatible ones. To keep a file instead, choose "Save as PDF" in the print dialog.</p>
@@ -906,7 +968,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
           <button type="button" id="copyBtn"><span class="en">Copy results</span><span class="tr">Sonuçları kopyala</span></button>
           <button type="button" class="ghost" id="resetBtn"></button>
         </div>
-        <a class="panel-links" href="#h-report"><span class="en">Print report or bottle labels ↓</span><span class="tr">Rapor veya şişe etiketi yazdır ↓</span></a>
+        <div class="panel-actions">
+          <button type="button" class="small ghost" data-act="save-browser"><span class="en">Save to browser</span><span class="tr">Tarayıcıya kaydet</span></button>
+          <button type="button" class="small ghost" data-act="export-txt"><span class="en">Export (.txt)</span><span class="tr">Dışa aktar (.txt)</span></button>
+        </div>
+        <div class="save-status" id="saveStatus" aria-live="polite"></div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a class="panel-links" href="#h-report"><span class="en">Print report or bottle labels ↓</span><span class="tr">Rapor veya şişe etiketi yazdır ↓</span></a>
+          <a class="panel-links" href="#h-saved" id="panelSavedLink"><span class="en">Saved tests &amp; import ↑</span><span class="tr">Kayıtlı testler ve içe aktar ↑</span></a>
+        </div>
         <div class="copy-msg" id="copyMsg" aria-live="polite"></div>
         <textarea class="copy-fallback" id="copyFallback" readonly hidden aria-label="Results"></textarea>
         <div class="offline">
@@ -929,7 +999,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 (function () {
   "use strict";
   var KEY = "olive-acidity-v1";
+  var ARCHIVE_KEY = "olive-acidity-tests-v1";
   var LANG_KEY = "olive-acidity-lang";
+  var EXPORT_START = "--- ERKEN-HASAT-ACIDITY-V1 ---";
+  var EXPORT_END = "--- END-ERKEN-HASAT-ACIDITY-V1 ---";
   var FACTOR = 28.2;          // ISO 660 factor for oleic acid
   var M_OLEIC = 282.46;       // g/mol
   var M_KOH = 56.11;          // g/mol, for acid value
@@ -1002,7 +1075,34 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       recScale: "Use a 0.01 g scale for this sample mass.",
       ranges: { low: "below 1%", mid: "1 to 4%", high: "4 to 15%" },
       stepsDone: function (d, t) { return d + " of " + t + " done"; },
-      reset: "Start new test", resetArm: "Click again to clear all runs",
+      reset: "Start new test", resetArm: "Click again to start blank (saved tests stay)",
+      savedCount: function (n) { return n ? n + " saved" : ""; },
+      savedCountJump: function (n) { return n ? "(" + n + ")" : ""; },
+      savedEmpty: "No saved tests in this browser yet. Clear the example and enter a sample name or run to auto-save.",
+      savedNoMatch: "No saved tests match your filter.",
+      savedFilterPlaceholder: "Filter by sample name or date…",
+      untitled: "Untitled test",
+      currentBadge: "Current",
+      openBtn: "Open",
+      exportBtn: "Export (.txt)",
+      deleteBtn: "Delete",
+      deleteConfirm: "Confirm delete",
+      savedAt: "saved",
+      runsCount: function (n) { return n === 1 ? "1 run" : n + " runs"; },
+      autoSavedStatus: function (time) { return "Auto-saved in browser" + (time ? " · " + time : ""); },
+      exampleStatus: "Example loaded · not saved to your tests list",
+      storageFullStatus: "Browser storage is full — export as .txt to keep a copy.",
+      savedBrowserOk: "Saved to browser storage.",
+      exportedOk: function (fn) { return "Exported " + fn; },
+      importedOk: function (name) { return 'Imported “' + name + '”. You can now edit it or <a href="#h-report">print report / labels ↓</a>.'; },
+      importErrFormat: "Could not read a valid Erken Hasat test from that file or text. Make sure it is an exported .txt file with the ERKEN-HASAT-ACIDITY-V1 data block.",
+      importErrEmpty: "The selected file or pasted text is empty.",
+      pastePlaceholder: "Paste the full contents of an exported .txt test file here…",
+      expHeader: "Erken Hasat · Olive oil free acidity test",
+      expTestDate: "Test date",
+      expSavedAt: "Saved",
+      expKey: "Test ID",
+      expDataWarn: "Machine-readable backup below (keep intact if you want to re-import this file):",
       copied: "Results copied.", copyManual: "Copy the text below manually.",
       cTitle: "Olive oil free acidity", cTitrant: function (N) { return "Titrant: " + N + " N NaOH · factor 28.2 (oleic acid)"; },
       cRun: function (i, m, V, a) { return "Run " + i + ": m = " + m + " g, V = " + V + " mL → " + a; },
@@ -1130,7 +1230,34 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       recScale: "Bu numune kütlesi için 0,01 g hassasiyetli terazi kullanın.",
       ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
       stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
-      reset: "Yeni test başlat", resetArm: "Tüm ölçümleri silmek için tekrar tıklayın",
+      reset: "Yeni test başlat", resetArm: "Boş test için tekrar tıklayın (kayıtlılar kalır)",
+      savedCount: function (n) { return n ? n + " kayıtlı" : ""; },
+      savedCountJump: function (n) { return n ? "(" + n + ")" : ""; },
+      savedEmpty: "Bu tarayıcıda henüz kayıtlı test yok. Örneği temizleyip numune adı veya ölçüm girdiğinizde otomatik kaydedilir.",
+      savedNoMatch: "Aramanızla eşleşen kayıtlı test yok.",
+      savedFilterPlaceholder: "Numune adı veya tarih ile ara…",
+      untitled: "İsimsiz test",
+      currentBadge: "Açık",
+      openBtn: "Aç",
+      exportBtn: "Dışa aktar (.txt)",
+      deleteBtn: "Sil",
+      deleteConfirm: "Silmeyi onayla",
+      savedAt: "kayıt",
+      runsCount: function (n) { return n + " ölçüm"; },
+      autoSavedStatus: function (time) { return "Tarayıcıda otomatik kaydedildi" + (time ? " · " + time : ""); },
+      exampleStatus: "Örnek yüklü · kayıtlı testler listenize eklenmez",
+      storageFullStatus: "Tarayıcı depolaması dolu — kopya saklamak için .txt olarak dışa aktarın.",
+      savedBrowserOk: "Tarayıcıya kaydedildi.",
+      exportedOk: function (fn) { return fn + " dışa aktarıldı."; },
+      importedOk: function (name) { return '“' + name + '” içe aktarıldı. Düzenleyebilir veya <a href="#h-report">rapor / etiket yazdırabilirsiniz ↓</a>.'; },
+      importErrFormat: "Bu dosya veya metinden geçerli bir Erken Hasat testi okunamadı. ERKEN-HASAT-ACIDITY-V1 veri bloğunu içeren dışa aktarılmış bir .txt dosyası olduğundan emin olun.",
+      importErrEmpty: "Seçilen dosya veya yapıştırılan metin boş.",
+      pastePlaceholder: "Dışa aktarılmış .txt test dosyasının tüm içeriğini buraya yapıştırın…",
+      expHeader: "Erken Hasat · Zeytinyağı serbest asitlik testi",
+      expTestDate: "Test tarihi",
+      expSavedAt: "Kayıt zamanı",
+      expKey: "Test kimliği",
+      expDataWarn: "Aşağıdaki makine-okunur yedek bloğunu dosyayı yeniden içe aktarmak için değiştirmeyin:",
       copied: "Sonuçlar kopyalandı.", copyManual: "Aşağıdaki metni elle kopyalayın.",
       cTitle: "Zeytinyağı serbest asitlik", cTitrant: function (N) { return "Titrant: " + N + " N NaOH · katsayı 28,2 (oleik asit)"; },
       cRun: function (i, m, V, a) { return i + ". ölçüm: m = " + m + " g, V = " + V + " mL → " + a; },
@@ -1211,9 +1338,20 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   };
   function t(k) { return T[lang][k]; }
 
-  // ---------- state ----------
+  // ---------- state & saved archive ----------
+  function makeId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
+    } catch (e) {}
+    return "t-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+  function nowISO() { return new Date().toISOString(); }
+  function cloneObj(o) { return JSON.parse(JSON.stringify(o)); }
+
   function exampleState() {
+    var ts = nowISO();
     return {
+      id: "example", createdAt: ts, updatedAt: ts,
       example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
       testDate: todayISO(), label: defaultLabel(),
       info: exampleInfo(),
@@ -1227,25 +1365,137 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     return { id: id, mode: "diff", before: "", after: "", direct: "", vol: "", blank: "", fills: [{ start: "", end: "" }] };
   }
   function freshState(keepSettings) {
-    var s = { example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)],
+    var ts = nowISO();
+    var s = { id: makeId(), createdAt: ts, updatedAt: ts,
+      example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)],
       info: {}, testDate: todayISO(), label: (state && state.label) || defaultLabel() };
     if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; }
     return s;
   }
 
+  function normalizeTest(raw, keepExample) {
+    if (!raw || typeof raw !== "object" || !Array.isArray(raw.runs)) return null;
+    var ts = nowISO();
+    var out = {
+      id: typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : makeId(),
+      createdAt: typeof raw.createdAt === "string" && raw.createdAt ? raw.createdAt : ts,
+      updatedAt: typeof raw.updatedAt === "string" && raw.updatedAt ? raw.updatedAt : ts,
+      example: !!(keepExample && raw.example),
+      name: raw.name == null ? "" : String(raw.name),
+      N: raw.N == null ? "0.1" : String(raw.N),
+      density: raw.density == null ? "0.91" : String(raw.density),
+      expected: raw.expected === "mid" || raw.expected === "high" ? raw.expected : "low",
+      steps: {},
+      nextId: 1,
+      testDate: typeof raw.testDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.testDate) ? raw.testDate : todayISO(),
+      label: defaultLabel(),
+      info: {},
+      runs: []
+    };
+    if (raw.steps && typeof raw.steps === "object") {
+      Object.keys(raw.steps).forEach(function (k) { if (raw.steps[k]) out.steps[k] = true; });
+    }
+    if (raw.label && typeof raw.label === "object") {
+      out.label.size = raw.label.size === "small" ? "small" : "large";
+      out.label.copies = raw.label.copies == null ? "" : String(raw.label.copies);
+      out.label.start = raw.label.start == null ? "1" : String(raw.label.start);
+      out.label.cut = !!raw.label.cut;
+    }
+    if (out.example) out.info = exampleInfo();
+    else if (raw.info && typeof raw.info === "object") {
+      Object.keys(raw.info).forEach(function (k) {
+        if (raw.info[k] != null) out.info[k] = String(raw.info[k]);
+      });
+      if (out.info.harvestDate && !out.info.harvestStart) out.info.harvestStart = out.info.harvestDate;
+      delete out.info.harvestDate;
+    }
+    var maxId = 0;
+    raw.runs.forEach(function (r, idx) {
+      if (!r || typeof r !== "object") return;
+      var rid = isFinite(Number(r.id)) && Number(r.id) > 0 ? Math.floor(Number(r.id)) : (idx + 1);
+      if (rid > maxId) maxId = rid;
+      var fills = Array.isArray(r.fills) ? r.fills.map(function (fl) {
+        return { start: fl && fl.start != null ? String(fl.start) : "", end: fl && fl.end != null ? String(fl.end) : "" };
+      }) : [];
+      if (!fills.length) fills.push({ start: "", end: "" });
+      out.runs.push({
+        id: rid,
+        mode: r.mode === "direct" || r.mode === "vol" ? r.mode : "diff",
+        before: r.before == null ? "" : String(r.before),
+        after: r.after == null ? "" : String(r.after),
+        direct: r.direct == null ? "" : String(r.direct),
+        vol: r.vol == null ? "" : String(r.vol),
+        blank: r.blank == null ? "" : String(r.blank),
+        fills: fills
+      });
+    });
+    if (!out.runs.length) { out.runs.push(blankRun(1)); maxId = 1; }
+    out.nextId = Math.max(maxId + 1, isFinite(Number(raw.nextId)) ? Math.floor(Number(raw.nextId)) : 2);
+    return out;
+  }
+
+  function hasContent(s) {
+    if (!s || s.example) return false;
+    if (String(s.name || "").trim() !== "") return true;
+    if (Object.keys(s.info || {}).some(function (k) { return String(s.info[k] || "").trim() !== ""; })) return true;
+    if (Object.keys(s.steps || {}).some(function (k) { return !!s.steps[k]; })) return true;
+    if (s.runs.length > 1) return true;
+    return s.runs.some(function (r) {
+      if (String(r.before || "").trim() || String(r.after || "").trim() || String(r.direct || "").trim() || String(r.vol || "").trim() || String(r.blank || "").trim()) return true;
+      return r.fills.some(function (fl) { return String(fl.start || "").trim() || String(fl.end || "").trim(); });
+    });
+  }
+
+  function loadArchive() {
+    try {
+      var raw = window.localStorage.getItem(ARCHIVE_KEY);
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return [];
+      var out = [];
+      arr.forEach(function (item) {
+        var n = normalizeTest(item, false);
+        if (n) out.push(n);
+      });
+      out.sort(function (a, b) { return String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")); });
+      return out;
+    } catch (e) { return []; }
+  }
+
+  var storageError = false;
+  function saveArchive(list) {
+    try {
+      window.localStorage.setItem(ARCHIVE_KEY, JSON.stringify(list));
+      storageError = false;
+      return true;
+    } catch (e) {
+      storageError = true;
+      return false;
+    }
+  }
+
+  function upsertArchive(s) {
+    if (!s) return false;
+    var list = loadArchive();
+    var copy = cloneObj(s);
+    copy.example = false;
+    if (!copy.id || copy.id === "example") copy.id = makeId();
+    if (!copy.createdAt) copy.createdAt = nowISO();
+    copy.updatedAt = s.updatedAt || nowISO();
+    var idx = -1;
+    for (var i = 0; i < list.length; i++) if (list[i].id === copy.id) { idx = i; break; }
+    if (idx >= 0) list[idx] = copy;
+    else list.unshift(copy);
+    list.sort(function (a, b) { return String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")); });
+    return saveArchive(list);
+  }
+
   var state;
   try {
     var raw = window.localStorage.getItem(KEY);
-    state = raw ? JSON.parse(raw) : exampleState();
-    if (!state || !Array.isArray(state.runs)) state = exampleState();
+    state = raw ? normalizeTest(JSON.parse(raw), true) : exampleState();
+    if (!state) state = exampleState();
   } catch (e) { state = exampleState(); }
-  // Fields added after the first version: fill them in for state saved by older versions.
-  if (!state.info || typeof state.info !== "object") state.info = {};
-  if (!state.label || typeof state.label !== "object") state.label = defaultLabel();
-  if (!state.testDate) state.testDate = todayISO();
-  if (state.example) state.info = exampleInfo();
-  else if (state.info.harvestDate && !state.info.harvestStart) { state.info.harvestStart = state.info.harvestDate; }
-  delete state.info.harvestDate;
 
   function exampleInfo() {
     return { origin: "Ayvalık, Balıkesir", variety: "Ayvalık (Edremit)", ripeness: "early", harvestStart: "2026-10-18T07:30", harvestEnd: "2026-10-18T16:00",
@@ -1258,8 +1508,16 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
 
-  function save() {
-    try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  if (!state.example && hasContent(state)) upsertArchive(state);
+
+  function save(forceArchive) {
+    if (!state.id || (!state.example && state.id === "example")) state.id = makeId();
+    if (!state.createdAt) state.createdAt = nowISO();
+    state.updatedAt = nowISO();
+    try { window.localStorage.setItem(KEY, JSON.stringify(state)); storageError = false; } catch (e) { storageError = true; }
+    if (forceArchive || (!state.example && hasContent(state))) upsertArchive(state);
+    if (typeof renderSavedTests === "function" && document.getElementById("savedList")) renderSavedTests();
+    if (typeof renderSaveStatus === "function" && document.getElementById("saveStatus")) renderSaveStatus();
   }
 
   function num(v) {
@@ -1272,8 +1530,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   // ---------- computation ----------
-  function compute(run) {
-    var N = num(state.N), rho = num(state.density);
+  function compute(run, s) {
+    s = s || state;
+    var N = num(s.N), rho = num(s.density);
     var out = { m: NaN, mExpr: "", V: NaN, vExpr: "", blank: 0, acidity: NaN, av: NaN, notes: [], fillVols: [] };
 
     if (run.mode === "diff") {
@@ -1324,11 +1583,11 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       } else {
         out.acidity = out.V * N * FACTOR / out.m;
         out.av = out.V * N * M_KOH / out.m;
-        var rec = MASS_REC[state.expected] || MASS_REC.low;
+        var rec = MASS_REC[s.expected] || MASS_REC.low;
         if (out.V < 0.5) out.notes.push(["warn", t("nSmallV")]);
         if (out.V > 10) out.notes.push(["warn", t("nBigV")]);
         if (out.m < rec.m * 0.5 || out.m > rec.m * 2) out.notes.push(["warn", t("nMass")(rec.m)]);
-        if (state.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
+        if (s.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
       }
     }
     return out;
@@ -1553,16 +1812,21 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     return d ? d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
   }
 
-  // Display text for one detail, HTML-escaped, with its unit; "" when empty.
-  function infoVal(k) {
-    var v = state.info[k];
+  // Display text for one detail, HTML-escaped (unless raw=true), with its unit; "" when empty.
+  function infoVal(k, s, raw) {
+    s = s || state;
+    var v = (s.info || {})[k];
     if (v == null || String(v).trim() === "") return "";
     v = String(v).trim();
     var O = t("opts");
-    if (O[k]) return O[k][v] ? esc(O[k][v]) : "";
-    if (k === "harvestStart" || k === "harvestEnd" || k === "pressDate") return esc(fmtDT(v));
-    var units = { malaxTime: t("min"), malaxTemp: "°C", olivesKg: "kg", oilL: "L" };
-    return esc(v) + (units[k] ? " " + units[k] : "");
+    var val = "";
+    if (O[k]) val = O[k][v] ? O[k][v] : "";
+    else if (k === "harvestStart" || k === "harvestEnd" || k === "pressDate") val = fmtDT(v);
+    else {
+      var units = { malaxTime: t("min"), malaxTemp: "°C", olivesKg: "kg", oilL: "L" };
+      val = v + (units[k] ? " " + units[k] : "");
+    }
+    return raw ? val : esc(val);
   }
   function infoFilled() {
     return Object.keys(state.info).filter(function (k) { return String(state.info[k] || "").trim() !== ""; }).length;
@@ -1594,8 +1858,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     renderInfoNotes();
   }
 
-  function infoDerived() {
-    var i = state.info, out = { notes: [] }, H = 3600000;
+  function infoDerived(s) {
+    s = s || state;
+    var i = s.info || {}, out = { notes: [] }, H = 3600000;
     var hs = parseDate(i.harvestStart), he = parseDate(i.harvestEnd), p = parseDate(i.pressDate);
     var bad = (hs && he && he < hs) || (p && ((hs && p < hs) || (he && p < he)));
     if (bad) out.notes.push(["bad", t("iOrder")]);
@@ -1611,7 +1876,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var temp = num(i.malaxTemp), time = num(i.malaxTime);
     if (isFinite(temp)) { out.cold = temp <= 27; out.notes.push(out.cold ? ["ok", t("iCold")] : ["warn", t("iWarm")]); }
     if (isFinite(time) && time > 60) out.notes.push(["warn", t("iLong")]);
-    var kg = num(i.olivesKg), L = num(i.oilL), rho = num(state.density);
+    var kg = num(i.olivesKg), L = num(i.oilL), rho = num(s.density);
     if (kg > 0 && L > 0) {
       out.yieldPct = L * (rho > 0 ? rho : 0.916) / kg * 100;
       out.kgPerL = kg / L;
@@ -1636,8 +1901,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   };
   var BRAND_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/></svg>';
 
-  function summary() {
-    return stats(state.runs.map(function (r) { return compute(r); }).filter(function (c) { return isFinite(c.acidity); }));
+  function summary(s) {
+    s = s || state;
+    return stats((s.runs || []).map(function (r) { return compute(r, s); }).filter(function (c) { return isFinite(c.acidity); }));
   }
   function clampInt(v, lo, hi, dflt) {
     var n = parseInt(v, 10);
@@ -1879,6 +2145,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     sel.options[1].textContent = t("optMid");
     sel.options[2].textContent = t("optHigh");
     document.getElementById("sampleName").placeholder = t("placeholder");
+    document.getElementById("savedSearch").placeholder = t("savedFilterPlaceholder");
+    document.getElementById("pasteInput").placeholder = t("pastePlaceholder");
     document.getElementById("resetBtn").textContent = resetArmed ? t("resetArm") : t("reset");
     document.querySelectorAll(".lang-switch button").forEach(function (b) {
       b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
@@ -1894,6 +2162,211 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     document.getElementById("exampleBanner").hidden = !state.example;
   }
 
+  // ---------- saved tests list, export & import ----------
+  function fmtDateTime(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleString(lang === "tr" ? "tr-TR" : "en-GB", {
+      day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false
+    });
+  }
+  function fmtTimeOnly(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleTimeString(lang === "tr" ? "tr-TR" : "en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  }
+  function slugifyName(name) {
+    var map = { "ç": "c", "Ç": "c", "ğ": "g", "Ğ": "g", "ı": "i", "İ": "i", "ö": "o", "Ö": "o", "ş": "s", "Ş": "s", "ü": "u", "Ü": "u" };
+    var s = String(name || "").replace(/[çÇğĞıİöÖşŞüÜ]/g, function (c) { return map[c] || c; })
+      .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return s || (lang === "tr" ? "zeytinyagi-testi" : "olive-oil-test");
+  }
+  function testDateTimeStamp(s) {
+    var d = new Date(s.createdAt || s.updatedAt || Date.now());
+    if (isNaN(d.getTime())) d = new Date();
+    var datePart = s.testDate && /^\d{4}-\d{2}-\d{2}$/.test(s.testDate)
+      ? s.testDate
+      : (d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"));
+    var timePart = String(d.getHours()).padStart(2, "0") + "-" + String(d.getMinutes()).padStart(2, "0");
+    return datePart + "_" + timePart;
+  }
+  function testKey(s) { return slugifyName(s.name) + "_" + testDateTimeStamp(s); }
+  function exportFilename(s) { return testKey(s) + ".txt"; }
+
+  function showImportMsg(kind, html) {
+    var el = document.getElementById("importMsg");
+    el.innerHTML = html ? '<div class="note ' + kind + '">' + html + '</div>' : "";
+  }
+
+  function renderSaveStatus() {
+    var el = document.getElementById("saveStatus");
+    if (!el) return;
+    if (storageError) { el.textContent = t("storageFullStatus"); return; }
+    if (state.example) { el.textContent = t("exampleStatus"); return; }
+    if (hasContent(state)) { el.textContent = t("autoSavedStatus")(fmtTimeOnly(state.updatedAt)); return; }
+    var list = loadArchive();
+    var inArchive = list.some(function (x) { return x.id === state.id; });
+    el.textContent = inArchive ? t("autoSavedStatus")(fmtTimeOnly(state.updatedAt)) : "";
+  }
+
+  var deleteArmedId = null, deleteArmTimer = null;
+  function renderSavedTests() {
+    var list = loadArchive();
+    var countEl = document.getElementById("savedCount");
+    var jumpCountEl = document.getElementById("savedJumpCount");
+    var listEl = document.getElementById("savedList");
+    var searchEl = document.getElementById("savedSearch");
+    if (countEl) countEl.textContent = t("savedCount")(list.length);
+    if (jumpCountEl) jumpCountEl.textContent = t("savedCountJump")(list.length);
+    if (!listEl) return;
+
+    searchEl.hidden = list.length < 4;
+    var q = searchEl.hidden ? "" : String(searchEl.value || "").trim().toLowerCase();
+    var filtered = q ? list.filter(function (item) {
+      var hay = [item.name, item.testDate, (item.info && item.info.variety) || "", (item.info && item.info.origin) || ""].join(" ").toLowerCase();
+      return hay.indexOf(q) >= 0;
+    }) : list;
+
+    if (!list.length) {
+      listEl.innerHTML = '<div class="saved-empty">' + esc(t("savedEmpty")) + '</div>';
+      return;
+    }
+    if (!filtered.length) {
+      listEl.innerHTML = '<div class="saved-empty">' + esc(t("savedNoMatch")) + '</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(function (item) {
+      var s = summary(item);
+      var g = grade(s ? s.mean : NaN);
+      var isCurrent = !state.example && item.id === state.id;
+      var title = String(item.name || "").trim() || t("untitled");
+      var metaParts = [];
+      if (item.testDate) metaParts.push(fmtDate(item.testDate));
+      if (item.updatedAt) metaParts.push(t("savedAt") + " " + fmtDateTime(item.updatedAt));
+      metaParts.push(t("runsCount")(item.runs.length));
+      metaParts.push(testKey(item));
+      var delArmed = deleteArmedId === item.id;
+
+      return '<div class="saved-item' + (isCurrent ? ' active' : '') + '">' +
+        '<div class="saved-main">' +
+          '<div class="saved-title"><span>' + esc(title) + '</span>' +
+            (isCurrent ? '<span class="saved-badge">' + esc(t("currentBadge")) + '</span>' : '') +
+            '<span class="chip ' + g.cls + '">' + esc(g.text) + '</span>' +
+          '</div>' +
+          '<div class="saved-meta">' + esc(metaParts.join(" · ")) + '</div>' +
+        '</div>' +
+        '<div class="saved-right">' +
+          '<span class="saved-res">' + (s ? pct(s.mean, 2) : "—") + '</span>' +
+          '<div class="saved-actions">' +
+            (isCurrent ? '' : '<button type="button" class="small" data-saved-act="open" data-saved-id="' + esc(item.id) + '">' + esc(t("openBtn")) + '</button>') +
+            '<button type="button" class="small ghost" data-saved-act="export" data-saved-id="' + esc(item.id) + '">' + esc(t("exportBtn")) + '</button>' +
+            '<button type="button" class="small ' + (delArmed ? 'danger' : 'ghost') + '" data-saved-act="delete" data-saved-id="' + esc(item.id) + '">' + esc(delArmed ? t("deleteConfirm") : t("deleteBtn")) + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  function buildExportText(s) {
+    s = s || state;
+    var lines = [];
+    lines.push(t("expHeader"));
+    lines.push((s.name ? s.name : t("untitled")));
+    lines.push(t("expTestDate") + ": " + (fmtDate(s.testDate) || s.testDate || ""));
+    lines.push(t("expSavedAt") + ": " + fmtDateTime(s.updatedAt || s.createdAt || nowISO()));
+    lines.push(t("expKey") + ": " + testKey(s) + " (" + (s.id || "") + ")");
+    lines.push("");
+    lines.push(resultText(s));
+    var notes = String((s.info && s.info.notes) || "").trim();
+    if (notes) {
+      lines.push("");
+      lines.push(t("repNotes") + ":\n" + notes);
+    }
+    var payload = cloneObj(s);
+    payload.example = false;
+    payload.v = 1;
+    lines.push("");
+    lines.push("# " + t("expDataWarn"));
+    lines.push(EXPORT_START);
+    lines.push(JSON.stringify(payload));
+    lines.push(EXPORT_END);
+    return lines.join("\n");
+  }
+
+  function downloadText(filename, text) {
+    var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function exportTest(s) {
+    s = s || state;
+    var fn = exportFilename(s);
+    downloadText(fn, buildExportText(s));
+    var msg = document.getElementById("copyMsg");
+    if (msg) {
+      msg.textContent = t("exportedOk")(fn);
+      setTimeout(function () { if (msg.textContent === t("exportedOk")(fn)) msg.textContent = ""; }, 3000);
+    }
+  }
+
+  function parseImportedText(raw) {
+    var txt = String(raw || "").trim();
+    if (!txt) return { ok: false, err: t("importErrEmpty") };
+    var jsonStr = "";
+    var m = /---\s*ERKEN-HASAT-ACIDITY-V1\s*---\r?\n([\s\S]*?)\r?\n---\s*END-ERKEN-HASAT-ACIDITY-V1\s*---/.exec(txt);
+    if (m) jsonStr = m[1].trim();
+    else if (txt.charAt(0) === "{") jsonStr = txt;
+    if (!jsonStr) return { ok: false, err: t("importErrFormat") };
+    try {
+      var parsed = JSON.parse(jsonStr);
+      var norm = normalizeTest(parsed, false);
+      if (!norm) return { ok: false, err: t("importErrFormat") };
+      return { ok: true, test: norm };
+    } catch (e) {
+      return { ok: false, err: t("importErrFormat") };
+    }
+  }
+
+  function loadTestIntoWorkspace(testObj, fromImport) {
+    if (!state.example && hasContent(state)) upsertArchive(state);
+    var loaded = normalizeTest(cloneObj(testObj), false);
+    if (!loaded) return;
+    if (fromImport) {
+      var archive = loadArchive();
+      var sameId = null;
+      for (var i = 0; i < archive.length; i++) if (archive[i].id === loaded.id) { sameId = archive[i]; break; }
+      if (sameId && sameId.updatedAt !== loaded.updatedAt) {
+        loaded.id = makeId();
+      }
+      if (!sameId || sameId.updatedAt !== loaded.updatedAt) upsertArchive(loaded);
+    }
+    state = loaded;
+    try { window.localStorage.setItem(KEY, JSON.stringify(state)); storageError = false; } catch (e) { storageError = true; }
+    renderAll();
+  }
+
+  function handleImportRaw(rawText) {
+    var res = parseImportedText(rawText);
+    if (!res.ok) {
+      showImportMsg("bad", esc(res.err));
+      return false;
+    }
+    loadTestIntoWorkspace(res.test, true);
+    var labelName = String(state.name || "").trim() || t("untitled");
+    showImportMsg("ok", t("importedOk")(esc(labelName)));
+    return true;
+  }
+
   function renderAll() {
     renderInfo();
     renderLabelControls();
@@ -1903,6 +2376,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     renderSteps();
     renderRuns();
     updateComputed();
+    renderSavedTests();
+    renderSaveStatus();
   }
 
   function findRun(id) {
@@ -1924,6 +2399,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       renderRuns();
       renderInfo();
       updateComputed();
+      renderSavedTests();
+      renderSaveStatus();
     });
   });
 
@@ -2030,26 +2507,29 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     }
     clearTimeout(resetTimer);
     disarm();
+    if (!state.example && hasContent(state)) upsertArchive(state);
     state = freshState(true);
     save(); renderAll();
     window.scrollTo(0, 0);
   });
 
-  function resultText() {
-    var N = num(state.N);
+  function resultText(st) {
+    st = st || state;
+    var N = num(st.N);
     var lines = [];
-    lines.push(t("cTitle") + (state.name ? " · " + state.name : "") + " · " + new Date().toISOString().slice(0, 10));
+    lines.push(t("cTitle") + (st.name ? " · " + st.name : "") + " · " + (st.testDate || new Date().toISOString().slice(0, 10)));
     lines.push(t("cTitrant")(f(N, 3)));
     INFO_GROUPS.forEach(function (grp) {
       grp[1].forEach(function (fd) {
-        if (fd[0] === "notes" || !infoVal(fd[0])) return;
-        var tmp = document.createElement("textarea"); tmp.innerHTML = infoVal(fd[0]);   // un-escape for plain text
-        lines.push(t("info")[fd[0]][0] + ": " + tmp.value);
+        if (fd[0] === "notes") return;
+        var val = infoVal(fd[0], st, true);
+        if (!val) return;
+        lines.push(t("info")[fd[0]][0] + ": " + val);
       });
     });
     var valid = [];
-    state.runs.forEach(function (run, i) {
-      var c = compute(run);
+    (st.runs || []).forEach(function (run, i) {
+      var c = compute(run, st);
       if (isFinite(c.acidity)) {
         valid.push(c);
         lines.push(t("cRun")(i + 1, f(c.m, 2), f(c.V, 2), pct(c.acidity, 3)));
@@ -2066,6 +2546,117 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     }
     return lines.join("\n");
   }
+
+  document.querySelectorAll('[data-act="save-browser"]').forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.example = false;
+      save(true);
+      renderSettings();
+      renderFieldSheet();
+      var msg = document.getElementById("copyMsg");
+      if (msg) {
+        msg.textContent = t("savedBrowserOk");
+        setTimeout(function () { if (msg.textContent === t("savedBrowserOk")) msg.textContent = ""; }, 2500);
+      }
+      showImportMsg("ok", esc(t("savedBrowserOk")));
+    });
+  });
+
+  document.querySelectorAll('[data-act="export-txt"]').forEach(function (b) {
+    b.addEventListener("click", function () { exportTest(state); });
+  });
+
+  function openSavedDrawer() {
+    var det = document.getElementById("savedDetails");
+    det.open = true;
+    det.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }
+  document.getElementById("savedJumpBtn").addEventListener("click", openSavedDrawer);
+  document.getElementById("panelSavedLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    openSavedDrawer();
+  });
+
+  document.getElementById("savedSearch").addEventListener("input", renderSavedTests);
+
+  document.getElementById("savedList").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-saved-act]");
+    if (!b) return;
+    var act = b.getAttribute("data-saved-act");
+    var id = b.getAttribute("data-saved-id");
+    var list = loadArchive();
+    var target = null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) { target = list[i]; break; }
+    if (!target) return;
+
+    if (act === "open") {
+      loadTestIntoWorkspace(target, false);
+      showImportMsg("", "");
+    } else if (act === "export") {
+      exportTest(target);
+    } else if (act === "delete") {
+      if (deleteArmedId !== id) {
+        deleteArmedId = id;
+        clearTimeout(deleteArmTimer);
+        deleteArmTimer = setTimeout(function () { deleteArmedId = null; renderSavedTests(); }, 4000);
+        renderSavedTests();
+        return;
+      }
+      clearTimeout(deleteArmTimer);
+      deleteArmedId = null;
+      list = list.filter(function (item) { return item.id !== id; });
+      saveArchive(list);
+      if (!state.example && state.id === id) {
+        state.id = makeId();
+        try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) {}
+      }
+      renderSavedTests();
+      renderSaveStatus();
+    }
+  });
+
+  var importFileInput = document.getElementById("importFileInput");
+  document.getElementById("importFileBtn").addEventListener("click", function () {
+    importFileInput.value = "";
+    importFileInput.click();
+  });
+  function readFileAndImport(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () { handleImportRaw(reader.result); };
+    reader.onerror = function () { showImportMsg("bad", esc(t("importErrFormat"))); };
+    reader.readAsText(file, "utf-8");
+  }
+  importFileInput.addEventListener("change", function () {
+    if (importFileInput.files && importFileInput.files[0]) readFileAndImport(importFileInput.files[0]);
+  });
+
+  var importDrop = document.getElementById("importDrop");
+  importDrop.addEventListener("dragover", function (e) { e.preventDefault(); importDrop.classList.add("drag"); });
+  importDrop.addEventListener("dragleave", function () { importDrop.classList.remove("drag"); });
+  importDrop.addEventListener("drop", function (e) {
+    e.preventDefault();
+    importDrop.classList.remove("drag");
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files[0]) readFileAndImport(files[0]);
+  });
+
+  var pasteBox = document.getElementById("pasteBox");
+  var pasteInput = document.getElementById("pasteInput");
+  document.getElementById("togglePasteBtn").addEventListener("click", function () {
+    pasteBox.hidden = !pasteBox.hidden;
+    if (!pasteBox.hidden) pasteInput.focus();
+  });
+  document.getElementById("cancelPasteBtn").addEventListener("click", function () {
+    pasteBox.hidden = true;
+    pasteInput.value = "";
+  });
+  document.getElementById("importPasteBtn").addEventListener("click", function () {
+    if (handleImportRaw(pasteInput.value)) {
+      pasteBox.hidden = true;
+      pasteInput.value = "";
+    }
+  });
 
   document.getElementById("copyBtn").addEventListener("click", function () {
     var text = resultText();
