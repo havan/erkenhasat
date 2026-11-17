@@ -459,11 +459,13 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 .rep td.v { width: 27%; }
 .rep .num { font-family: var(--font-mono); text-align: right; white-space: nowrap; }
 .rep-notes { white-space: pre-wrap; }
-.rep-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; margin-top: 5mm; }
+.rep-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; align-items: start; break-inside: avoid; }
+.rep .rep-methods h2 { font-size: 9pt; border-bottom: 0.2mm solid var(--line); padding-bottom: 1mm; margin: 0 0 1.5mm; }
+.rep .rep-methods p { font-size: 7.5pt; line-height: 1.35; }
+.rep .method-note { margin: 0; max-width: none; background: none; border: 0; border-radius: 0; padding: 0; break-inside: avoid; }
+.rep .method-note p + p { margin-top: 1.2mm; }
+.rep-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin-top: 12mm; break-inside: avoid; }
 .rep-sign div { border-top: 0.3mm solid #000; padding-top: 1mm; font-size: 8pt; color: var(--muted); }
-.rep .method-note { margin: 0; max-width: none; padding: 3mm 4mm; border-radius: 2mm; break-inside: avoid; }
-.rep .method-note h2 { border: 0; padding: 0; margin: 0; font-size: 10pt; }
-.rep .method-note p { font-size: 8.5pt; }
 .rep-foot { font-size: 7.5pt; color: var(--muted); }
 
 @media print {
@@ -1726,8 +1728,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       (detRows ? '<section><h2>' + t("repDetails") + '</h2><table>' + detRows + '</table></section>' : '') +
       (notes ? '<section><h2>' + t("repNotes") + '</h2><p class="rep-notes">' + esc(notes) + '</p></section>' : '') +
       '<section><h2>' + t("repRuns") + '</h2><table><thead><tr>' + cols.map(function (c, j) { return '<th' + (j > 1 ? ' class="num"' : '') + '>' + c + '</th>'; }).join("") + '</tr></thead><tbody>' + runRows + '</tbody></table></section>' +
-      '<section><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
-      methodNoteHTML() +
+      '<div class="rep-methods">' +
+        '<section class="rep-method"><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
+        methodNoteHTML() +
+      '</div>' +
       '<div class="rep-sign"><div>' + t("repBy") + '</div><div>' + t("repSig") + '</div></div>' +
       '<div class="rep-foot">Erken Hasat · havan.github.io/erkenhasat</div></div>';
   }
