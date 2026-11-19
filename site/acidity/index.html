@@ -139,6 +139,16 @@ section.block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px;
 .field { display: grid; gap: 4px; align-content: start; }
 .field label { font-size: 0.86rem; font-weight: 500; }
 .field .hint { font-size: 0.8rem; color: var(--muted); }
+/* Test setup and report: explanations open from an ⓘ button (hover or tap) instead of sitting under every field. */
+.field-head { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+.info-btn { flex: none; display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border-radius: 50%;
+  border: 1px solid var(--line); background: transparent; color: var(--muted); font: 600 0.72rem/1 var(--font-body); }
+.info-btn:hover, .info-btn[aria-expanded="true"] { color: var(--paper); background: var(--accent); border-color: var(--accent); }
+.field.has-pop { position: relative; }
+.field .hint.hint-pop { display: none; position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: max(100%, 240px); max-width: min(360px, calc(100vw - 40px));
+  padding: 10px 12px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18); font-size: 0.82rem; line-height: 1.45; }
+.field.pop-open .hint.hint-pop { display: block; }
 input[type="text"], input[type="date"], input[type="datetime-local"], select, textarea {
   font: inherit; font-family: var(--font-mono); font-variant-numeric: tabular-nums;
   color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 7px;
@@ -206,12 +216,19 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .run-part { display: grid; gap: 10px; }
 .run-part > .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-family: var(--font-mono); }
 
-.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: fit-content; max-width: 100%; }
-.seg label { position: relative; cursor: pointer; }
+/* Segmented choice: options always share one row and stretch to the field width; a long option wraps inside its own
+   segment instead of pushing segments onto a second row. */
+.seg { display: flex; flex-wrap: nowrap; width: 100%; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg label { position: relative; cursor: pointer; flex: 1 1 auto; display: flex; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label > span { display: block; padding: 7px 12px; font-size: 0.88rem; border-right: 1px solid var(--line); background: var(--paper); }
+.seg label > span { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 7px 10px; font-size: 0.88rem; line-height: 1.25; border-right: 1px solid var(--line); background: var(--paper); }
 .seg label:last-child > span { border-right: 0; }
 .seg input:checked + span { background: var(--accent); color: var(--paper); font-weight: 500; }
+.seg input:disabled + span { opacity: 0.45; cursor: not-allowed; }
+/* Set by fitSegs() when the options don't fit side by side in a narrow column: stack them instead. */
+.seg.stack { flex-direction: column; }
+.seg.stack label > span { border-right: 0; border-bottom: 1px solid var(--line); }
+.seg.stack label:last-child > span { border-bottom: 0; }
 
 .fill-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 90px 32px; gap: 10px; align-items: end; }
 .fill-row .fill-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); padding-bottom: 9px; }
@@ -627,6 +644,15 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
               <span class="hint"><span class="en">Decides how much oil and solvent to use. Not used in a quick check.</span><span class="tr">Ne kadar yağ ve çözücü kullanılacağını belirler. Hızlı kontrolde kullanılmaz.</span></span>
             </div>
             <div class="field">
+              <span class="flabel"><span class="en">Resolution</span><span class="tr">Hassasiyet</span></span>
+              <div class="seg" role="radiogroup" aria-label="Resolution / Hassasiyet">
+                <label><input type="radio" name="resolution" value="std"><span><span class="en">Standard</span><span class="tr">Standart</span></span></label>
+                <label><input type="radio" name="resolution" value="fine"><span><span class="en">Fine</span><span class="tr">Hassas</span></span></label>
+                <label><input type="radio" name="resolution" value="finest"><span><span class="en">Finest</span><span class="tr">Çok hassas</span></span></label>
+              </div>
+              <span class="hint"><span class="en">Fine and Finest use 2× and 4× the oil and solvent, so each drop of titrant is worth half or a quarter as much. Standard is enough to grade oil; Fine helps when the result sits near 0.80% or you are comparing oils that are very close. Beyond Fine, judging the faint-pink endpoint usually limits the result more than the drop size does. Not used in a quick check.</span><span class="tr">Hassas ve Çok hassas 2 ve 4 kat yağ ve çözücü kullanır; böylece her titrant damlası yarı ya da çeyrek değerde olur. Yağı sınıflandırmak için Standart yeterlidir; sonuç %0,80’e yakınsa ya da birbirine çok yakın yağları karşılaştırıyorsanız Hassas işe yarar. Hassas’tan ötesinde sonucu genellikle damla büyüklüğünden çok soluk pembe dönüm noktasını ne kadar iyi seçtiğiniz sınırlar. Hızlı kontrolde kullanılmaz.</span></span>
+            </div>
+            <div class="field">
               <label for="density"><span class="en">Oil density</span><span class="tr">Yağ yoğunluğu</span></label>
               <div class="unit-input"><input type="text" inputmode="decimal" id="density"><span>g/mL</span></div>
               <span class="hint"><span class="en">Only used if you measure the oil by volume. Olive oil ≈ 0.91 at room temperature.</span><span class="tr">Yalnızca yağı hacimle ölçerseniz kullanılır. Zeytinyağı oda sıcaklığında ≈ 0,91.</span></span>
@@ -662,7 +688,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
                 <li>Work at a table near an open window, or outdoors out of direct sun.</li>
                 <li>Make sure there are <b>no flames or sparks in the room</b>: gas stove, water heater pilot light, candles, cigarettes, space heaters.</li>
                 <li>Put on safety glasses and nitrile gloves. If diethyl ether splashes onto a glove, remove it, wash and dry your hands, and put on a fresh pair (ether permeates nitrile quickly).</li>
-                <li>Lay out: Erlenmeyer flask, 100 mL measuring cylinder, 1:1 alcohol-ether solution, 1% phenolphthalein (in ethanol) with dropper, NaOH bottle, small glass jar, waste cup or tissue, Pi-pump with a 10 mL pipette (or a 10 mL microburette), scale, your oil, and a sheet of white paper. If measuring oil by volume, use a separate dry syringe or small cylinder.</li>
+                <li>Lay out: Erlenmeyer flask (at least <b class="fill" data-amount="flask">250 mL</b>), 100 mL measuring cylinder, 1:1 alcohol-ether solution, 1% phenolphthalein (in ethanol) with dropper, NaOH bottle, small glass jar, waste cup or tissue, Pi-pump with a 10 mL pipette (or a 10 mL microburette), scale, your oil, and a sheet of white paper. If measuring oil by volume, use a separate dry syringe or small cylinder.</li>
                 <li>Mix your oil container gently so the sample is uniform, and bring cold oil to room temperature (20–25 °C). If the oil is cloudy or unfiltered with water droplets or sediment, let it settle or pass it through a clean dry paper filter first.</li>
               </ul>
               <div class="caution"><b>Why this matters:</b> the alcohol-ether solution is half diethyl ether (1:1 ethanol–diethyl ether). Ether boils at 35 °C, and its vapour is heavier than air. The vapour creeps along the table and floor and can ignite metres away from the bottle. NaOH, even at 0.1 N, irritates the eyes; at 0.5 N and stronger it is corrosive to eyes and skin.</div>
@@ -672,7 +698,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
                 <li>Açık bir pencerenin yanındaki masada ya da doğrudan güneş almayan bir dış mekânda çalışın.</li>
                 <li>Odada <b>alev veya kıvılcım kaynağı olmadığından</b> emin olun: ocak, şofben/kombi pilot alevi, mum, sigara, ısıtıcı.</li>
                 <li>Koruyucu gözlük ve nitril eldiven takın. Eldivene dietil eter sıçrarsa eldiveni çıkarın, ellerinizi yıkayıp kurulayın ve yeni bir çift takın (eter nitrili hızla geçirir).</li>
-                <li>Hazırlayın: erlen, 100 mL mezür, 1:1 alkol-eter solüsyonu, damlalıklı %1’lik fenolftalein (etanol içinde), NaOH şişesi, küçük cam kavanoz, atık kabı veya kâğıt havlu, 10 mL pipet takılı Pi-pump (veya varsa 10 mL mikrobüret), terazi, yağınız ve bir beyaz kâğıt. Yağı hacimle ölçecekseniz ayrı, kuru bir şırınga veya küçük mezür kullanın.</li>
+                <li>Hazırlayın: erlen (en az <b class="fill" data-amount="flask">250 mL</b>), 100 mL mezür, 1:1 alkol-eter solüsyonu, damlalıklı %1’lik fenolftalein (etanol içinde), NaOH şişesi, küçük cam kavanoz, atık kabı veya kâğıt havlu, 10 mL pipet takılı Pi-pump (veya varsa 10 mL mikrobüret), terazi, yağınız ve bir beyaz kâğıt. Yağı hacimle ölçecekseniz ayrı, kuru bir şırınga veya küçük mezür kullanın.</li>
                 <li>Numune homojen olsun diye yağ kabını nazikçe karıştırın; soğuk yağı oda sıcaklığına (20–25 °C) getirin. Yağ bulanıksa veya içinde su damlacığı ya da tortu varsa önce dinlendirin ya da temiz, kuru bir kâğıt filtreden süzün.</li>
               </ul>
               <div class="caution"><b>Neden önemli:</b> alkol-eter solüsyonunun yarısı dietil eterdir (1:1 etanol–dietil eter). Eter 35 °C’de kaynar ve buharı havadan ağırdır. Buhar masa ve zemin boyunca yayılır, şişeden metrelerce uzakta tutuşabilir. NaOH, 0,1 N’de bile gözü tahriş eder; 0,5 N ve üstünde göz ve cilt için aşındırıcıdır.</div>
@@ -882,10 +908,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             <div class="field">
               <span class="flabel"><span class="en">Label size</span><span class="tr">Etiket boyutu</span></span>
               <div class="seg" role="radiogroup" aria-label="Label size / Etiket boyutu">
-                <label><input type="radio" name="lblSize" value="large"><span><span class="en">Large · 8 per sheet</span><span class="tr">Büyük · sayfada 8</span></span></label>
-                <label><input type="radio" name="lblSize" value="small"><span><span class="en">Small · 21 per sheet</span><span class="tr">Küçük · sayfada 21</span></span></label>
+                <label><input type="radio" name="lblSize" value="large"><span><span class="en">Large · 8</span><span class="tr">Büyük · 8</span></span></label>
+                <label><input type="radio" name="lblSize" value="small"><span><span class="en">Small · 21</span><span class="tr">Küçük · 21</span></span></label>
               </div>
-              <span class="hint"><span class="en">99.1 × 67.7 mm or 63.5 × 38.1 mm.</span><span class="tr">99,1 × 67,7 mm veya 63,5 × 38,1 mm.</span></span>
+              <span class="hint"><span class="en">Large: 99.1 × 67.7 mm, 8 per A4 sheet (Avery L7165 or compatible). Small: 63.5 × 38.1 mm, 21 per sheet (L7160).</span><span class="tr">Büyük: 99,1 × 67,7 mm, A4 sayfada 8 adet (Avery L7165 veya muadili). Küçük: 63,5 × 38,1 mm, sayfada 21 adet (L7160).</span></span>
             </div>
             <div class="field">
               <label for="lblCopies"><span class="en">Number of labels</span><span class="tr">Etiket sayısı</span></label>
@@ -1040,11 +1066,18 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   };
   var V_TARGET = 3.5;   // mL of titrant at the top of the expected range: fits one 10 mL pipette fill with room to spare
   var DROP_ML = 0.05;   // typical drop from a pipette tip
-  var NICE_MASS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7.5, 10, 12.5, 15, 20];
+  var NICE_MASS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7.5, 10, 12.5, 15, 20, 25, 30, 40];
+  // Resolution: k scales the titrant volume (and so oil and solvent) at the top of the expected range;
+  // cap is the most oil we ask for. More oil per drop of titrant means each drop is worth fewer points.
+  var RESOLUTION = {
+    std:    { k: 1, cap: 20 },
+    fine:   { k: 2, cap: 40 },
+    finest: { k: 4, cap: 40 }
+  };
 
-  // How much oil and solvent to use for the current normality and test type.
-  // Standard: oil mass is chosen so the titrant at the top of the expected range is about V_TARGET, rounded to an
-  // easy number and kept to 1–20 g (a stronger titrant would otherwise need a lot of oil and solvent).
+  // How much oil and solvent to use for the current normality, test type and resolution.
+  // Standard test: oil mass is chosen so the titrant at the top of the expected range is about V_TARGET × k,
+  // rounded to an easy number and kept to 1 g – cap (a stronger titrant would otherwise need a lot of oil and solvent).
   // Quick check: m = 28.2 × N, so V in mL reads directly as % acidity.
   // Solvent: ~5 mL per gram of oil to dissolve it, at least 20 mL, and at least 8× the largest expected titrant
   // volume so the water from aqueous NaOH stays under ~1/8 of the solvent.
@@ -1057,18 +1090,27 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       r = { quick: true, m: N * FACTOR, lo: 0.1, hi: 2.0, capped: false };
     } else {
       var rg = RANGES[s.expected] || RANGES.low;
-      var ideal = V_TARGET * N * FACTOR / rg.hi;
-      var m = NICE_MASS.reduce(function (best, x) { return Math.abs(Math.log(x / ideal)) < Math.abs(Math.log(best / ideal)) ? x : best; }, NICE_MASS[0]);
-      r = { quick: false, m: m, lo: rg.lo, hi: rg.hi, capped: ideal > 22 };
+      var res = RESOLUTION[s.res] || RESOLUTION.std;
+      var ideal = V_TARGET * res.k * N * FACTOR / rg.hi;
+      var m = NICE_MASS.filter(function (x) { return x <= res.cap; })
+        .reduce(function (best, x) { return Math.abs(Math.log(x / ideal)) < Math.abs(Math.log(best / ideal)) ? x : best; }, NICE_MASS[0]);
+      r = { quick: false, m: m, lo: rg.lo, hi: rg.hi, cap: res.cap, capped: ideal > res.cap * 1.1 };
     }
     r.vlo = r.lo * r.m / (N * FACTOR);
     r.vhi = r.hi * r.m / (N * FACTOR);
     r.solvent = Math.ceil(Math.max(20, 5 * r.m, 8 * r.vhi) / 5) * 5;
     r.drop = DROP_ML * N * FACTOR / r.m;   // acidity points per drop
+    // Flask: keep the liquid (solvent + oil + titrant) under about 60% of the flask so it can be swirled.
+    var liquid = r.solvent + r.m / 0.91 + r.vhi;
+    r.flask = liquid <= 60 ? 100 : (liquid <= 150 ? 250 : 500);
     return r;
   }
-  // Normality: three decimals as before (0.100), four when the label gives one more (0.0995).
-  function fmtN(x) { return f(x, Math.abs(x * 1000 - Math.round(x * 1000)) < 1e-6 ? 3 : 4); }
+  // Normality as written on a label: 0.1, 0.125, 1, or 0.0995 for an exact value (up to four decimals).
+  function fmtN(x) {
+    if (!isFinite(x)) return "—";
+    var s = x.toFixed(4).replace(/\.?0+$/, "");
+    return lang === "tr" ? s.replace(".", ",") : s;
+  }
   function fmtMass(m) {
     var d = Math.abs(m - Math.round(m)) < 1e-9 ? 0 : (Math.abs(m * 10 - Math.round(m * 10)) < 1e-6 ? 1 : 2);
     return f(m, d);
@@ -1106,7 +1148,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       nBlank: "The blank is larger than the titration volume. Check the readings.",
       nBlankNeg: "The blank cannot be negative. Check the reading.",
       nZeroV: "0 mL of titrant was recorded after subtracting the blank. Check the readings.",
-      nSmallV: function (d) { return "Less than 0.5 mL of titrant was used, and one drop is worth about " + d + " points here. For a finer result use more oil (with more solvent), or 0.1 N titrant if yours is stronger."; },
+      nSmallV: function (d) { return "Less than 0.5 mL of titrant was used, and one drop is worth about " + d + " points here. For a finer result choose a finer resolution in Test setup (more oil and solvent), or use 0.1 N titrant if yours is stronger."; },
       nBigV: "More than 10 mL was needed. The oil is quite acidic. Next time set a higher expected acidity in Test setup, so you use less oil, one pipette fill is enough and the water from the titrant doesn't separate out.",
       nMass: function (m) { return "Oil mass is far from the recommended " + m + " g. The result is still valid, but precision may suffer."; },
       nAbove: "The result is above the expected range. Consider setting a higher expected acidity in Test setup and using less oil.",
@@ -1138,9 +1180,13 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       recQuick: function (m, N) { return "Quick check: with exactly " + m + " g of oil, the mL of " + N + " N titrant used <strong>is</strong> the acidity in % (e.g. 0.40 mL → 0.40%). If you weigh a little more or less, the run card works out the exact value."; },
       recTotal: function (n, sv) { return "Solvent for " + n + ": about <strong>" + sv + " mL</strong>."; },
       recTotalN: { 1: "one run", 2: "two runs" },
-      recCapped: function (N) { return "With " + N + " N titrant the oil mass is capped at 20 g, so results are coarser. 0.1 N titrant gives finer results with less solvent."; },
+      recCapped: function (N, cap) { return "With " + N + " N titrant the oil mass is capped at " + cap + " g, so results are coarser than this resolution aims for. 0.1 N titrant gives finer results with less solvent."; },
+      recFlask: function (fl) { return "Use an Erlenmeyer flask of at least <strong>" + fl + " mL</strong>."; },
+      recTwoFills: "At the top of the expected range this needs more than one 10 mL pipette fill (record each fill in the run card).",
+      resNames: { std: "standard", fine: "fine", finest: "finest" },
       recScale: "Use a 0.01 g scale for this sample mass.",
       nOther: "Other / exact value",
+      infoBtn: "More information",
       ranges: { low: "below 1%", mid: "1 to 4%", high: "4 to 15%" },
       stepsDone: function (d, t) { return d + " of " + t + " done"; },
       reset: "Start new test", resetArm: "Click again to start blank (saved tests stay)",
@@ -1179,7 +1225,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       cSpread: function (r, sd) { return "Spread: " + r + " points · SD " + sd; },
       cAV: function (av) { return "Acid value: " + av + " mg KOH/g"; },
       cCat: function (g) { return "Category by acidity: " + g; },
-      fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · expected acidity: " + range + "."; },
+      fsSetup1: function (N, range, res) { return "Titrant: <strong>" + N + " N</strong> NaOH · expected acidity: " + range + " · resolution: " + res + "."; },
       fsSetupQuick: function (N) { return "Titrant: <strong>" + N + " N</strong> NaOH · quick check."; },
       fsRun: function (n) { return "Run " + n; },
       fsIfNeeded: "only if needed",
@@ -1270,7 +1316,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       nBlank: "Kör deneme hacmi titrasyon hacminden büyük. Okumaları kontrol edin.",
       nBlankNeg: "Kör deneme negatif olamaz. Okumayı kontrol edin.",
       nZeroV: "Kör düşüldükten sonra 0 mL titrant harcandı görünüyor. Okumaları kontrol edin.",
-      nSmallV: function (d) { return "0,5 mL’den az titrant harcandı ve burada bir damla yaklaşık " + d + " puan ediyor. Daha hassas sonuç için daha çok yağ (daha çok çözücüyle) ya da sizinki daha güçlüyse 0,1 N titrant kullanın."; },
+      nSmallV: function (d) { return "0,5 mL’den az titrant harcandı ve burada bir damla yaklaşık " + d + " puan ediyor. Daha hassas sonuç için Test ayarlarında daha yüksek bir hassasiyet seçin (daha çok yağ ve çözücü) ya da sizinki daha güçlüyse 0,1 N titrant kullanın."; },
       nBigV: "10 mL’den fazla gerekti; yağ oldukça asidik. Bir dahaki sefere Test ayarlarında daha yüksek bir beklenen asitlik seçin; böylece daha az yağ kullanırsınız, tek pipet dolumu yeter ve titranttaki su ayrışmaz.",
       nMass: function (m) { return "Yağ kütlesi önerilen " + String(m).replace(".", ",") + " g’dan çok farklı. Sonuç yine geçerli ama hassasiyet düşebilir."; },
       nAbove: "Sonuç beklenen aralığın üstünde. Test ayarlarında daha yüksek bir beklenen asitlik seçip daha az yağ kullanmayı düşünün.",
@@ -1302,9 +1348,13 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       recQuick: function (m, N) { return "Hızlı kontrol: tam " + m + " g yağla, harcanan " + N + " N titrantın mL’si <strong>doğrudan</strong> % asitliktir (ör. 0,40 mL → %0,40). Biraz fazla veya az tartarsanız ölçüm kartı kesin değeri hesaplar."; },
       recTotal: function (n, sv) { return n + " için çözücü: yaklaşık <strong>" + sv + " mL</strong>."; },
       recTotalN: { 1: "Tek ölçüm", 2: "İki ölçüm" },
-      recCapped: function (N) { return N + " N titrantla yağ miktarı 20 g ile sınırlanır, bu yüzden sonuç daha kabadır. 0,1 N titrant daha az çözücüyle daha hassas sonuç verir."; },
+      recCapped: function (N, cap) { return N + " N titrantla yağ miktarı " + cap + " g ile sınırlanır, bu yüzden sonuç bu hassasiyetin hedeflediğinden daha kabadır. 0,1 N titrant daha az çözücüyle daha hassas sonuç verir."; },
+      recFlask: function (fl) { return "En az <strong>" + fl + " mL</strong>’lik bir erlen kullanın."; },
+      recTwoFills: "Beklenen aralığın üst ucunda bu, birden fazla 10 mL pipet dolumu gerektirir (her dolumu ölçüm kartına yazın).",
+      resNames: { std: "standart", fine: "hassas", finest: "çok hassas" },
       recScale: "Bu numune kütlesi için 0,01 g hassasiyetli terazi kullanın.",
       nOther: "Diğer / kesin değer",
+      infoBtn: "Daha fazla bilgi",
       ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
       stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
       reset: "Yeni test başlat", resetArm: "Boş test için tekrar tıklayın (kayıtlılar kalır)",
@@ -1343,7 +1393,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       cSpread: function (r, sd) { return "Fark: " + r + " puan · SS " + sd; },
       cAV: function (av) { return "Asit değeri: " + av + " mg KOH/g"; },
       cCat: function (g) { return "Asitliğe göre kategori: " + g; },
-      fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · beklenen asitlik: " + range + "."; },
+      fsSetup1: function (N, range, res) { return "Titrant: <strong>" + N + " N</strong> NaOH · beklenen asitlik: " + range + " · hassasiyet: " + res + "."; },
       fsSetupQuick: function (N) { return "Titrant: <strong>" + N + " N</strong> NaOH · hızlı kontrol."; },
       fsRun: function (n) { return n + ". ölçüm"; },
       fsIfNeeded: "yalnızca gerekirse",
@@ -1431,7 +1481,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var ts = nowISO();
     return {
       id: "example", createdAt: ts, updatedAt: ts,
-      example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", quick: false, steps: {}, nextId: 3,
+      example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", quick: false, res: "std", steps: {}, nextId: 3,
       testDate: todayISO(), label: defaultLabel(),
       info: exampleInfo(),
       runs: [
@@ -1446,9 +1496,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   function freshState(keepSettings) {
     var ts = nowISO();
     var s = { id: makeId(), createdAt: ts, updatedAt: ts,
-      example: false, name: "", N: "0.1", density: "0.91", expected: "low", quick: false, steps: {}, nextId: 2, runs: [blankRun(1)],
+      example: false, name: "", N: "0.1", density: "0.91", expected: "low", quick: false, res: "std", steps: {}, nextId: 2, runs: [blankRun(1)],
       info: {}, testDate: todayISO(), label: (state && state.label) || defaultLabel() };
-    if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; s.quick = !!state.quick; }
+    if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; s.quick = !!state.quick; s.res = state.res || "std"; }
     return s;
   }
 
@@ -1465,6 +1515,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       density: raw.density == null ? "0.91" : String(raw.density),
       expected: raw.expected === "mid" || raw.expected === "high" ? raw.expected : "low",
       quick: raw.quick === true,
+      res: RESOLUTION.hasOwnProperty(raw.res) ? raw.res : "std",
       steps: {},
       nextId: 1,
       testDate: typeof raw.testDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.testDate) ? raw.testDate : todayISO(),
@@ -1666,7 +1717,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         var rec = recommend(s);
         var dropPts = DROP_ML * N * FACTOR / out.m;
         if (out.V < 0.5 && !s.quick && dropPts > 0.02) out.notes.push(["warn", t("nSmallV")(f(dropPts, 2))]);
-        if (out.V > 10) out.notes.push(["warn", t("nBigV")]);
+        if (out.V > 10 && out.V > rec.vhi * 1.2) out.notes.push(["warn", t("nBigV")]);
         if (out.m < rec.m * 0.5 || out.m > rec.m * 2) out.notes.push(["warn", t("nMass")(fmtMass(rec.m))]);
         if (!s.quick && s.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
       }
@@ -1861,6 +1912,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       drops: rec ? (function (d) { return f(d, 0) + "–" + f(d + 1, 0); })(Math.max(1, Math.floor(rec.solvent / 20))) : "—",
       mass: rec ? fmtMass(rec.m) + " g" : "—",
       oilml: isFinite(oilMl) ? f(oilMl, oilMl < 10 ? 1 : 0) + " mL" : "—",
+      flask: rec ? f(rec.flask, 0) + " mL" : "—",
       cup: isFinite(oilMl) ? f(Math.ceil((3 * oilMl + 15) / 10) * 10, 0) + " mL" : "—"
     };
     document.querySelectorAll("[data-amount]").forEach(function (x) { x.textContent = fills[x.getAttribute("data-amount")]; });
@@ -1871,7 +1923,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var html = '<div>' + t("rec1")(mStr, ml, f(rec.solvent, 0)) + (rec.m <= 5 ? " " + t("recScale") : "") + '</div>';
     if (rec.quick) html += '<div>' + t("recQuick")(mStr, Ns) + '</div>';
     else html += '<div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(rec.vlo, 1), f(rec.vhi, 1), Ns, f(rec.drop, rec.drop < 0.1 ? 3 : 2)) + '</div>';
-    if (rec.capped) html += '<div>' + t("recCapped")(Ns) + '</div>';
+    if (rec.capped) html += '<div>' + t("recCapped")(Ns, fmtMass(rec.cap)) + '</div>';
+    if (!rec.quick && rec.vhi > 9) html += '<div>' + t("recTwoFills") + '</div>';
+    html += '<div>' + t("recFlask")(rec.flask) + '</div>';
     html += '<div>' + t("recTotal")(t("recTotalN")[runs], f(rec.solvent * runs, 0)) + '</div>';
     el.innerHTML = html;
   }
@@ -2158,7 +2212,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       [t("fsHarvest"), ex ? "" : esc(fmtRange(state.info.harvestStart, state.info.harvestEnd))], [t("fsPressed"), iv("pressDate")], [t("fsMalax"), malax]
     ].map(function (p) { return '<div class="ln"><b>' + p[0] + '</b><i>' + p[1] + '</i></div>'; }).join("");
     var setup = document.getElementById("fsSetup");
-    setup.innerHTML = '<div>' + (state.quick ? t("fsSetupQuick")(Ns) : t("fsSetup1")(Ns, rangeTxt)) + '</div>' + document.getElementById("recommend").innerHTML;
+    setup.innerHTML = '<div>' + (state.quick ? t("fsSetupQuick")(Ns) : t("fsSetup1")(Ns, rangeTxt, t("resNames")[state.res] || t("resNames").std)) + '</div>' + document.getElementById("recommend").innerHTML;
 
     var modes = t("modes");
     var runs = "";
@@ -2248,6 +2302,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var nSel = document.getElementById("normalityPreset");
     N_PRESETS.forEach(function (v, i) { nSel.options[i].textContent = (lang === "tr" ? v.replace(".", ",") : v) + " N"; });
     nSel.options[N_PRESETS.length].textContent = t("nOther");
+    document.querySelectorAll(".info-btn").forEach(function (b) { b.setAttribute("aria-label", t("infoBtn")); b.title = t("infoBtn"); });
     document.getElementById("sampleName").placeholder = t("placeholder");
     document.getElementById("savedSearch").placeholder = t("savedFilterPlaceholder");
     document.getElementById("pasteInput").placeholder = t("pastePlaceholder");
@@ -2278,6 +2333,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     renderNormality();
     document.querySelectorAll('input[name="testType"]').forEach(function (r) { r.checked = r.value === (state.quick ? "quick" : "std"); });
     document.getElementById("expected").disabled = !!state.quick;
+    document.querySelectorAll('input[name="resolution"]').forEach(function (r) { r.checked = r.value === (state.res || "std"); r.disabled = !!state.quick; });
     document.getElementById("density").value = state.density;
     document.getElementById("testDate").value = state.testDate || "";
     document.getElementById("expected").value = state.expected;
@@ -2500,7 +2556,18 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     updateComputed();
     renderSavedTests();
     renderSaveStatus();
+    fitSegs();
   }
+
+  // Segmented choices stack vertically when their options (in the current language) are wider than the column.
+  function fitSegs() {
+    document.querySelectorAll(".seg").forEach(function (g) {
+      g.classList.remove("stack");
+      if (g.clientWidth > 0 && g.scrollWidth > g.clientWidth + 1) g.classList.add("stack");
+    });
+  }
+  window.addEventListener("resize", fitSegs);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSegs);
 
   function findRun(id) {
     id = Number(id);
@@ -2601,11 +2668,19 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     if (nOtherOpen) document.getElementById("normality").focus();
     save(); updateComputed();
   });
+  document.querySelectorAll('input[name="resolution"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      if (!r.checked) return;
+      state.res = r.value;
+      save(); updateComputed();
+    });
+  });
   document.querySelectorAll('input[name="testType"]').forEach(function (r) {
     r.addEventListener("change", function () {
       if (!r.checked) return;
       state.quick = r.value === "quick";
       document.getElementById("expected").disabled = state.quick;
+      document.querySelectorAll('input[name="resolution"]').forEach(function (x) { x.disabled = state.quick; });
       save(); updateComputed();
     });
   });
@@ -2815,6 +2890,48 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       } else { fallback(); }
     } catch (e) { fallback(); }
   });
+
+  // Test setup and report: move each field's explanation behind an ⓘ button. Hover shows it; a click or tap pins it open
+  // until clicking elsewhere, pressing Escape or clicking the button again.
+  (function () {
+    var pinned = null;
+    function show(field, on) {
+      field.classList.toggle("pop-open", on);
+      field.querySelector(".info-btn").setAttribute("aria-expanded", on ? "true" : "false");
+    }
+    document.querySelectorAll("#setupSection .field, #reportSection .field").forEach(function (field, i) {
+      var hint = field.querySelector(":scope > .hint"), head = field.firstElementChild;
+      if (!hint || !head || head === hint) return;
+      var row = document.createElement("div");
+      row.className = "field-head";
+      field.insertBefore(row, head);
+      row.appendChild(head);
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "info-btn"; b.textContent = "i";
+      hint.id = hint.id || "setup-hint-" + i;
+      hint.classList.add("hint-pop");
+      hint.setAttribute("role", "tooltip");
+      b.setAttribute("aria-controls", hint.id);
+      b.setAttribute("aria-expanded", "false");
+      row.appendChild(b);
+      field.classList.add("has-pop");
+      b.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = pinned !== field;
+        if (pinned) show(pinned, false);
+        pinned = open ? field : null;
+        show(field, open);
+      });
+      b.addEventListener("mouseenter", function () { if (pinned !== field) show(field, true); });
+      b.addEventListener("mouseleave", function () { if (pinned !== field) show(field, false); });
+    });
+    document.addEventListener("click", function (e) {
+      if (pinned && !pinned.contains(e.target)) { show(pinned, false); pinned = null; }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && pinned) { var b = pinned.querySelector(".info-btn"); show(pinned, false); pinned = null; b.focus(); }
+    });
+  })();
 
   renderAll();
 })();
