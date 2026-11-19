@@ -105,6 +105,19 @@ code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums;
 a { color: var(--accent); }
 
 .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+/* Brand, saved tests, field sheet and language stay pinned at the top while scrolling. --bar-h is measured by script so
+   the sticky result panel and in-page jumps land below the bar. */
+html { scroll-padding-top: calc(var(--bar-h, 58px) + 12px); }
+.topbar { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); }
+.topbar-inner { max-width: 1180px; margin: 0 auto; padding: 10px 16px; }
+@media (max-width: 560px) {
+  .topbar .brand-text { display: none; }
+  .topbar .top-row { flex-wrap: nowrap; }
+  .topbar .top-actions { gap: 6px; flex-wrap: nowrap; }
+  .topbar .top-actions button.small { padding: 5px 8px; font-size: 0.82rem; white-space: nowrap; }
+  .topbar .lang-switch button { padding: 5px 9px; }
+  .topbar .hide-xs { display: none; }
+}
 header.top { display: grid; gap: 8px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
 .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 header.top .eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
@@ -117,7 +130,7 @@ header.top p { color: var(--muted); max-width: 68ch; }
 
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
 .main { display: grid; gap: 28px; min-width: 0; }
-aside.panel { position: sticky; top: 16px; }
+aside.panel { position: sticky; top: calc(var(--bar-h, 58px) + 16px); max-height: calc(100vh - var(--bar-h, 58px) - 32px); overflow-y: auto; }
 @media (max-width: 920px) {
   .layout { grid-template-columns: 1fr; }
   aside.panel { position: static; order: -1; }
@@ -126,6 +139,7 @@ aside.panel { position: sticky; top: 16px; }
 section.block { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .section-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .section-head .tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.section-head .all-steps { margin-left: auto; align-self: center; }
 .lede { color: var(--muted); max-width: 68ch; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
@@ -218,8 +232,20 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 
 /* Segmented choice: options always share one row and stretch to the field width; a long option wraps inside its own
    segment instead of pushing segments onto a second row. */
-.seg { display: flex; flex-wrap: nowrap; width: 100%; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg { display: flex; flex-wrap: nowrap; width: 100%; border: 1px solid var(--line); border-radius: 8px; }
 .seg label { position: relative; cursor: pointer; flex: 1 1 auto; display: flex; }
+/* No overflow: hidden on .seg (it would clip the tooltips), so the end segments carry the rounding themselves. */
+.seg label:first-child > span { border-radius: 7px 0 0 7px; }
+.seg label:last-child > span { border-radius: 0 7px 7px 0; }
+.seg.stack label:first-child > span { border-radius: 7px 7px 0 0; }
+.seg.stack label:last-child > span { border-radius: 0 0 7px 7px; }
+/* Hover tooltip from data-tip (run weighing methods). Screen readers get the same text via aria-describedby. */
+.seg label[data-tip]::after { content: attr(data-tip); display: none; position: absolute; z-index: 20; top: calc(100% + 6px); left: 0;
+  width: max-content; max-width: min(300px, calc(100vw - 60px)); padding: 8px 11px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  font-size: 0.8rem; font-weight: 400; line-height: 1.45; text-align: left; pointer-events: none; }
+.seg label[data-tip]:last-child::after { left: auto; right: 0; }
+.seg label[data-tip]:hover::after, .seg label[data-tip]:has(input:focus-visible)::after { display: block; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg label > span { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 7px 10px; font-size: 0.88rem; line-height: 1.25; border-right: 1px solid var(--line); background: var(--paper); }
 .seg label:last-child > span { border-right: 0; }
@@ -232,12 +258,25 @@ ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 
 .fill-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 90px 32px; gap: 10px; align-items: end; }
 .fill-row .fill-name { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); padding-bottom: 9px; }
-.fill-row .fill-vol { font-family: var(--font-mono); font-size: 0.92rem; padding-bottom: 9px; text-align: right; }
+.fill-vol { font-family: var(--font-mono); font-size: 0.92rem; padding-bottom: 9px; text-align: right; white-space: nowrap; }
 .fill-row .x { padding: 4px 0; width: 32px; height: 36px; background: transparent; color: var(--muted); border-color: var(--line); }
+/* Oil mass inputs with the derived mass on the right, lined up with the fill volumes below. */
+.mass-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 90px 32px; gap: 10px; align-items: end; }
+.mass-row.one { grid-template-columns: minmax(0, 1fr) 90px 32px; }
+/* Popovers in the right-hand column open leftwards so the run card doesn't clip them. */
+.field.pop-right .hint.hint-pop { left: auto; right: 0; }
 @media (max-width: 560px) {
-  .fill-row { grid-template-columns: 1fr 1fr; }
+  .fill-row, .mass-row { grid-template-columns: 1fr 1fr; }
+  .mass-row.one { grid-template-columns: 1fr; }
   .fill-row .fill-name { grid-column: 1 / -1; padding-bottom: 0; }
-  .fill-row .fill-vol { text-align: left; }
+  .fill-vol { text-align: left; }
+  .mass-row .fill-vol { grid-column: 1 / -1; padding-bottom: 0; }
+  .mass-row > :last-child:empty { display: none; }
+}
+/* Remove-run button: only while the pointer (or keyboard focus) is inside that run. Always visible on touch screens. */
+@media (hover: hover) {
+  .run .rm-run { opacity: 0; transition: opacity 0.12s; }
+  .run:hover .rm-run, .run:focus-within .rm-run { opacity: 1; }
 }
 
 .calc { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; font-family: var(--font-mono); font-size: 0.88rem; overflow-x: auto; }
@@ -331,6 +370,8 @@ footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-size: 10.5pt; line-height: 1.4; background: #fff; }
   .wrap { max-width: none; padding: 0; }
+  .topbar { position: static; border: 0; background: none; }
+  .topbar-inner { max-width: none; padding: 0 0 6px; }
   .print-only { display: block; }
   .screen-only, .lang-switch, .top-actions, #exampleBanner, aside.panel,
   #savedSection, #setupSection, #infoSection, #reportSection, #runsSection, #mathSection, .lede.screen-only, #stepCount { display: none !important; }
@@ -489,7 +530,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 .rep-foot { font-size: 7.5pt; color: var(--muted); }
 
 @media print {
-  html[data-print] .wrap { display: none !important; }
+  html[data-print] .wrap, html[data-print] .topbar { display: none !important; }
   html[data-print="labels"] #printLabels, html[data-print="report"] #printReport { display: block; }
   #printLabels .sheet { position: relative; width: 210mm; height: 296mm; overflow: hidden; break-after: page; }
   #printLabels .sheet:last-child { break-after: auto; }
@@ -525,19 +566,23 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
+<div class="topbar" id="topbar">
+  <div class="topbar-inner">
     <div class="top-row">
       <a class="brand" href="../" title="Erken Hasat · all tools / tüm araçlar"><svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 6c6 4 9 9 9 14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 16c7-6 15-6 19-3-5 6-12 8-19 3z" fill="#7c8b2a"/><ellipse cx="30" cy="38" rx="17" ry="21" fill="#56631b"/><ellipse cx="24" cy="31" rx="4" ry="6" fill="#b8c76c" opacity=".7"/></svg><span class="brand-text"><span class="brand-name">Erken Hasat</span><span class="brand-url">havan.github.io/erkenhasat</span></span></a>
       <div class="top-actions">
         <button type="button" class="small ghost" id="savedJumpBtn"><span class="en">Saved tests</span><span class="tr">Kayıtlı testler</span> <span class="mono" id="savedJumpCount"></span></button>
-        <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet (PDF)</span><span class="tr">Saha formu (PDF)</span></button>
+        <button type="button" class="small ghost" data-act="print"><span class="en">Field sheet</span><span class="tr">Saha formu</span><span class="hide-xs"> (PDF)</span></button>
         <div class="lang-switch" role="group" aria-label="Language / Dil">
           <button type="button" data-lang="en" aria-pressed="false">EN</button>
           <button type="button" data-lang="tr" aria-pressed="false">TR</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
+<div class="wrap">
+  <header class="top">
     <span class="eyebrow"><span class="en">Free fatty acid titration · based on ISO 660 / EU 2022/2105 (ex-2568/91)</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2022/2105 (eski 2568/91) yöntemine dayalı</span></span>
     <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
     <p class="en">Work through the steps in order. Enter the numbers you read on the scale and the pipette in the run cards, and the page calculates the acidity as % oleic acid, showing every formula with your values filled in. Your entries stay in this browser if the page reloads.</p>
@@ -675,7 +720,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
       <!-- PROCEDURE -->
       <section class="block" aria-labelledby="h-proc">
-        <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span></div>
+        <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span><button type="button" class="small ghost screen-only all-steps" id="allStepsBtn"></button></div>
         <p class="lede en screen-only">Tick each step as you finish it. Steps 3 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>. Amounts in <b class="fill">this colour</b> come from Test setup and change with it.</p>
         <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 3–6. adımlar her ölçüm için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki ölçüm kartlarına yazın. <b class="fill">Bu renkteki</b> miktarlar Test ayarlarından gelir ve onlarla değişir.</p>
         <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 3 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 3–6. adımlar her ölçüm için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
@@ -998,7 +1043,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     <aside class="panel" aria-labelledby="h-result">
       <div class="card">
         <div>
-          <div class="k-label" id="h-result"><span class="en">Free acidity · mean of runs</span><span class="tr">Serbest asitlik · ölçümlerin ortalaması</span></div>
+          <div class="k-label" id="h-result"><span class="en">Free acidity</span><span class="tr">Serbest asitlik</span></div>
           <div class="result-big" id="pMean">—</div>
           <div class="result-sub" id="pMeanSub"></div>
         </div>
@@ -1137,10 +1182,20 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       modeAria: function (n) { return "Weighing method for run " + n; },
       modes: { diff: "By difference", direct: "Tared flask", vol: "By volume" },
       before: "Cup with oil, before pouring", after: "Cup after pouring into flask",
-      direct: "Oil mass on tared scale", vol: "Oil volume (separate syringe / cylinder)", volHint: "Approximate (±3–5%). Converted using the density from Test setup.",
+      direct: "Oil mass on tared scale", vol: "Oil volume (separate syringe / cylinder)", volHint: "Measure with a separate dry syringe or small cylinder. Approximate (±3–5%): converted to grams using the density from Test setup.",
+      modeTips: {
+        diff: "Weigh the cup of oil before and after pouring; the weight it lost is the sample. Recommended: the most accurate on an ordinary scale.",
+        direct: "Tare a clean, dry flask and weigh the oil straight into it. Only if you neutralize the solvent in a separate flask or beaker.",
+        vol: "No scale: measure the oil with a separate syringe or small cylinder and convert it with the density. Approximate (±3–5%)."
+      },
+      beforeHint: "Weigh the cup of oil right before pouring. From the second run on, this is usually the previous run's 'after' weight.",
+      afterHint: "Weigh the cup again right after pouring. The weight it lost is the oil mass m. If oil ran down the outside of the flask, start the run again.",
+      directHint: "Put the clean, dry flask on the scale, tare it, pour in the oil and read the mass. Add the neutralized solvent only after weighing.",
       start: "Start reading", end: "End reading", rmFillAria: function (n) { return "Remove fill " + n; },
+      startHint: "Pipette reading before you add any NaOH. Read the bottom of the meniscus at eye level.",
+      endHint: "Reading when the whole flask stays faint pink for 10 seconds. If the pipette runs low first, write down where it stopped and add another fill.",
       addFill: "Add another pipette fill",
-      blank: "Blank (optional)", blankHint: "Leave empty if you neutralized the solvent in step 3.",
+      blank: "Blank (optional)", blankHint: "Only for the blank method in step 3: the mL of titrant used by the same volume of solvent with no oil. It is subtracted from V. Leave empty if you neutralized the solvent in step 3.",
       partMass: "Step 4 · Oil mass, m", partVol: "Step 6 · Titrant volume, V", partCalc: "Calculation",
       kM: "m (oil mass)", kV: "V (titrant)", kN: "N (normality)", kA: "Acidity",
       waiting: "waiting for readings", setN: "set in Test setup", tared: "(read on tared scale)", blankTag: "(blank)",
@@ -1189,6 +1244,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       infoBtn: "More information",
       ranges: { low: "below 1%", mid: "1 to 4%", high: "4 to 15%" },
       stepsDone: function (d, t) { return d + " of " + t + " done"; },
+      allDone: "Mark all steps done", allUndo: "Untick all steps",
       reset: "Start new test", resetArm: "Click again to start blank (saved tests stay)",
       savedCount: function (n) { return n ? n + " saved" : ""; },
       savedCountJump: function (n) { return n ? "(" + n + ")" : ""; },
@@ -1305,10 +1361,20 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       modeAria: function (n) { return n + ". ölçüm için tartım yöntemi"; },
       modes: { diff: "Farkla tartım", direct: "Darası alınmış erlen", vol: "Hacimle" },
       before: "Yağlı kap, dökmeden önce", after: "Kap, erlene döktükten sonra",
-      direct: "Darası alınmış terazide yağ kütlesi", vol: "Yağ hacmi (ayrı şırınga / mezür)", volHint: "Yaklaşıktır (±%3–5). Test ayarlarındaki yoğunlukla grama çevrilir.",
+      direct: "Darası alınmış terazide yağ kütlesi", vol: "Yağ hacmi (ayrı şırınga / mezür)", volHint: "Ayrı, kuru bir şırınga veya küçük mezürle ölçün. Yaklaşıktır (±%3–5): Test ayarlarındaki yoğunlukla grama çevrilir.",
+      modeTips: {
+        diff: "Yağlı kabı dökmeden önce ve sonra tartın; kabın kaybettiği ağırlık numunedir. Önerilen yöntem: sıradan bir terazide en doğru sonucu verir.",
+        direct: "Temiz, kuru erlenin darasını alıp yağı doğrudan içine tartın. Yalnızca çözücüyü ayrı bir erlen veya beherde nötrleştiriyorsanız.",
+        vol: "Terazisiz: yağı ayrı bir şırınga veya küçük mezürle ölçün; yoğunlukla grama çevrilir. Yaklaşıktır (±%3–5)."
+      },
+      beforeHint: "Yağlı kabı dökmeden hemen önce tartın. İkinci ölçümden itibaren bu genellikle önceki ölçümün ‘sonra’ değeridir.",
+      afterHint: "Döktükten hemen sonra kabı yeniden tartın. Kabın kaybettiği ağırlık yağ kütlesi m’dir. Yağ erlenin dışından aktıysa ölçüme baştan başlayın.",
+      directHint: "Temiz, kuru erleni teraziye koyup darasını alın, yağı dökün ve kütleyi okuyun. Nötrleştirilmiş çözücüyü ancak tartımdan sonra ekleyin.",
       start: "Başlangıç okuması", end: "Bitiş okuması", rmFillAria: function (n) { return n + ". dolumu sil"; },
+      startHint: "NaOH eklemeden önceki pipet okuması. Menisküsün altını göz hizasından okuyun.",
+      endHint: "Erlenin tamamı 10 saniye soluk pembe kaldığındaki okuma. Pipet daha önce azalırsa durduğu yeri yazın ve bir dolum daha ekleyin.",
       addFill: "Bir pipet dolumu daha ekle",
-      blank: "Kör deneme (isteğe bağlı)", blankHint: "Çözücüyü 3. adımda nötrleştirdiyseniz boş bırakın.",
+      blank: "Kör deneme (isteğe bağlı)", blankHint: "Yalnızca 3. adımdaki kör deneme yöntemi için: yağ eklenmemiş aynı hacimdeki çözücünün harcadığı titrant (mL). V’den düşülür. Çözücüyü 3. adımda nötrleştirdiyseniz boş bırakın.",
       partMass: "4. adım · Yağ kütlesi, m", partVol: "6. adım · Titrant hacmi, V", partCalc: "Hesaplama",
       kM: "m (yağ kütlesi)", kV: "V (titrant)", kN: "N (normalite)", kA: "Asitlik",
       waiting: "okumalar bekleniyor", setN: "Test ayarlarından girin", tared: "(darası alınmış terazide okundu)", blankTag: "(kör)",
@@ -1357,6 +1423,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       infoBtn: "Daha fazla bilgi",
       ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
       stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
+      allDone: "Tüm adımları tamamlandı işaretle", allUndo: "Tüm işaretleri kaldır",
       reset: "Yeni test başlat", resetArm: "Boş test için tekrar tıklayın (kayıtlılar kalır)",
       savedCount: function (n) { return n ? n + " kayıtlı" : ""; },
       savedCountJump: function (n) { return n ? "(" + n + ")" : ""; },
@@ -1735,36 +1802,47 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   // ---------- rendering ----------
   var runsEl = document.getElementById("runs");
 
-  function fieldInput(run, field, label, unit, hint) {
+  // A run field: label with an ⓘ popover holding the hint (see the popover handlers at the end of the script).
+  function popField(id, label, inputHTML, hint, right) {
+    if (!hint) return '<div class="field"><label for="' + id + '">' + label + '</label>' + inputHTML + '</div>';
+    var hid = id + "-hint";
+    return '<div class="field has-pop' + (right ? " pop-right" : "") + '"><div class="field-head"><label for="' + id + '">' + label + '</label>' +
+      '<button type="button" class="info-btn" aria-controls="' + hid + '" aria-expanded="false" aria-label="' + esc(t("infoBtn")) + '" title="' + esc(t("infoBtn")) + '">i</button></div>' +
+      inputHTML + '<span class="hint hint-pop" id="' + hid + '" role="tooltip">' + hint + '</span></div>';
+  }
+
+  function fieldInput(run, field, label, unit, hint, right) {
     var id = "r" + run.id + "-" + field;
-    return '<div class="field"><label for="' + id + '">' + label + '</label>' +
-      '<div class="unit-input"><input type="text" inputmode="decimal" id="' + id + '" data-run="' + run.id + '" data-field="' + field + '" value="' + esc(run[field]) + '"><span>' + unit + '</span></div>' +
-      (hint ? '<span class="hint">' + hint + '</span>' : '') + '</div>';
+    return popField(id, label, '<div class="unit-input"><input type="text" inputmode="decimal" id="' + id + '" data-run="' + run.id + '" data-field="' + field + '" value="' + esc(run[field]) + '"><span>' + unit + '</span></div>', hint, right);
   }
 
   function renderRuns() {
     var html = "";
-    var modes = t("modes");
+    var modes = t("modes"), tips = t("modeTips");
     state.runs.forEach(function (run, idx) {
       var seg = '<div class="seg" role="radiogroup" aria-label="' + esc(t("modeAria")(idx + 1)) + '">' + ["diff", "direct", "vol"].map(function (m) {
-        return '<label><input type="radio" name="mode-' + run.id + '" value="' + m + '" data-run="' + run.id + '" data-mode="1"' + (run.mode === m ? " checked" : "") + '><span>' + modes[m] + '</span></label>';
-      }).join("") + '</div>';
+        return '<label data-tip="' + esc(tips[m]) + '"><input type="radio" name="mode-' + run.id + '" value="' + m + '" data-run="' + run.id + '" data-mode="1" aria-describedby="tip-' + run.id + '-' + m + '"' + (run.mode === m ? " checked" : "") + '><span>' + modes[m] + '</span></label>';
+      }).join("") + '</div>' + ["diff", "direct", "vol"].map(function (m) {
+        return '<span hidden id="tip-' + run.id + '-' + m + '">' + esc(tips[m]) + '</span>';
+      }).join("");
 
+      // The derived mass sits on the right like a fill volume; tared mode needs none (the reading is the mass).
+      var massOut = '<span class="fill-vol" id="mv-' + run.id + '">—</span><span></span>';
       var massFields;
       if (run.mode === "diff") {
-        massFields = '<div class="fields">' + fieldInput(run, "before", t("before"), "g", "") + fieldInput(run, "after", t("after"), "g", "") + '</div>';
+        massFields = '<div class="mass-row">' + fieldInput(run, "before", t("before"), "g", t("beforeHint")) + fieldInput(run, "after", t("after"), "g", t("afterHint"), true) + massOut + '</div>';
       } else if (run.mode === "direct") {
-        massFields = '<div class="fields">' + fieldInput(run, "direct", t("direct"), "g", "") + '</div>';
+        massFields = '<div class="fields">' + fieldInput(run, "direct", t("direct"), "g", t("directHint")) + '</div>';
       } else {
-        massFields = '<div class="fields">' + fieldInput(run, "vol", t("vol"), "mL", t("volHint")) + '</div>';
+        massFields = '<div class="mass-row one">' + fieldInput(run, "vol", t("vol"), "mL", t("volHint")) + massOut + '</div>';
       }
 
       var fills = run.fills.map(function (fl, fi) {
         var sid = "r" + run.id + "-f" + fi + "-start", eid = "r" + run.id + "-f" + fi + "-end";
         return '<div class="fill-row">' +
           '<span class="fill-name">' + t("fill") + ' ' + (fi + 1) + '</span>' +
-          '<div class="field"><label for="' + sid + '">' + t("start") + '</label><div class="unit-input"><input type="text" inputmode="decimal" id="' + sid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="start" value="' + esc(fl.start) + '"><span>mL</span></div></div>' +
-          '<div class="field"><label for="' + eid + '">' + t("end") + '</label><div class="unit-input"><input type="text" inputmode="decimal" id="' + eid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="end" value="' + esc(fl.end) + '"><span>mL</span></div></div>' +
+          popField(sid, t("start"), '<div class="unit-input"><input type="text" inputmode="decimal" id="' + sid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="start" value="' + esc(fl.start) + '"><span>mL</span></div>', t("startHint")) +
+          popField(eid, t("end"), '<div class="unit-input"><input type="text" inputmode="decimal" id="' + eid + '" data-run="' + run.id + '" data-fill="' + fi + '" data-field="end" value="' + esc(fl.end) + '"><span>mL</span></div>', t("endHint"), true) +
           '<span class="fill-vol" id="fv-' + run.id + '-' + fi + '">—</span>' +
           (run.fills.length > 1 ? '<button type="button" class="x" data-act="rmfill" data-run="' + run.id + '" data-fill="' + fi + '" aria-label="' + esc(t("rmFillAria")(fi + 1)) + '">×</button>' : '<span></span>') +
           '</div>';
@@ -1772,7 +1850,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
       html += '<article class="run" data-run-card="' + run.id + '">' +
         '<div class="run-head"><h3>' + t("run") + ' ' + (idx + 1) + '</h3><span class="res" id="rres-' + run.id + '">—</span>' +
-        (state.runs.length > 1 ? '<button type="button" class="small danger" data-act="rmrun" data-run="' + run.id + '">' + t("remove") + '</button>' : '') + '</div>' +
+        (state.runs.length > 1 ? '<button type="button" class="small danger rm-run" data-act="rmrun" data-run="' + run.id + '">' + t("remove") + '</button>' : '') + '</div>' +
         '<div class="run-body">' +
           '<div class="run-part"><span class="label">' + t("partMass") + '</span>' + seg + massFields + '</div>' +
           '<div class="run-part"><span class="label">' + t("partVol") + '</span>' + fills +
@@ -1796,6 +1874,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         var el = document.getElementById("fv-" + run.id + "-" + fi);
         if (el) el.textContent = isFinite(v) ? "= " + f(v, 2) + " mL" : "—";
       });
+      var mv = document.getElementById("mv-" + run.id);
+      if (mv) mv.textContent = isFinite(c.m) ? "= " + f(c.m, 2) + " g" : "—";
       var calc = document.getElementById("calc-" + run.id);
       if (calc) {
         calc.innerHTML =
@@ -2292,6 +2372,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       tg.setAttribute("aria-expanded", collapsed ? "false" : "true");
     });
     document.getElementById("stepCount").textContent = t("stepsDone")(done, total);
+    var all = document.getElementById("allStepsBtn");
+    all.textContent = done === total ? t("allUndo") : t("allDone");
+    all.setAttribute("data-all", done === total ? "1" : "");
   }
 
   function renderStaticText() {
@@ -2694,6 +2777,12 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     delete openSteps[el.getAttribute("data-step")];
     save(); renderSteps();
   });
+  document.getElementById("allStepsBtn").addEventListener("click", function (e) {
+    var on = !e.currentTarget.getAttribute("data-all");
+    document.querySelectorAll("[data-step]").forEach(function (cb) { state.steps[cb.getAttribute("data-step")] = on; });
+    openSteps = {};
+    save(); renderSteps();
+  });
   document.querySelector(".steps").addEventListener("click", function (e) {
     var b = e.target.closest("[data-toggle]");
     if (!b) return;
@@ -2891,13 +2980,19 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     } catch (e) { fallback(); }
   });
 
-  // Test setup and report: move each field's explanation behind an ⓘ button. Hover shows it; a click or tap pins it open
-  // until clicking elsewhere, pressing Escape or clicking the button again.
+  // Field explanations behind an ⓘ button. Hover shows one; a click or tap pins it open until clicking elsewhere, pressing
+  // Escape or clicking the button again. Test setup and report fields are converted here once; run cards render the same
+  // markup themselves (popField), so the handlers are delegated to survive re-renders.
   (function () {
     var pinned = null;
     function show(field, on) {
       field.classList.toggle("pop-open", on);
-      field.querySelector(".info-btn").setAttribute("aria-expanded", on ? "true" : "false");
+      var b = field.querySelector(".info-btn");
+      if (b) b.setAttribute("aria-expanded", on ? "true" : "false");
+    }
+    function fieldOf(target) {
+      var b = target && target.closest ? target.closest(".info-btn") : null;
+      return b ? { btn: b, field: b.closest(".field.has-pop") } : null;
     }
     document.querySelectorAll("#setupSection .field, #reportSection .field").forEach(function (field, i) {
       var hint = field.querySelector(":scope > .hint"), head = field.firstElementChild;
@@ -2915,22 +3010,40 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       b.setAttribute("aria-expanded", "false");
       row.appendChild(b);
       field.classList.add("has-pop");
-      b.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var open = pinned !== field;
-        if (pinned) show(pinned, false);
-        pinned = open ? field : null;
-        show(field, open);
-      });
-      b.addEventListener("mouseenter", function () { if (pinned !== field) show(field, true); });
-      b.addEventListener("mouseleave", function () { if (pinned !== field) show(field, false); });
     });
     document.addEventListener("click", function (e) {
+      if (pinned && !pinned.isConnected) pinned = null;
+      var hit = fieldOf(e.target);
+      if (hit && hit.field) {
+        var open = pinned !== hit.field;
+        if (pinned) show(pinned, false);
+        pinned = open ? hit.field : null;
+        show(hit.field, open);
+        return;
+      }
       if (pinned && !pinned.contains(e.target)) { show(pinned, false); pinned = null; }
     });
+    function hover(on) {
+      return function (e) {
+        var hit = fieldOf(e.target);
+        if (!hit || !hit.field || hit.btn.contains(e.relatedTarget) || pinned === hit.field) return;
+        show(hit.field, on);
+      };
+    }
+    document.addEventListener("mouseover", hover(true));
+    document.addEventListener("mouseout", hover(false));
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && pinned) { var b = pinned.querySelector(".info-btn"); show(pinned, false); pinned = null; b.focus(); }
+      if (e.key === "Escape" && pinned && pinned.isConnected) { var b = pinned.querySelector(".info-btn"); show(pinned, false); pinned = null; b.focus(); }
     });
+  })();
+
+  // Keep --bar-h in step with the sticky top bar (it changes height when the actions wrap or the language changes).
+  (function () {
+    var bar = document.getElementById("topbar");
+    function measure() { document.documentElement.style.setProperty("--bar-h", bar.offsetHeight + "px"); }
+    measure();
+    if (window.ResizeObserver) new ResizeObserver(measure).observe(bar);
+    else window.addEventListener("resize", measure);
   })();
 
   renderAll();
