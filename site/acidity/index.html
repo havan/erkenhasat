@@ -148,6 +148,9 @@ select { font-family: var(--font-body); }
 input.wide-text { font-family: var(--font-body); }
 input[type="text"]:focus, input[type="date"]:focus, input[type="datetime-local"]:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .unit-input { display: flex; align-items: stretch; }
+.unit-input[hidden] { display: none; }
+.fill { color: var(--accent); font-weight: 600; }
+#normalityPreset + .unit-input { margin-top: 6px; }
 .unit-input input { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .unit-input span { display: grid; place-items: center; padding: 0 10px; border: 1px solid var(--line); border-left: 0;
   border-radius: 0 7px 7px 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); background: var(--accent-soft); }
@@ -518,7 +521,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         </div>
       </div>
     </div>
-    <span class="eyebrow"><span class="en">Free fatty acid titration · ISO 660 / EU 2022/2105 (ex-2568/91) method</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2022/2105 (eski 2568/91) yöntemi</span></span>
+    <span class="eyebrow"><span class="en">Free fatty acid titration · based on ISO 660 / EU 2022/2105 (ex-2568/91)</span><span class="tr">Serbest yağ asidi titrasyonu · ISO 660 / AB 2022/2105 (eski 2568/91) yöntemine dayalı</span></span>
     <h1><span class="en">Olive Oil Acidity Titration</span><span class="tr">Zeytinyağı Asitlik Titrasyonu</span></h1>
     <p class="en">Work through the steps in order. Enter the numbers you read on the scale and the pipette in the run cards, and the page calculates the acidity as % oleic acid, showing every formula with your values filled in. Your entries stay in this browser if the page reloads.</p>
     <p class="tr">Adımları sırayla uygulayın. Terazide ve pipette okuduğunuz değerleri ölçüm kartlarına girin; sayfa asitliği % oleik asit olarak hesaplar ve her formülü sizin değerlerinizle gösterir. Sayfa yenilense de girdileriniz bu tarayıcıda kalır.</p>
@@ -594,9 +597,25 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
               <span class="hint"><span class="en">Shown on the report and labels.</span><span class="tr">Rapor ve etiketlerde görünür.</span></span>
             </div>
             <div class="field">
-              <label for="normality"><span class="en">Titrant normality, N</span><span class="tr">Titrant normalitesi, N</span></label>
-              <div class="unit-input"><input type="text" inputmode="decimal" id="normality"><span>mol/L</span></div>
-              <span class="hint"><span class="en">From the NaOH label, usually 0.1. If the label gives an exact value (e.g. 0.0995), enter that.</span><span class="tr">NaOH etiketinde yazar, genellikle 0,1. Etikette kesin bir değer varsa (ör. 0,0995) onu girin.</span></span>
+              <label for="normalityPreset"><span class="en">Titrant normality, N</span><span class="tr">Titrant normalitesi, N</span></label>
+              <select id="normalityPreset">
+                <option value="0.1"></option>
+                <option value="0.125"></option>
+                <option value="0.25"></option>
+                <option value="0.5"></option>
+                <option value="1"></option>
+                <option value="other"></option>
+              </select>
+              <div class="unit-input" id="normalityOther" hidden><input type="text" inputmode="decimal" id="normality" aria-label="Exact normality / Kesin normalite"><span>mol/L</span></div>
+              <span class="hint"><span class="en">From the NaOH label. If it gives an exact value (e.g. 0.0995), choose Other and enter it. 0.1 N gives the finest result for the least solvent.</span><span class="tr">NaOH etiketinde yazar. Kesin bir değer veriyorsa (ör. 0,0995) Diğer’i seçip onu girin. En az çözücüyle en hassas sonucu 0,1 N verir.</span></span>
+            </div>
+            <div class="field">
+              <span class="flabel"><span class="en">Test type</span><span class="tr">Test türü</span></span>
+              <div class="seg" role="radiogroup" aria-label="Test type / Test türü">
+                <label><input type="radio" name="testType" value="std"><span><span class="en">Standard</span><span class="tr">Standart</span></span></label>
+                <label><input type="radio" name="testType" value="quick"><span><span class="en">Quick check</span><span class="tr">Hızlı kontrol</span></span></label>
+              </div>
+              <span class="hint"><span class="en">Quick check: much less oil and solvent, and the mL of titrant reads directly as % acidity, but one drop is worth 0.05 points. Too coarse to decide an oil near 0.80%.</span><span class="tr">Hızlı kontrol: çok daha az yağ ve çözücü; harcanan titrant mL’si doğrudan % asitliktir, ama bir damla 0,05 puan eder. %0,80 sınırına yakın bir yağa karar vermek için fazla kaba.</span></span>
             </div>
             <div class="field">
               <label for="expected"><span class="en">Expected acidity</span><span class="tr">Beklenen asitlik</span></label>
@@ -605,7 +624,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
                 <option value="mid"></option>
                 <option value="high"></option>
               </select>
-              <span class="hint"><span class="en">Decides how much oil to weigh.</span><span class="tr">Ne kadar yağ tartılacağını belirler.</span></span>
+              <span class="hint"><span class="en">Decides how much oil and solvent to use. Not used in a quick check.</span><span class="tr">Ne kadar yağ ve çözücü kullanılacağını belirler. Hızlı kontrolde kullanılmaz.</span></span>
             </div>
             <div class="field">
               <label for="density"><span class="en">Oil density</span><span class="tr">Yağ yoğunluğu</span></label>
@@ -631,9 +650,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       <!-- PROCEDURE -->
       <section class="block" aria-labelledby="h-proc">
         <div class="section-head"><h2 id="h-proc"><span class="en">Procedure</span><span class="tr">Uygulama adımları</span></h2><span class="tag" id="stepCount"></span></div>
-        <p class="lede en screen-only">Tick each step as you finish it. Steps 4 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>.</p>
-        <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 4–6. adımlar her ölçüm için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki ölçüm kartlarına yazın.</p>
-        <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 4 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 4–6. adımlar her ölçüm için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
+        <p class="lede en screen-only">Tick each step as you finish it. Steps 3 to 6 are repeated for every run. Record their numbers in the run cards under <a href="#h-runs">Measurements</a>. Amounts in <b class="fill">this colour</b> come from Test setup and change with it.</p>
+        <p class="lede tr screen-only">Her adımı bitirdikçe işaretleyin. 3–6. adımlar her ölçüm için tekrarlanır. Bu adımların değerlerini <a href="#h-runs">Ölçümler</a> bölümündeki ölçüm kartlarına yazın. <b class="fill">Bu renkteki</b> miktarlar Test ayarlarından gelir ve onlarla değişir.</p>
+        <p class="lede print-only"><span class="en">Tick each box as you finish the step. Steps 3 to 6 are repeated for every run; write their readings on the record sheet on the next pages.</span><span class="tr">Her adımı bitirdikçe kutusunu işaretleyin. 3–6. adımlar her ölçüm için tekrarlanır; okumaları sonraki sayfalardaki kayıt formuna yazın.</span></p>
 
         <ol class="steps">
           <li><div class="step" data-step-box="s1">
@@ -646,7 +665,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
                 <li>Lay out: Erlenmeyer flask, 100 mL measuring cylinder, 1:1 alcohol-ether solution, 1% phenolphthalein (in ethanol) with dropper, NaOH bottle, small glass jar, waste cup or tissue, Pi-pump with a 10 mL pipette (or a 10 mL microburette), scale, your oil, and a sheet of white paper. If measuring oil by volume, use a separate dry syringe or small cylinder.</li>
                 <li>Mix your oil container gently so the sample is uniform, and bring cold oil to room temperature (20–25 °C). If the oil is cloudy or unfiltered with water droplets or sediment, let it settle or pass it through a clean dry paper filter first.</li>
               </ul>
-              <div class="caution"><b>Why this matters:</b> the alcohol-ether solution is half diethyl ether (1:1 ethanol–diethyl ether). Ether boils at 35 °C, and its vapour is heavier than air. The vapour creeps along the table and floor and can ignite metres away from the bottle. NaOH, even at 0.1 N, irritates the eyes.</div>
+              <div class="caution"><b>Why this matters:</b> the alcohol-ether solution is half diethyl ether (1:1 ethanol–diethyl ether). Ether boils at 35 °C, and its vapour is heavier than air. The vapour creeps along the table and floor and can ignite metres away from the bottle. NaOH, even at 0.1 N, irritates the eyes; at 0.5 N and stronger it is corrosive to eyes and skin.</div>
             </div>
             <div class="lang-body tr">
               <ul>
@@ -656,7 +675,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
                 <li>Hazırlayın: erlen, 100 mL mezür, 1:1 alkol-eter solüsyonu, damlalıklı %1’lik fenolftalein (etanol içinde), NaOH şişesi, küçük cam kavanoz, atık kabı veya kâğıt havlu, 10 mL pipet takılı Pi-pump (veya varsa 10 mL mikrobüret), terazi, yağınız ve bir beyaz kâğıt. Yağı hacimle ölçecekseniz ayrı, kuru bir şırınga veya küçük mezür kullanın.</li>
                 <li>Numune homojen olsun diye yağ kabını nazikçe karıştırın; soğuk yağı oda sıcaklığına (20–25 °C) getirin. Yağ bulanıksa veya içinde su damlacığı ya da tortu varsa önce dinlendirin ya da temiz, kuru bir kâğıt filtreden süzün.</li>
               </ul>
-              <div class="caution"><b>Neden önemli:</b> alkol-eter solüsyonunun yarısı dietil eterdir (1:1 etanol–dietil eter). Eter 35 °C’de kaynar ve buharı havadan ağırdır. Buhar masa ve zemin boyunca yayılır, şişeden metrelerce uzakta tutuşabilir. NaOH, 0,1 N’de bile gözü tahriş eder.</div>
+              <div class="caution"><b>Neden önemli:</b> alkol-eter solüsyonunun yarısı dietil eterdir (1:1 etanol–dietil eter). Eter 35 °C’de kaynar ve buharı havadan ağırdır. Buhar masa ve zemin boyunca yayılır, şişeden metrelerce uzakta tutuşabilir. NaOH, 0,1 N’de bile gözü tahriş eder; 0,5 N ve üstünde göz ve cilt için aşındırıcıdır.</div>
             </div>
           </div></li>
 
@@ -664,7 +683,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             <div class="step-head"><span class="n">02</span><h3><span class="en">Prepare the titrant</span><span class="tr">Titrantı hazırlayın</span></h3><label class="check"><input type="checkbox" data-step="s2"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
-                <li>Pour about 20–30 mL of 0.1 N NaOH into the small clean glass jar, then <b>close the NaOH bottle straight away</b>.</li>
+                <li>Pour about 20–30 mL of the NaOH into the small clean glass jar, then <b>close the NaOH bottle straight away</b>.</li>
                 <li>Fit a 10 mL pipette into the green Pi-pump (a 10 mL burette with 0.02–0.05 mL divisions is even better if you have one). Practise with water first: turn the wheel up to draw liquid, then down slowly to release it one drop at a time.</li>
                 <li>Never pour leftover NaOH from the jar back into the bottle.</li>
               </ul>
@@ -673,7 +692,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             </div>
             <div class="lang-body tr">
               <ul>
-                <li>Küçük, temiz cam kavanoza yaklaşık 20–30 mL 0,1 N NaOH dökün ve <b>NaOH şişesini hemen kapatın</b>.</li>
+                <li>Küçük, temiz cam kavanoza yaklaşık 20–30 mL NaOH dökün ve <b>NaOH şişesini hemen kapatın</b>.</li>
                 <li>Yeşil Pi-pump’a 10 mL’lik pipeti takın (varsa 0,02–0,05 mL bölmeli 10 mL’lik bir büret daha da iyidir). Önce suyla deneyin: çarkı yukarı çevirince sıvı çekilir, yavaşça aşağı çevirince damla damla bırakılır.</li>
                 <li>Kavanozda kalan NaOH’ı asla şişeye geri dökmeyin.</li>
               </ul>
@@ -686,8 +705,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             <div class="step-head"><span class="n">03</span><h3><span class="en">Measure and neutralize the solvent</span><span class="tr">Çözücüyü ölçün ve nötrleştirin</span></h3><label class="check"><input type="checkbox" data-step="s3"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
-                <li>Measure <b>100 mL</b> of alcohol-ether solution with the 100 mL cylinder and pour it into an Erlenmeyer flask.</li>
-                <li>Add <b>4–5 drops</b> of 1% phenolphthalein (about 0.25 mL) and swirl.</li>
+                <li>Measure <b class="fill" data-amount="solvent">50 mL</b> of alcohol-ether solution with the 100 mL cylinder and pour it into an Erlenmeyer flask. It doesn't need to be exact: the solvent volume isn't part of the result.</li>
+                <li>Add about one drop of 1% phenolphthalein per 20 mL of solvent (<b class="fill" data-amount="drops">2–3</b> drops) and swirl.</li>
                 <li>Add NaOH from the pipette drop by drop, swirling, until the liquid turns the <b>faintest pink that stays for 10 seconds</b>.</li>
                 <li>You don't need to write down this volume. It isn't part of the result.</li>
                 <li>Do this just before adding the oil. If the pink fades while the flask stands (it absorbs CO₂ from the air), add another drop to bring it back.</li>
@@ -695,8 +714,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             </div>
             <div class="lang-body tr">
               <ul>
-                <li>100 mL’lik mezürle <b>100 mL</b> alkol-eter solüsyonu ölçüp bir erlene dökün.</li>
-                <li><b>4–5 damla</b> %1’lik fenolftalein (yaklaşık 0,25 mL) ekleyip çalkalayın.</li>
+                <li>100 mL’lik mezürle <b class="fill" data-amount="solvent">50 mL</b> alkol-eter solüsyonu ölçüp bir erlene dökün. Tam olması gerekmez: çözücü hacmi sonuca girmez.</li>
+                <li>Her 20 mL çözücü için yaklaşık bir damla %1’lik fenolftalein (<b class="fill" data-amount="drops">2–3</b> damla) ekleyip çalkalayın.</li>
                 <li>Pipetten damla damla NaOH ekleyin ve çalkalayın; sıvı <b>10 saniye kalan en soluk pembeye</b> dönene kadar devam edin.</li>
                 <li>Bu hacmi yazmanıza gerek yok. Sonuca dahil değildir.</li>
                 <li>Bunu yağı eklemeden hemen önce yapın. Erlen beklerken pembe solarsa (havadan CO₂ emer), bir damla daha ekleyerek geri getirin.</li>
@@ -709,33 +728,33 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             </div>
             <div class="lang-body en">
               <div class="why"><b>Why:</b> the solvent itself contains traces of acid, from ethanol oxidation, ether peroxides and dissolved CO₂. If you didn't cancel them first, the NaOH used on them would be counted as acid from the oil, and the result would come out too high. If you overshoot to a strong pink, the solvent is now slightly alkaline and the result will read low. Pour it away and start again.</div>
-              <p class="lede" style="font-size:0.9rem">Alternative (<b>blank</b>): still measure 100 mL of solvent and add 4–5 drops of phenolphthalein into your flask, but skip adding NaOH here. Separately titrate 100 mL of untreated solvent + 4–5 drops of phenolphthalein (with no oil) and enter that volume as the blank in the run card.</p>
+              <p class="lede" style="font-size:0.9rem">Alternative (<b>blank</b>): still measure the solvent and add the phenolphthalein into your flask, but skip adding NaOH here. Separately titrate the same volume of untreated solvent with the same number of phenolphthalein drops (with no oil) and enter that volume as the blank in the run card.</p>
             </div>
             <div class="lang-body tr">
               <div class="why"><b>Neden:</b> çözücünün kendisi de etanol oksidasyonu, eter peroksitleri ve çözünmüş CO₂ kaynaklı eser miktarda asit içerir. Önce bunlar giderilmezse, onlar için harcanan NaOH yağdan gelen asit gibi sayılır ve sonuç yüksek çıkar. Koyu pembeye kadar fazla kaçırırsanız çözücü hafif bazik olur ve sonuç düşük çıkar. Dökün ve baştan başlayın.</div>
-              <p class="lede" style="font-size:0.9rem">Alternatif (<b>kör deneme</b>): erleninize yine 100 mL çözücü ölçüp 4–5 damla fenolftalein ekleyin, ancak burada NaOH damlatmayın. Ayrı olarak yağ eklemeden 100 mL işlenmemiş çözücü + 4–5 damla fenolftaleini titre edin ve bu hacmi ölçüm kartına kör deneme olarak girin.</p>
+              <p class="lede" style="font-size:0.9rem">Alternatif (<b>kör deneme</b>): erleninize yine çözücüyü ölçüp fenolftaleini ekleyin, ancak burada NaOH damlatmayın. Ayrı olarak yağ eklemeden aynı hacimde işlenmemiş çözücüyü aynı sayıda fenolftalein damlasıyla titre edin ve bu hacmi ölçüm kartına kör deneme olarak girin.</p>
             </div>
           </div></li>
 
           <li><div class="step" data-step-box="s4">
             <div class="step-head"><span class="n">04</span><h3><span class="en">Weigh the oil</span><span class="tr">Yağı tartın</span></h3><label class="check"><input type="checkbox" data-step="s4"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
-              <p>Aim for the mass shown in Test setup (20 g for good oil). You don't need to hit it exactly: enter whatever you actually weighed. Choose one method in the run card:</p>
+              <p>Aim for about <b class="fill" data-amount="mass">10 g</b> of oil (from Test setup). You don't need to hit it exactly: enter whatever you actually weighed. Choose one method in the run card:</p>
               <ul>
-                <li><b>By difference (recommended):</b> pour about 80 mL of oil into a small cup, enough for three runs. Weigh the cup and write it down. Pour roughly 22 mL of oil (about 20 g) into the flask of neutralized solvent. Weigh the cup again. The weight it lost is your sample, and the new weight is the starting weight for the next run. Pour slowly into the middle of the flask neck: oil that runs down the outside of the flask has left the cup but isn't in the test, so if that happens, start the run again. A small dropper bottle or syringe, weighed before and after, avoids drips.</li>
+                <li><b>By difference (recommended):</b> pour about <b class="fill" data-amount="cup">50 mL</b> of oil into a small cup, enough for up to three runs. Weigh the cup and write it down. Pour roughly <b class="fill" data-amount="oilml">11 mL</b> of oil (about <b class="fill" data-amount="mass">10 g</b>) into the flask of neutralized solvent. Weigh the cup again. The weight it lost is your sample, and the new weight is the starting weight for the next run. Pour slowly into the middle of the flask neck: oil that runs down the outside of the flask has left the cup but isn't in the test, so if that happens, start the run again. A small dropper bottle or syringe, weighed before and after, avoids drips and is easier for samples under 5 g.</li>
                 <li><b>Tared flask (dry flask only):</b> only use this if you have a second flask or beaker to neutralize the solvent in separately—put the <b>clean, dry</b> flask on the scale, tare it, weigh in the oil, then pour the neutralized solvent on top. Never put an open flask that already holds alcohol-ether on the scale: ether evaporates (~0.1 g/min) and makes the reading drift downward.</li>
                 <li><b>By volume (approximate fallback, no scale):</b> measure the target volume in a <b>separate dry syringe or small cylinder</b> (never the 100 mL solvent cylinder, or leftover oil will contaminate the next run). If you use a cylinder, let it drain into the flask for a minute. Expect ~3–5% uncertainty because viscous oil clings to walls.</li>
               </ul>
-              <div class="why"><b>Why by difference:</b> cheap scales ignore very slow, small changes (auto-zero tracking) and ether evaporates if the solvent flask sits on the scale. Weighing the cup of oil twice means the scale reads a large, non-volatile load. With 20 g of oil, a ±0.1 g scale error is only ±0.5% of the result—for 1.5–5 g samples (high acidity), use a 0.01 g scale.</div>
+              <div class="why"><b>Why by difference:</b> cheap scales ignore very slow, small changes (auto-zero tracking) and ether evaporates if the solvent flask sits on the scale. Weighing the cup of oil twice means the scale reads a large, non-volatile load. With 10 g of oil, a ±0.1 g scale error is only ±1% of the result—for samples under 5 g, use a 0.01 g scale.</div>
             </div>
             <div class="lang-body tr">
-              <p>Test ayarlarında gösterilen kütleyi hedefleyin (iyi yağ için 20 g). Tam tutturmanız gerekmez; gerçekte ne tarttıysanız onu girin. Ölçüm kartında bir yöntem seçin:</p>
+              <p>Yaklaşık <b class="fill" data-amount="mass">10 g</b> yağ hedefleyin (Test ayarlarından). Tam tutturmanız gerekmez; gerçekte ne tarttıysanız onu girin. Ölçüm kartında bir yöntem seçin:</p>
               <ul>
-                <li><b>Farkla tartım (önerilen):</b> küçük bir kaba üç ölçüme yetecek kadar, yaklaşık 80 mL yağ koyun. Kabı tartıp değeri yazın. Nötrleştirilmiş çözücünün bulunduğu erlene yaklaşık 22 mL (≈ 20 g) yağ dökün. Kabı tekrar tartın. Kabın kaybettiği ağırlık numunenizdir; yeni ağırlık da bir sonraki ölçümün başlangıç ağırlığıdır. Yağı yavaşça erlen ağzının ortasına dökün: erlenin dışından akan yağ kaptan çıkmıştır ama teste girmemiştir; böyle olursa o ölçüme baştan başlayın. Önce ve sonra tartılan küçük bir damlalıklı şişe veya şırınga damlamayı önler.</li>
+                <li><b>Farkla tartım (önerilen):</b> küçük bir kaba üç ölçüme yetecek kadar, yaklaşık <b class="fill" data-amount="cup">50 mL</b> yağ koyun. Kabı tartıp değeri yazın. Nötrleştirilmiş çözücünün bulunduğu erlene yaklaşık <b class="fill" data-amount="oilml">11 mL</b> (≈ <b class="fill" data-amount="mass">10 g</b>) yağ dökün. Kabı tekrar tartın. Kabın kaybettiği ağırlık numunenizdir; yeni ağırlık da bir sonraki ölçümün başlangıç ağırlığıdır. Yağı yavaşça erlen ağzının ortasına dökün: erlenin dışından akan yağ kaptan çıkmıştır ama teste girmemiştir; böyle olursa o ölçüme baştan başlayın. Önce ve sonra tartılan küçük bir damlalıklı şişe veya şırınga damlamayı önler; 5 g’ın altındaki numunelerde de daha kolaydır.</li>
                 <li><b>Darası alınmış erlen (yalnızca kuru erlenle):</b> bunu yalnızca çözücüyü ayrı bir kapta nötrleştiriyorsanız kullanın—<b>temiz ve kuru</b> erleni teraziye koyup dara alın, yağı tartın, sonra nötrleştirilmiş çözücüyü üzerine dökün. İçinde alkol-eter bulunan açık erleni asla teraziye koymayın: eter buharlaşır (≈ 0,1 g/dk) ve okuma sürekli aşağı kayar.</li>
                 <li><b>Hacimle (terazisiz, yaklaşık yöntem):</b> hedef hacmi <b>ayrı, kuru bir şırınga veya küçük mezürle</b> ölçün (asla 100 mL çözücü mezürünü kullanmayın; kalan yağ sonraki ölçümü kirletir). Mezür kullanıyorsanız erlene bir dakika akmasını bekleyin. Yağ cam çepere yapıştığı için ~%3–5 sapma payı bekleyin.</li>
               </ul>
-              <div class="why"><b>Neden farkla tartım:</b> ucuz teraziler çok yavaş ve küçük değişimleri yok sayar (otomatik sıfır takibi), çözücülü erlen ise terazide buharlaşarak kütle kaybeder. Yağ kabını iki kez tartmak teraziye hep büyük ve uçucu olmayan bir yük okutur. 20 g yağda ±0,1 g terazi hatası sonucun yalnızca ±%0,5’idir; yüksek asitlikteki 1,5–5 g numunelerde 0,01 g hassasiyetli terazi kullanın.</div>
+              <div class="why"><b>Neden farkla tartım:</b> ucuz teraziler çok yavaş ve küçük değişimleri yok sayar (otomatik sıfır takibi), çözücülü erlen ise terazide buharlaşarak kütle kaybeder. Yağ kabını iki kez tartmak teraziye hep büyük ve uçucu olmayan bir yük okutur. 10 g yağda ±0,1 g terazi hatası sonucun yalnızca ±%1’idir; 5 g’ın altındaki numunelerde 0,01 g hassasiyetli terazi kullanın.</div>
             </div>
           </div></li>
 
@@ -745,17 +764,17 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
               <ul>
                 <li>Swirl the flask until the oil has dissolved completely and the liquid is <b>clear and uniform</b>, with no oily streaks or droplets.</li>
                 <li>The faint pink disappears as you swirl. This is expected: the free fatty acids in the oil are neutralizing the trace of base you left in the solvent. (With the blank method the flask was never pink.)</li>
-                <li>If it stays cloudy, add about 25 mL more solvent, <b>neutralized first</b>: in a clean glass, add 1–2 drops of phenolphthalein and bring it to the faintest pink with NaOH, as in step 3. Then pour it in. Don't heat it: ether boils at 35 °C.</li>
+                <li>If it stays cloudy, add about half as much solvent again, <b>neutralized first</b>: in a clean glass, add 1–2 drops of phenolphthalein and bring it to the faintest pink with NaOH, as in step 3. Then pour it in. Don't heat it: ether boils at 35 °C.</li>
               </ul>
-              <div class="why"><b>Why:</b> NaOH can only react with fatty acids that are dissolved. Oil left undissolved holds acid that the titrant can't reach, so the result comes out low. Extra solvent doesn't change the result: it depends only on how much NaOH the oil's acids use and how much oil you weighed, and neutralized solvent uses none. Solvent that isn't neutralized would make the result high, because its own trace acid would be counted as the oil's. With the blank method, titrate the blank with the same total volume of solvent (e.g. 125 mL).</div>
+              <div class="why"><b>Why:</b> NaOH can only react with fatty acids that are dissolved. Oil left undissolved holds acid that the titrant can't reach, so the result comes out low. Extra solvent doesn't change the result: it depends only on how much NaOH the oil's acids use and how much oil you weighed, and neutralized solvent uses none. Solvent that isn't neutralized would make the result high, because its own trace acid would be counted as the oil's. With the blank method, titrate the blank with the same total volume of solvent.</div>
             </div>
             <div class="lang-body tr">
               <ul>
                 <li>Yağ tamamen çözünüp sıvı <b>berrak ve homojen</b> olana kadar, yağlı çizgi veya damlacık kalmayacak şekilde erleni çalkalayın.</li>
                 <li>Çalkaladıkça soluk pembe kaybolur. Bu beklenen bir durumdur: yağdaki serbest yağ asitleri çözücüde bıraktığınız eser bazı nötrleştirir. (Kör deneme yönteminde erlen hiç pembe olmamıştı.)</li>
-                <li>Bulanık kalırsa yaklaşık 25 mL daha çözücü ekleyin, ama <b>önce nötrleştirin</b>: temiz bir bardakta 1–2 damla fenolftalein ekleyip 3. adımdaki gibi NaOH ile en soluk pembeye getirin, sonra erlene dökün. Isıtmayın: eter 35 °C’de kaynar.</li>
+                <li>Bulanık kalırsa yaklaşık yarısı kadar daha çözücü ekleyin, ama <b>önce nötrleştirin</b>: temiz bir bardakta 1–2 damla fenolftalein ekleyip 3. adımdaki gibi NaOH ile en soluk pembeye getirin, sonra erlene dökün. Isıtmayın: eter 35 °C’de kaynar.</li>
               </ul>
-              <div class="why"><b>Neden:</b> NaOH yalnızca çözünmüş yağ asitleriyle tepkimeye girebilir. Çözünmeden kalan yağdaki aside titrant ulaşamaz ve sonuç düşük çıkar. Fazladan çözücü sonucu değiştirmez: sonuç yalnızca yağdaki asitlerin harcadığı NaOH’a ve tarttığınız yağ miktarına bağlıdır; nötrleştirilmiş çözücü hiç NaOH harcamaz. Nötrleştirilmemiş çözücü ise sonucu yükseltir, çünkü kendi eser asidi yağınkiymiş gibi sayılır. Kör deneme yöntemindeyseniz körü aynı toplam çözücü hacmiyle (ör. 125 mL) titre edin.</div>
+              <div class="why"><b>Neden:</b> NaOH yalnızca çözünmüş yağ asitleriyle tepkimeye girebilir. Çözünmeden kalan yağdaki aside titrant ulaşamaz ve sonuç düşük çıkar. Fazladan çözücü sonucu değiştirmez: sonuç yalnızca yağdaki asitlerin harcadığı NaOH’a ve tarttığınız yağ miktarına bağlıdır; nötrleştirilmiş çözücü hiç NaOH harcamaz. Nötrleştirilmemiş çözücü ise sonucu yükseltir, çünkü kendi eser asidi yağınkiymiş gibi sayılır. Kör deneme yöntemindeyseniz körü aynı toplam çözücü hacmiyle titre edin.</div>
             </div>
           </div></li>
 
@@ -781,30 +800,32 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
             </div>
             <div class="reaction"><span class="en">R–COOH (free fatty acid) + NaOH → R–COO⁻Na⁺ (soap) + H₂O &nbsp;·&nbsp; 1 : 1</span><span class="tr">R–COOH (serbest yağ asidi) + NaOH → R–COO⁻Na⁺ (sabun) + H₂O &nbsp;·&nbsp; 1 : 1</span></div>
             <div class="lang-body en">
-              <div class="why"><b>Why 10 seconds:</b> once all the fatty acids are neutralized, the next drop leaves excess OH⁻ and phenolphthalein turns pink (pH ≈ 8.2–10). After a minute or so the pink fades again as the liquid absorbs CO₂ from the air. Ignore that fading. The first pink that lasts 10 s is the endpoint. A little cloudiness from the water in aqueous NaOH is normal; avoid exceeding ~10 mL of aqueous titrant or the phases may start separating.</div>
+              <div class="why"><b>Why 10 seconds:</b> once all the fatty acids are neutralized, the next drop leaves excess OH⁻ and phenolphthalein turns pink (pH ≈ 8.2–10). After a minute or so the pink fades again as the liquid absorbs CO₂ from the air. Ignore that fading. The first pink that lasts 10 s is the endpoint. A little cloudiness from the water in aqueous NaOH is normal. The amounts in Test setup keep that water below about an eighth of the solvent; if you need much more titrant than predicted, the liquid may start to separate, so next time use less oil.</div>
             </div>
             <div class="lang-body tr">
-              <div class="why"><b>Neden 10 saniye:</b> tüm yağ asitleri nötrleşince bir sonraki damla fazla OH⁻ bırakır ve fenolftalein pembeye döner (pH ≈ 8,2–10). Bir dakika kadar sonra sıvı havadan CO₂ emdiği için pembe yeniden solar. Bu solmayı dikkate almayın; 10 saniye kalan ilk pembe dönüm noktasıdır. Sulu NaOH’taki sudan kaynaklı hafif bulanıklık normaldir; ancak ~10 mL sulu titrantı aşmamaya çalışın, yoksa fazlar ayrışmaya başlayabilir.</div>
+              <div class="why"><b>Neden 10 saniye:</b> tüm yağ asitleri nötrleşince bir sonraki damla fazla OH⁻ bırakır ve fenolftalein pembeye döner (pH ≈ 8,2–10). Bir dakika kadar sonra sıvı havadan CO₂ emdiği için pembe yeniden solar. Bu solmayı dikkate almayın; 10 saniye kalan ilk pembe dönüm noktasıdır. Sulu NaOH’taki sudan kaynaklı hafif bulanıklık normaldir. Test ayarlarındaki miktarlar bu suyu çözücünün yaklaşık sekizde birinin altında tutar; öngörülenden çok daha fazla titrant gerekirse sıvı ayrışmaya başlayabilir, bir dahakine daha az yağ kullanın.</div>
             </div>
           </div></li>
 
           <li><div class="step" data-step-box="s7">
-            <div class="step-head"><span class="n">07</span><h3><span class="en">Repeat with a fresh portion (runs 2 and 3)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ve 3. ölçüm)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
+            <div class="step-head"><span class="n">07</span><h3><span class="en">Repeat with a fresh portion (run 2)</span><span class="tr">Yeni bir porsiyonla tekrarlayın (2. ölçüm)</span></h3><label class="check"><input type="checkbox" data-step="s7"> <span class="en">Done</span><span class="tr">Tamam</span></label></div>
             <div class="lang-body en">
               <ul>
                 <li>Use a clean flask, fresh solvent (step 3 again) and a fresh portion of oil (steps 4–6).</li>
                 <li>Press <b>Add run</b> under Measurements for each repeat.</li>
-                <li>The result panel shows the mean and how closely the runs agree.</li>
+                <li>The result panel shows the mean and how closely the runs agree. Two runs that agree are enough. Do a third only if the panel says they differ, or if the mean is close to the 0.80% limit.</li>
+                <li><b>Quick check:</b> one run is enough. If the result is between about 0.6 and 1.0%, it is too close to the limit for a quick check, so do a standard test.</li>
               </ul>
-              <div class="why"><b>Why:</b> a single titration can be off because of one overshot drop or a misread meniscus. Two or three runs that agree show the result is real, and their mean is more precise than any one of them.</div>
+              <div class="why"><b>Why:</b> a single titration can be off because of one overshot drop or a misread meniscus. Two runs that agree show the result is real, and their mean is more precise than either of them.</div>
             </div>
             <div class="lang-body tr">
               <ul>
                 <li>Temiz bir erlen, taze çözücü (yine 3. adım) ve yeni bir yağ porsiyonu (4–6. adımlar) kullanın.</li>
                 <li>Her tekrar için Ölçümler bölümünde <b>Ölçüm ekle</b>’ye basın.</li>
-                <li>Sonuç paneli ortalamayı ve ölçümlerin ne kadar uyuştuğunu gösterir.</li>
+                <li>Sonuç paneli ortalamayı ve ölçümlerin ne kadar uyuştuğunu gösterir. Uyuşan iki ölçüm yeterlidir. Üçüncüyü yalnızca panel ölçümlerin farklı olduğunu söylerse ya da ortalama %0,80 sınırına yakınsa yapın.</li>
+                <li><b>Hızlı kontrol:</b> tek ölçüm yeterlidir. Sonuç yaklaşık %0,6 ile %1,0 arasındaysa hızlı kontrol için sınıra fazla yakındır; standart test yapın.</li>
               </ul>
-              <div class="why"><b>Neden:</b> tek bir titrasyon, fazla kaçan bir damla ya da yanlış okunan bir menisküs yüzünden sapabilir. Birbiriyle uyuşan iki-üç ölçüm sonucun gerçek olduğunu gösterir; ortalamaları da tek tek her birinden daha hassastır.</div>
+              <div class="why"><b>Neden:</b> tek bir titrasyon, fazla kaçan bir damla ya da yanlış okunan bir menisküs yüzünden sapabilir. Birbiriyle uyuşan iki ölçüm sonucun gerçek olduğunu gösterir; ortalamaları da her birinden daha hassastır.</div>
             </div>
           </div></li>
 
@@ -933,10 +954,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
 
       <aside class="method-note" id="methodNote" aria-labelledby="h-method-note">
         <div class="en"><h2 id="h-method-note">About this result</h2>
-          <p><b>Adapted from the standard method.</b> This test is based on the cold free-acidity titration of ISO 660 and the EU reference method (Regulation 2022/2105, formerly 2568/91): neutralized 1:1 alcohol-ether solvent, phenolphthalein end point, the standard formula, and repeat runs. It differs in three practical ways. It uses 0.1 N aqueous NaOH from a pipette instead of ethanolic KOH from a burette. It uses smaller samples for more acidic oil (5 g and 1.5 g instead of 10 g and 2.5 g), so one 10 mL pipette fill is enough. And it picks the sample size by % oleic acid rather than by acid value. Accredited labs get tighter repeatability (~0.02 points); here a 0.05-point spread counts as a good repeat.</p>
+          <p><b>Adapted from the standard method.</b> This test is based on the cold free-acidity titration of ISO 660 and the EU reference method (Regulation 2022/2105, formerly 2568/91): neutralized 1:1 alcohol-ether solvent, phenolphthalein end point, the standard formula, and repeat runs. It differs in three practical ways. It uses aqueous NaOH (usually 0.1 N) from a pipette instead of ethanolic KOH from a burette. It uses smaller samples and less solvent (for good oil, 10 g in 50 mL instead of 20 g in 50–150 mL), sized so the titrant fits in one 10 mL pipette fill. And it picks the sample size by % oleic acid rather than by acid value. The optional quick check uses even less (2.82 g at 0.1 N) and is a screening test only. Accredited labs get tighter repeatability (~0.02 points); here a 0.05-point spread counts as a good repeat.</p>
           <p><b>Not an accredited analysis.</b> It is done with your own equipment, outside an accredited laboratory, so the result can't be used for official grading, label claims or trade disputes.</p></div>
         <div class="tr"><h2>Bu sonuç hakkında</h2>
-          <p><b>Standart yöntemden uyarlanmıştır.</b> Bu test, ISO 660 ve AB referans yönteminin (2022/2105 sayılı Tüzük, eski 2568/91) soğuk serbest asitlik titrasyonuna dayanır: nötrleştirilmiş 1:1 alkol-eter çözücü, fenolftalein dönüm noktası, standart formül ve tekrarlı ölçümler. Üç pratik farkı vardır. Büretten etanollü KOH yerine pipetle 0,1 N sulu NaOH kullanır. Daha asitli yağlarda daha küçük numune alır (10 g ve 2,5 g yerine 5 g ve 1,5 g), böylece tek bir 10 mL pipet dolumu yeter. Numune miktarını da asit değerine göre değil, % oleik aside göre seçer. Akredite laboratuvarlar daha dar tekrarlanabilirlik (~0,02 puan) elde eder; burada 0,05 puanlık fark iyi bir tekrar sayılır.</p>
+          <p><b>Standart yöntemden uyarlanmıştır.</b> Bu test, ISO 660 ve AB referans yönteminin (2022/2105 sayılı Tüzük, eski 2568/91) soğuk serbest asitlik titrasyonuna dayanır: nötrleştirilmiş 1:1 alkol-eter çözücü, fenolftalein dönüm noktası, standart formül ve tekrarlı ölçümler. Üç pratik farkı vardır. Büretten etanollü KOH yerine pipetle sulu NaOH (genellikle 0,1 N) kullanır. Daha küçük numune ve daha az çözücü kullanır (iyi yağda 20 g ve 50–150 mL yerine 10 g ve 50 mL); miktarlar titrant tek bir 10 mL pipet dolumuna sığacak şekilde seçilir. Numune miktarını da asit değerine göre değil, % oleik aside göre seçer. İsteğe bağlı hızlı kontrol daha da azını kullanır (0,1 N’de 2,82 g) ve yalnızca bir ön tarama testidir. Akredite laboratuvarlar daha dar tekrarlanabilirlik (~0,02 puan) elde eder; burada 0,05 puanlık fark iyi bir tekrar sayılır.</p>
           <p><b>Akredite analiz değildir.</b> Kendi ekipmanınızla, akredite bir laboratuvar dışında yapılır; bu nedenle sonuç resmî sınıflandırma, etiket beyanı veya ticari anlaşmazlıklarda kullanılamaz.</p></div>
       </aside>
 
@@ -985,8 +1006,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         <textarea class="copy-fallback" id="copyFallback" readonly hidden aria-label="Results"></textarea>
         <div class="offline">
           <div class="k-label"><span class="en">No internet in the field?</span><span class="tr">Sahada internet yok mu?</span></div>
-          <p class="en">Print the field sheet or save it as PDF: procedure, record boxes for 3 runs and a lookup table, using the normality and expected acidity set above.</p>
-          <p class="tr">Saha formunu yazdırın veya PDF olarak kaydedin: uygulama adımları, 3 ölçüm için kayıt kutuları ve bir hızlı tablo; yukarıda girilen normalite ve beklenen asitliğe göre.</p>
+          <p class="en">Print the field sheet or save it as PDF: procedure, record boxes for the runs and a lookup table, using the normality, test type and expected acidity set above.</p>
+          <p class="tr">Saha formunu yazdırın veya PDF olarak kaydedin: uygulama adımları, ölçümler için kayıt kutuları ve bir hızlı tablo; yukarıda girilen normalite, test türü ve beklenen asitliğe göre.</p>
           <div><button type="button" class="small" data-act="print"><span class="en">Print / save field sheet as PDF</span><span class="tr">Saha formunu yazdır / PDF kaydet</span></button></div>
           <p class="links"><span class="en">Ready-made PDF (0.1 N, oil below 1%):</span><span class="tr">Hazır PDF (0,1 N, %1’in altındaki yağ):</span> <a href="field-sheet-en.pdf" download>English</a> · <a href="field-sheet-tr.pdf" download>Türkçe</a></p>
         </div>
@@ -1011,11 +1032,47 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   var M_OLEIC = 282.46;       // g/mol
   var M_KOH = 56.11;          // g/mol, for acid value
 
-  var MASS_REC = {
-    low:  { m: 20,  lo: 0.1, hi: 1.0 },
-    mid:  { m: 5,   lo: 1.0, hi: 4.0 },
-    high: { m: 1.5, lo: 4.0, hi: 15.0 }
+  var N_PRESETS = ["0.1", "0.125", "0.25", "0.5", "1"];
+  var RANGES = {
+    low:  { lo: 0.1, hi: 1.0 },
+    mid:  { lo: 1.0, hi: 4.0 },
+    high: { lo: 4.0, hi: 15.0 }
   };
+  var V_TARGET = 3.5;   // mL of titrant at the top of the expected range: fits one 10 mL pipette fill with room to spare
+  var DROP_ML = 0.05;   // typical drop from a pipette tip
+  var NICE_MASS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 7.5, 10, 12.5, 15, 20];
+
+  // How much oil and solvent to use for the current normality and test type.
+  // Standard: oil mass is chosen so the titrant at the top of the expected range is about V_TARGET, rounded to an
+  // easy number and kept to 1–20 g (a stronger titrant would otherwise need a lot of oil and solvent).
+  // Quick check: m = 28.2 × N, so V in mL reads directly as % acidity.
+  // Solvent: ~5 mL per gram of oil to dissolve it, at least 20 mL, and at least 8× the largest expected titrant
+  // volume so the water from aqueous NaOH stays under ~1/8 of the solvent.
+  function recommend(s) {
+    s = s || state;
+    var N = num(s.N);
+    if (!(N > 0)) return null;
+    var r;
+    if (s.quick) {
+      r = { quick: true, m: N * FACTOR, lo: 0.1, hi: 2.0, capped: false };
+    } else {
+      var rg = RANGES[s.expected] || RANGES.low;
+      var ideal = V_TARGET * N * FACTOR / rg.hi;
+      var m = NICE_MASS.reduce(function (best, x) { return Math.abs(Math.log(x / ideal)) < Math.abs(Math.log(best / ideal)) ? x : best; }, NICE_MASS[0]);
+      r = { quick: false, m: m, lo: rg.lo, hi: rg.hi, capped: ideal > 22 };
+    }
+    r.vlo = r.lo * r.m / (N * FACTOR);
+    r.vhi = r.hi * r.m / (N * FACTOR);
+    r.solvent = Math.ceil(Math.max(20, 5 * r.m, 8 * r.vhi) / 5) * 5;
+    r.drop = DROP_ML * N * FACTOR / r.m;   // acidity points per drop
+    return r;
+  }
+  // Normality: three decimals as before (0.100), four when the label gives one more (0.0995).
+  function fmtN(x) { return f(x, Math.abs(x * 1000 - Math.round(x * 1000)) < 1e-6 ? 3 : 4); }
+  function fmtMass(m) {
+    var d = Math.abs(m - Math.round(m)) < 1e-9 ? 0 : (Math.abs(m * 10 - Math.round(m * 10)) < 1e-6 ? 1 : 2);
+    return f(m, d);
+  }
 
   var lang = document.documentElement.lang === "tr" ? "tr" : "en";
 
@@ -1049,14 +1106,16 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       nBlank: "The blank is larger than the titration volume. Check the readings.",
       nBlankNeg: "The blank cannot be negative. Check the reading.",
       nZeroV: "0 mL of titrant was recorded after subtracting the blank. Check the readings.",
-      nSmallV: "Less than 0.5 mL of titrant was used, so a single drop (≈ 0.05 mL) is over 10% of the reading. For a more precise result, use more oil (e.g. 30 g, dissolved in 150 mL of neutralized solvent) or a weaker titrant (0.05 N).",
-      nBigV: "More than 10 mL was needed. The oil is quite acidic. Next time use less oil (or 0.5 N titrant) so one pipette fill is enough and aqueous phase separation is avoided.",
+      nSmallV: function (d) { return "Less than 0.5 mL of titrant was used, and one drop is worth about " + d + " points here. For a finer result use more oil (with more solvent), or 0.1 N titrant if yours is stronger."; },
+      nBigV: "More than 10 mL was needed. The oil is quite acidic. Next time set a higher expected acidity in Test setup, so you use less oil, one pipette fill is enough and the water from the titrant doesn't separate out.",
       nMass: function (m) { return "Oil mass is far from the recommended " + m + " g. The result is still valid, but precision may suffer."; },
       nAbove: "The result is above the expected range. Consider setting a higher expected acidity in Test setup and using less oil.",
       gNone: "No result yet", gEV: "Extra virgin range (≤ 0.80%)", gV: "Virgin range (≤ 2.0%)", gL: "Lampante range (> 2.0%)",
       unitOleic: "% oleic acid",
       enterRun: "Enter a run to see the result.",
       single: "From a single run. Add a second run to confirm.",
+      singleQuick: "Quick check, single run. One drop is worth about 0.05 points.",
+      quickNear: "Too close to the 0.80% limit for a quick check. Do a standard test to decide.",
       meanOf: function (n) { return "Mean of " + n + " runs."; },
       incomplete: "incomplete",
       agree: function (l) { return "Runs agree within " + l + " points, a good repeat."; },
@@ -1074,9 +1133,14 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       ],
       eqMass: "mass", eqAcids: "n(free fatty acids)",
       recNoN: "Enter the titrant normality to see the recommended sample size.",
-      rec1: function (m, ml) { return "Weigh about <strong>" + m + " g</strong> of oil" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + " for each run."; },
-      rec2: function (range, vlo, vhi, N) { return "At " + range + " acidity this will use roughly <strong>" + vlo + "–" + vhi + " mL</strong> of " + N + " N titrant. Rearranged formula: V = acidity × m ÷ (N × 28.2)."; },
+      rec1: function (m, ml, sv) { return "For each run, weigh about <strong>" + m + " g</strong> of oil" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + " and dissolve it in about <strong>" + sv + " mL</strong> of neutralized solvent."; },
+      rec2: function (range, vlo, vhi, N, d) { return "At " + range + " acidity this will use roughly <strong>" + vlo + "–" + vhi + " mL</strong> of " + N + " N titrant; one drop is worth about " + d + " points. Rearranged formula: V = acidity × m ÷ (N × 28.2)."; },
+      recQuick: function (m, N) { return "Quick check: with exactly " + m + " g of oil, the mL of " + N + " N titrant used <strong>is</strong> the acidity in % (e.g. 0.40 mL → 0.40%). If you weigh a little more or less, the run card works out the exact value."; },
+      recTotal: function (n, sv) { return "Solvent for " + n + ": about <strong>" + sv + " mL</strong>."; },
+      recTotalN: { 1: "one run", 2: "two runs" },
+      recCapped: function (N) { return "With " + N + " N titrant the oil mass is capped at 20 g, so results are coarser. 0.1 N titrant gives finer results with less solvent."; },
       recScale: "Use a 0.01 g scale for this sample mass.",
+      nOther: "Other / exact value",
       ranges: { low: "below 1%", mid: "1 to 4%", high: "4 to 15%" },
       stepsDone: function (d, t) { return d + " of " + t + " done"; },
       reset: "Start new test", resetArm: "Click again to start blank (saved tests stay)",
@@ -1116,7 +1180,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       cAV: function (av) { return "Acid value: " + av + " mg KOH/g"; },
       cCat: function (g) { return "Category by acidity: " + g; },
       fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · expected acidity: " + range + "."; },
+      fsSetupQuick: function (N) { return "Titrant: <strong>" + N + " N</strong> NaOH · quick check."; },
       fsRun: function (n) { return "Run " + n; },
+      fsIfNeeded: "only if needed",
       fsMethod: "Weighing", fsBefore: "Cup before", fsAfter: "Cup after", fsOr: "or tared / by volume",
       fsMass: "Oil mass m", fsFill: function (n) { return "Fill " + n; }, fsStart: "start", fsEnd: "end",
       fsBlank: "Blank (if not neutralized in step 3)", fsV: "Titrant V",
@@ -1179,7 +1245,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       repMean: function (n) { return n === 1 ? "From 1 run" : "Mean of " + n + " runs"; },
       repCols: ["Run", "Weighing", "m (g)", "V (mL)", "Acidity"],
       repStats: function (r, sd, av) { return (r ? "Spread " + r + " · SD " + sd + " · " : "") + "Acid value " + av + " mg KOH/g"; },
-      repMethodTxt: function (N) { return "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized 1:1 alcohol-ether solvent. Adapted from the cold method of ISO 660 / EU 2022/2105 (formerly 2568/91), with aqueous NaOH in place of ethanolic KOH. Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
+      repMethodTxt: function (N, quick) { return (quick ? "Quick check (screening only; one drop ≈ 0.05 points). " : "") + "Free fatty acids by titration with " + N + " N NaOH against phenolphthalein, in neutralized 1:1 alcohol-ether solvent. Adapted from the cold method of ISO 660 / EU 2022/2105 (formerly 2568/91), with aqueous NaOH in place of ethanolic KOH. Acidity = V × N × 28.2 ÷ m, as % oleic acid. Limits: extra virgin ≤ 0.80 %, virgin ≤ 2.0 %, above that lampante. Acidity alone doesn't set the official grade: that also needs peroxide value, UV absorbance and a tasting panel."; },
       repBy: "Tested by", repSig: "Signature",
       dHarvestH: "Picking took", dWait: "Picking to pressing", dCold: "Cold extraction (≤ 27 °C)", dYield: "Yield", yes: "yes", no: "no",
       noResultWarn: "No completed run yet: the labels and report will show “—” for acidity."
@@ -1204,14 +1270,16 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       nBlank: "Kör deneme hacmi titrasyon hacminden büyük. Okumaları kontrol edin.",
       nBlankNeg: "Kör deneme negatif olamaz. Okumayı kontrol edin.",
       nZeroV: "Kör düşüldükten sonra 0 mL titrant harcandı görünüyor. Okumaları kontrol edin.",
-      nSmallV: "0,5 mL’den az titrant harcandı; tek bir damla (≈ 0,05 mL) okumanın %10’undan fazlası. Daha hassas sonuç için daha çok yağ (ör. 150 mL nötrleştirilmiş çözücüde çözülmüş 30 g) ya da daha seyreltik titrant (0,05 N) kullanın.",
-      nBigV: "10 mL’den fazla gerekti; yağ oldukça asidik. Bir dahaki sefere tek pipet dolumu yetsin ve sulu faz ayrışması olmasın diye daha az yağ (veya 0,5 N titrant) kullanın.",
+      nSmallV: function (d) { return "0,5 mL’den az titrant harcandı ve burada bir damla yaklaşık " + d + " puan ediyor. Daha hassas sonuç için daha çok yağ (daha çok çözücüyle) ya da sizinki daha güçlüyse 0,1 N titrant kullanın."; },
+      nBigV: "10 mL’den fazla gerekti; yağ oldukça asidik. Bir dahaki sefere Test ayarlarında daha yüksek bir beklenen asitlik seçin; böylece daha az yağ kullanırsınız, tek pipet dolumu yeter ve titranttaki su ayrışmaz.",
       nMass: function (m) { return "Yağ kütlesi önerilen " + String(m).replace(".", ",") + " g’dan çok farklı. Sonuç yine geçerli ama hassasiyet düşebilir."; },
       nAbove: "Sonuç beklenen aralığın üstünde. Test ayarlarında daha yüksek bir beklenen asitlik seçip daha az yağ kullanmayı düşünün.",
       gNone: "Henüz sonuç yok", gEV: "Natürel sızma aralığı (≤ %0,80)", gV: "Natürel birinci aralığı (≤ %2,0)", gL: "Lampant aralığı (> %2,0)",
       unitOleic: "oleik asit",
       enterRun: "Sonucu görmek için bir ölçüm girin.",
       single: "Tek ölçümden. Doğrulamak için ikinci bir ölçüm ekleyin.",
+      singleQuick: "Hızlı kontrol, tek ölçüm. Bir damla yaklaşık 0,05 puan eder.",
+      quickNear: "Hızlı kontrol için %0,80 sınırına fazla yakın. Karar vermek için standart test yapın.",
       meanOf: function (n) { return n + " ölçümün ortalaması."; },
       incomplete: "eksik",
       agree: function (l) { return "Ölçümler " + l + " puan içinde uyuşuyor; iyi bir tekrar."; },
@@ -1229,9 +1297,14 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       ],
       eqMass: "kütle", eqAcids: "n(serbest yağ asitleri)",
       recNoN: "Önerilen numune miktarını görmek için titrant normalitesini girin.",
-      rec1: function (m, ml) { return "Her ölçüm için yaklaşık <strong>" + m + " g</strong> yağ tartın" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + "."; },
-      rec2: function (range, vlo, vhi, N) { return range + " asitlikte bu, " + N + " N titranttan yaklaşık <strong>" + vlo + "–" + vhi + " mL</strong> harcatır. Ters çevrilmiş formül: V = asitlik × m ÷ (N × 28,2)."; },
+      rec1: function (m, ml, sv) { return "Her ölçüm için yaklaşık <strong>" + m + " g</strong> yağ tartın" + (ml ? " (≈ <strong>" + ml + " mL</strong>)" : "") + " ve yaklaşık <strong>" + sv + " mL</strong> nötrleştirilmiş çözücüde çözün."; },
+      rec2: function (range, vlo, vhi, N, d) { return range + " asitlikte bu, " + N + " N titranttan yaklaşık <strong>" + vlo + "–" + vhi + " mL</strong> harcatır; bir damla yaklaşık " + d + " puan eder. Ters çevrilmiş formül: V = asitlik × m ÷ (N × 28,2)."; },
+      recQuick: function (m, N) { return "Hızlı kontrol: tam " + m + " g yağla, harcanan " + N + " N titrantın mL’si <strong>doğrudan</strong> % asitliktir (ör. 0,40 mL → %0,40). Biraz fazla veya az tartarsanız ölçüm kartı kesin değeri hesaplar."; },
+      recTotal: function (n, sv) { return n + " için çözücü: yaklaşık <strong>" + sv + " mL</strong>."; },
+      recTotalN: { 1: "Tek ölçüm", 2: "İki ölçüm" },
+      recCapped: function (N) { return N + " N titrantla yağ miktarı 20 g ile sınırlanır, bu yüzden sonuç daha kabadır. 0,1 N titrant daha az çözücüyle daha hassas sonuç verir."; },
       recScale: "Bu numune kütlesi için 0,01 g hassasiyetli terazi kullanın.",
+      nOther: "Diğer / kesin değer",
       ranges: { low: "%1’in altındaki", mid: "%1–4 arası", high: "%4–15 arası" },
       stepsDone: function (d, t) { return t + " adımdan " + d + " tamam"; },
       reset: "Yeni test başlat", resetArm: "Boş test için tekrar tıklayın (kayıtlılar kalır)",
@@ -1271,7 +1344,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       cAV: function (av) { return "Asit değeri: " + av + " mg KOH/g"; },
       cCat: function (g) { return "Asitliğe göre kategori: " + g; },
       fsSetup1: function (N, range) { return "Titrant: <strong>" + N + " N</strong> NaOH · beklenen asitlik: " + range + "."; },
+      fsSetupQuick: function (N) { return "Titrant: <strong>" + N + " N</strong> NaOH · hızlı kontrol."; },
       fsRun: function (n) { return n + ". ölçüm"; },
+      fsIfNeeded: "yalnızca gerekirse",
       fsMethod: "Tartım", fsBefore: "Kap, önce", fsAfter: "Kap, sonra", fsOr: "veya dara / hacimle",
       fsMass: "Yağ kütlesi m", fsFill: function (n) { return n + ". dolum"; }, fsStart: "başlangıç", fsEnd: "bitiş",
       fsBlank: "Kör (3. adımda nötrleştirilmediyse)", fsV: "Titrant V",
@@ -1334,7 +1409,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       repMean: function (n) { return n === 1 ? "1 ölçümden" : n + " ölçümün ortalaması"; },
       repCols: ["Ölçüm", "Tartım", "m (g)", "V (mL)", "Asitlik"],
       repStats: function (r, sd, av) { return (r ? "Fark " + r + " · SS " + sd + " · " : "") + "Asit değeri " + av + " mg KOH/g"; },
-      repMethodTxt: function (N) { return "Serbest yağ asitleri, nötrleştirilmiş 1:1 alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile titre edilmiştir. Yöntem, ISO 660 / AB 2022/2105 (eski 2568/91) soğuk yönteminden etanollü KOH yerine sulu NaOH kullanılarak uyarlanmıştır. Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
+      repMethodTxt: function (N, quick) { return (quick ? "Hızlı kontrol (yalnızca ön tarama; bir damla ≈ 0,05 puan). " : "") + "Serbest yağ asitleri, nötrleştirilmiş 1:1 alkol-eter çözücüde fenolftalein eşliğinde " + N + " N NaOH ile titre edilmiştir. Yöntem, ISO 660 / AB 2022/2105 (eski 2568/91) soğuk yönteminden etanollü KOH yerine sulu NaOH kullanılarak uyarlanmıştır. Asitlik = V × N × 28,2 ÷ m, % oleik asit cinsinden. Sınırlar: natürel sızma ≤ %0,80, natürel birinci ≤ %2,0, üstü lampant. Asitlik tek başına resmî sınıfı belirlemez; ayrıca peroksit değeri, UV absorbansı ve duyusal panel gerekir."; },
       repBy: "Testi yapan", repSig: "İmza",
       dHarvestH: "Toplama süresi", dWait: "Toplamadan sıkıma", dCold: "Soğuk sıkım (≤ 27 °C)", dYield: "Verim", yes: "evet", no: "hayır",
       noResultWarn: "Henüz tamamlanmış ölçüm yok: etiket ve raporda asitlik “—” olarak görünür."
@@ -1356,12 +1431,12 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var ts = nowISO();
     return {
       id: "example", createdAt: ts, updatedAt: ts,
-      example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 3,
+      example: true, name: "2026 · tin 1", N: "0.1", density: "0.91", expected: "low", quick: false, steps: {}, nextId: 3,
       testDate: todayISO(), label: defaultLabel(),
       info: exampleInfo(),
       runs: [
-        { id: 1, mode: "diff", before: "87.42", after: "67.31", direct: "", vol: "", blank: "", fills: [{ start: "0.00", end: "2.35" }] },
-        { id: 2, mode: "diff", before: "67.31", after: "47.05", direct: "", vol: "", blank: "", fills: [{ start: "2.35", end: "4.72" }] }
+        { id: 1, mode: "diff", before: "52.40", after: "42.31", direct: "", vol: "", blank: "", fills: [{ start: "0.00", end: "1.18" }] },
+        { id: 2, mode: "diff", before: "42.31", after: "32.25", direct: "", vol: "", blank: "", fills: [{ start: "1.18", end: "2.36" }] }
       ]
     };
   }
@@ -1371,9 +1446,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   function freshState(keepSettings) {
     var ts = nowISO();
     var s = { id: makeId(), createdAt: ts, updatedAt: ts,
-      example: false, name: "", N: "0.1", density: "0.91", expected: "low", steps: {}, nextId: 2, runs: [blankRun(1)],
+      example: false, name: "", N: "0.1", density: "0.91", expected: "low", quick: false, steps: {}, nextId: 2, runs: [blankRun(1)],
       info: {}, testDate: todayISO(), label: (state && state.label) || defaultLabel() };
-    if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; }
+    if (keepSettings) { s.N = state.N; s.density = state.density; s.expected = state.expected; s.quick = !!state.quick; }
     return s;
   }
 
@@ -1389,6 +1464,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       N: raw.N == null ? "0.1" : String(raw.N),
       density: raw.density == null ? "0.91" : String(raw.density),
       expected: raw.expected === "mid" || raw.expected === "high" ? raw.expected : "low",
+      quick: raw.quick === true,
       steps: {},
       nextId: 1,
       testDate: typeof raw.testDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.testDate) ? raw.testDate : todayISO(),
@@ -1587,11 +1663,12 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       } else {
         out.acidity = out.V * N * FACTOR / out.m;
         out.av = out.V * N * M_KOH / out.m;
-        var rec = MASS_REC[s.expected] || MASS_REC.low;
-        if (out.V < 0.5) out.notes.push(["warn", t("nSmallV")]);
+        var rec = recommend(s);
+        var dropPts = DROP_ML * N * FACTOR / out.m;
+        if (out.V < 0.5 && !s.quick && dropPts > 0.02) out.notes.push(["warn", t("nSmallV")(f(dropPts, 2))]);
         if (out.V > 10) out.notes.push(["warn", t("nBigV")]);
-        if (out.m < rec.m * 0.5 || out.m > rec.m * 2) out.notes.push(["warn", t("nMass")(rec.m)]);
-        if (s.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
+        if (out.m < rec.m * 0.5 || out.m > rec.m * 2) out.notes.push(["warn", t("nMass")(fmtMass(rec.m))]);
+        if (!s.quick && s.expected !== "high" && out.acidity > rec.hi * 1.2) out.notes.push(["warn", t("nAbove")]);
       }
     }
     return out;
@@ -1673,9 +1750,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         calc.innerHTML =
           '<div class="row"><span class="k">' + t("kM") + '</span><span class="v">' + (c.mExpr || t("waiting")) + '</span></div>' +
           '<div class="row"><span class="k">' + t("kV") + '</span><span class="v">' + (c.vExpr || t("waiting")) + '</span></div>' +
-          '<div class="row"><span class="k">' + t("kN") + '</span><span class="v">' + (isFinite(N) ? f(N, 3) + " mol/L" : t("setN")) + '</span></div>' +
+          '<div class="row"><span class="k">' + t("kN") + '</span><span class="v">' + (isFinite(N) ? fmtN(N) + " mol/L" : t("setN")) + '</span></div>' +
           '<div class="row final"><span class="k">' + t("kA") + '</span><span class="v">' +
-            (isFinite(c.acidity) ? f(c.V, 2) + " × " + f(N, 3) + " × " + f(FACTOR, 1) + " ÷ " + f(c.m, 2) + " = " + pct(c.acidity, 3) : "V × N × " + f(FACTOR, 1) + " ÷ m") + '</span></div>';
+            (isFinite(c.acidity) ? f(c.V, 2) + " × " + fmtN(N) + " × " + f(FACTOR, 1) + " ÷ " + f(c.m, 2) + " = " + pct(c.acidity, 3) : "V × N × " + f(FACTOR, 1) + " ÷ m") + '</span></div>';
       }
       var notes = document.getElementById("notes-" + run.id);
       if (notes) notes.innerHTML = c.notes.map(function (n) { return '<div class="note ' + n[0] + '">' + n[1] + '</div>'; }).join("");
@@ -1723,7 +1800,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       ["pRange", "pAV", "pSD"].forEach(function (id) { document.getElementById(id).textContent = "—"; });
     } else {
       meanEl.innerHTML = (lang === "tr" ? "%" + f(s.mean, 2) : f(s.mean, 2)) + "<small>" + t("unitOleic") + "</small>";
-      sub.textContent = s.n === 1 ? t("single") : t("meanOf")(s.n);
+      sub.textContent = s.n === 1 ? (state.quick ? t("singleQuick") : t("single")) : t("meanOf")(s.n);
       var g = grade(s.mean);
       chip.className = "chip " + g.cls; chip.textContent = g.text;
       var pos = Math.max(0, Math.min(100, s.mean / 2.5 * 100));
@@ -1737,7 +1814,8 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
         if (s.range <= limit) notes.push(["ok", t("agree")(f(limit, 2))]);
         else notes.push(["warn", t("differ")(f(limit, 2))]);
       }
-      if (s.mean > 0.7 && s.mean <= 0.9) notes.push(["warn", t("nearLimit")]);
+      if (state.quick) { if (s.mean >= 0.6 && s.mean <= 1.0) notes.push(["warn", t("quickNear")]); }
+      else if (s.mean > 0.7 && s.mean <= 0.9) notes.push(["warn", t("nearLimit")]);
     }
     document.getElementById("pRuns").innerHTML = all.map(function (c) {
       return '<div class="r"><span class="muted">' + t("run") + ' ' + (c.idx + 1) + '</span><span>' + (isFinite(c.acidity) ? pct(c.acidity, 3) : t("incomplete")) + '</span></div>';
@@ -1750,18 +1828,18 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var src = document.getElementById("deriveSource");
     var N = num(state.N);
     var has = !!c;
-    var V = has ? c.V : 2.35, m = has ? c.m : 20.0, n = isFinite(N) && N > 0 ? N : 0.1;
+    var V = has ? c.V : 1.18, m = has ? c.m : 10.0, n = isFinite(N) && N > 0 ? N : 0.1;
     src.textContent = has ? t("deriveFrom")(c.idx + 1) : t("deriveSample");
     var mmol = V * n;
     var mg = mmol * M_OLEIC;
     var p = mg / (m * 1000) * 100;
     var exact = V * n * FACTOR / m;
     var eqs = [
-      "n(NaOH) = V × N = " + f(V, 2) + " mL × " + f(n, 3) + " mmol/mL = " + f(mmol, 4) + " mmol",
+      "n(NaOH) = V × N = " + f(V, 2) + " mL × " + fmtN(n) + " mmol/mL = " + f(mmol, 4) + " mmol",
       t("eqAcids") + " = " + f(mmol, 4) + " mmol",
       t("eqMass") + " = " + f(mmol, 4) + " mmol × " + f(M_OLEIC, 2) + " mg/mmol = " + f(mg, 2) + " mg",
       f(mg, 2) + " mg ÷ " + f(m * 1000, 0) + " mg × 100 = " + pct(p, 3),
-      "V × N × " + f(FACTOR, 1) + " ÷ m = " + f(V, 2) + " × " + f(n, 3) + " × " + f(FACTOR, 1) + " ÷ " + f(m, 2) + " = " + pct(exact, 3),
+      "V × N × " + f(FACTOR, 1) + " ÷ m = " + f(V, 2) + " × " + fmtN(n) + " × " + f(FACTOR, 1) + " ÷ " + f(m, 2) + " = " + pct(exact, 3),
       "AV = V × N × " + f(M_KOH, 2) + " ÷ m = " + f(V * n * M_KOH / m, 2) + " mg KOH/g"
     ];
     var d = t("d");
@@ -1771,16 +1849,33 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   }
 
   function renderRecommend() {
-    var rec = MASS_REC[state.expected] || MASS_REC.low;
+    var rec = recommend(state);
     var N = num(state.N);
     var rho = num(state.density);
     var el = document.getElementById("recommend");
-    if (!(N > 0)) { el.innerHTML = t("recNoN"); return; }
-    var vlo = rec.lo * rec.m / (N * FACTOR), vhi = rec.hi * rec.m / (N * FACTOR);
-    var mlOil = isFinite(rho) && rho > 0 ? f(rec.m / rho, rec.m < 5 ? 1 : 0) : null;
-    var mStr = lang === "tr" ? String(rec.m).replace(".", ",") : String(rec.m);
-    el.innerHTML = '<div>' + t("rec1")(mStr, mlOil) + (rec.m <= 5 ? " " + t("recScale") : "") + '</div><div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(vlo, 1), f(vhi, 1), f(N, 3)) + '</div>';
+    var hasRho = isFinite(rho) && rho > 0;
+    var oilMl = rec && hasRho ? rec.m / rho : NaN;
+    // Amounts quoted inside the procedure steps.
+    var fills = {
+      solvent: rec ? f(rec.solvent, 0) + " mL" : "—",
+      drops: rec ? (function (d) { return f(d, 0) + "–" + f(d + 1, 0); })(Math.max(1, Math.floor(rec.solvent / 20))) : "—",
+      mass: rec ? fmtMass(rec.m) + " g" : "—",
+      oilml: isFinite(oilMl) ? f(oilMl, oilMl < 10 ? 1 : 0) + " mL" : "—",
+      cup: isFinite(oilMl) ? f(Math.ceil((3 * oilMl + 15) / 10) * 10, 0) + " mL" : "—"
+    };
+    document.querySelectorAll("[data-amount]").forEach(function (x) { x.textContent = fills[x.getAttribute("data-amount")]; });
+    if (!rec) { el.innerHTML = t("recNoN"); return; }
+    var mStr = fmtMass(rec.m), Ns = fmtN(N);
+    var ml = isFinite(oilMl) ? f(oilMl, oilMl < 10 ? 1 : 0) : null;
+    var runs = rec.quick ? 1 : 2;
+    var html = '<div>' + t("rec1")(mStr, ml, f(rec.solvent, 0)) + (rec.m <= 5 ? " " + t("recScale") : "") + '</div>';
+    if (rec.quick) html += '<div>' + t("recQuick")(mStr, Ns) + '</div>';
+    else html += '<div>' + t("rec2")(t("ranges")[state.expected] || t("ranges").low, f(rec.vlo, 1), f(rec.vhi, 1), Ns, f(rec.drop, rec.drop < 0.1 ? 3 : 2)) + '</div>';
+    if (rec.capped) html += '<div>' + t("recCapped")(Ns) + '</div>';
+    html += '<div>' + t("recTotal")(t("recTotalN")[runs], f(rec.solvent * runs, 0)) + '</div>';
+    el.innerHTML = html;
   }
+
 
   // ---------- oil details ----------
   var INFO_GROUPS = [
@@ -1999,7 +2094,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       (notes ? '<section><h2>' + t("repNotes") + '</h2><p class="rep-notes">' + esc(notes) + '</p></section>' : '') +
       '<section><h2>' + t("repRuns") + '</h2><table><thead><tr>' + cols.map(function (c, j) { return '<th' + (j > 1 ? ' class="num"' : '') + '>' + c + '</th>'; }).join("") + '</tr></thead><tbody>' + runRows + '</tbody></table></section>' +
       '<div class="rep-methods">' +
-        '<section class="rep-method"><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? f(N, 3) : "?") + '</p></section>' +
+        '<section class="rep-method"><h2>' + t("repMethod") + '</h2><p>' + t("repMethodTxt")(isFinite(N) ? fmtN(N) : "?", !!state.quick) + '</p></section>' +
         methodNoteHTML() +
       '</div>' +
       '<div class="rep-sign"><div>' + t("repBy") + '</div><div>' + t("repSig") + '</div></div>' +
@@ -2044,10 +2139,10 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   // ---------- printable field sheet ----------
   // Always rendered (it is cheap) so that Ctrl+P, the print button and headless PDF builds all get current values.
   function renderFieldSheet() {
-    var rec = MASS_REC[state.expected] || MASS_REC.low;
+    var rec = recommend(state);
     var N = num(state.N);
-    var hasN = isFinite(N) && N > 0;
-    var Ns = hasN ? f(N, 3) : "____";
+    var hasN = !!rec;
+    var Ns = hasN ? fmtN(N) : "____";
     var rangeTxt = t("ranges")[state.expected] || t("ranges").low;
     var blank = function (w) { return '<span class="fs-blank' + (w ? " w" : "") + '"></span>'; };
     var box = '<span class="fs-box"></span>';
@@ -2063,12 +2158,14 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
       [t("fsHarvest"), ex ? "" : esc(fmtRange(state.info.harvestStart, state.info.harvestEnd))], [t("fsPressed"), iv("pressDate")], [t("fsMalax"), malax]
     ].map(function (p) { return '<div class="ln"><b>' + p[0] + '</b><i>' + p[1] + '</i></div>'; }).join("");
     var setup = document.getElementById("fsSetup");
-    setup.innerHTML = '<div>' + t("fsSetup1")(Ns, rangeTxt) + '</div>' + document.getElementById("recommend").innerHTML;
+    setup.innerHTML = '<div>' + (state.quick ? t("fsSetupQuick")(Ns) : t("fsSetup1")(Ns, rangeTxt)) + '</div>' + document.getElementById("recommend").innerHTML;
 
     var modes = t("modes");
     var runs = "";
-    for (var i = 1; i <= 3; i++) {
-      runs += '<div class="fs-run"><h3>' + t("fsRun")(i) + '</h3>' +
+    // Standard: two runs plus a third if needed. Quick check: one run plus a second if needed.
+    var nRuns = state.quick ? 2 : 3;
+    for (var i = 1; i <= nRuns; i++) {
+      runs += '<div class="fs-run"><h3>' + t("fsRun")(i) + (i === nRuns ? ' <span class="fs-unit">(' + t("fsIfNeeded") + ')</span>' : '') + '</h3>' +
         '<div class="fs-row"><span class="fs-lbl">' + t("fsMethod") + '</span>' +
           opt(modes.diff) + opt(modes.direct) + opt(modes.vol) + '</div>' +
         '<div class="fs-row"><span class="fs-lbl">' + t("fsMass") + '</span>' +
@@ -2095,9 +2192,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     // Lookup grid: rows of titrant volume, columns of oil mass around the recommended mass.
     var table = document.getElementById("fsLookup");
     var lede = document.getElementById("fsLookupLede");
-    var mStr = lang === "tr" ? String(rec.m).replace(".", ",") : String(rec.m);
     if (!hasN) { table.innerHTML = ""; lede.textContent = t("recNoN"); return; }
-    lede.textContent = t("fsLookupLede")(f(N, 3), mStr);
+    var mStr = fmtMass(rec.m);
+    lede.textContent = t("fsLookupLede")(fmtN(N), mStr);
     var masses = [0.8, 0.9, 0.95, 1, 1.05, 1.1, 1.2].map(function (k) { return rec.m * k; });
     var vLo = rec.lo * rec.m / (N * FACTOR), vHi = rec.hi * rec.m / (N * FACTOR) * 1.15;
     var step = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 5].filter(function (st) { return (vHi - vLo) / st <= 34; })[0] || 10;
@@ -2148,6 +2245,9 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     sel.options[0].textContent = t("optLow");
     sel.options[1].textContent = t("optMid");
     sel.options[2].textContent = t("optHigh");
+    var nSel = document.getElementById("normalityPreset");
+    N_PRESETS.forEach(function (v, i) { nSel.options[i].textContent = (lang === "tr" ? v.replace(".", ",") : v) + " N"; });
+    nSel.options[N_PRESETS.length].textContent = t("nOther");
     document.getElementById("sampleName").placeholder = t("placeholder");
     document.getElementById("savedSearch").placeholder = t("savedFilterPlaceholder");
     document.getElementById("pasteInput").placeholder = t("pastePlaceholder");
@@ -2157,9 +2257,27 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     });
   }
 
+  // Normality: a preset matching the stored value is selected; anything else shows the free-text field.
+  // nOtherOpen keeps that field open after choosing "Other", even while its value happens to equal a preset.
+  var nOtherOpen = false;
+  function presetFor(v) {
+    var n = num(v);
+    for (var i = 0; i < N_PRESETS.length; i++) if (n === Number(N_PRESETS[i])) return N_PRESETS[i];
+    return "other";
+  }
+  function renderNormality() {
+    var p = nOtherOpen ? "other" : presetFor(state.N);
+    document.getElementById("normalityPreset").value = p;
+    document.getElementById("normalityOther").hidden = p !== "other";
+  }
+
   function renderSettings() {
     document.getElementById("sampleName").value = state.name || "";
     document.getElementById("normality").value = state.N;
+    nOtherOpen = false;
+    renderNormality();
+    document.querySelectorAll('input[name="testType"]').forEach(function (r) { r.checked = r.value === (state.quick ? "quick" : "std"); });
+    document.getElementById("expected").disabled = !!state.quick;
     document.getElementById("density").value = state.density;
     document.getElementById("testDate").value = state.testDate || "";
     document.getElementById("expected").value = state.expected;
@@ -2474,6 +2592,23 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
   document.querySelector('[data-act="print-labels"]').addEventListener("click", function () { printMode("labels"); });
   document.querySelector('[data-act="print-report"]').addEventListener("click", function () { printMode("report"); });
   document.getElementById("normality").addEventListener("input", function (e) { state.N = e.target.value; save(); updateComputed(); });
+  document.getElementById("normalityPreset").addEventListener("change", function (e) {
+    var v = e.target.value;
+    nOtherOpen = v === "other";
+    if (!nOtherOpen) state.N = v;
+    document.getElementById("normality").value = state.N;
+    renderNormality();
+    if (nOtherOpen) document.getElementById("normality").focus();
+    save(); updateComputed();
+  });
+  document.querySelectorAll('input[name="testType"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      if (!r.checked) return;
+      state.quick = r.value === "quick";
+      document.getElementById("expected").disabled = state.quick;
+      save(); updateComputed();
+    });
+  });
   document.getElementById("density").addEventListener("input", function (e) { state.density = e.target.value; save(); updateComputed(); });
   document.getElementById("expected").addEventListener("change", function (e) { state.expected = e.target.value; save(); updateComputed(); });
 
@@ -2522,7 +2657,7 @@ section.block > .card { grid-template-columns: minmax(0, 1fr); }
     var N = num(st.N);
     var lines = [];
     lines.push(t("cTitle") + (st.name ? " · " + st.name : "") + " · " + (st.testDate || new Date().toISOString().slice(0, 10)));
-    lines.push(t("cTitrant")(f(N, 3)));
+    lines.push(t("cTitrant")(fmtN(N)));
     INFO_GROUPS.forEach(function (grp) {
       grp[1].forEach(function (fd) {
         if (fd[0] === "notes") return;

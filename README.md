@@ -10,7 +10,7 @@ works without a server, and has a printable field sheet for places with no inter
 
 | Tool | Path | What it does |
 | --- | --- | --- |
-| Acidity titration | [`site/acidity/`](site/acidity/) | Free acidity (% oleic acid) by NaOH titration (ISO 660 / EU 2568/91), with a step-by-step guide, live calculation, a PDF field sheet, optional oil details (variety, harvest and pressing, mill, malaxation, storage), an A4 test report and bottle labels. |
+| Acidity titration | [`site/acidity/`](site/acidity/) | Free acidity (% oleic acid) by NaOH titration (adapted from ISO 660 / EU 2568/91), with a step-by-step guide, oil and solvent amounts sized to your titrant normality, an optional quick check, live calculation, a PDF field sheet, optional oil details (variety, harvest and pressing, mill, malaxation, storage), an A4 test report and bottle labels. |
 
 ## Layout
 
